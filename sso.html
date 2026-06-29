@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSO Rijk — Kamer van Koophandel</title>
+
+  <!-- Echte NLDD design system -->
+  <link rel="stylesheet" href="https://esm.sh/@nldd/design-system@0.8.60/dist/css/settings.css" />
+  <script type="module" src="https://esm.sh/@nldd/design-system@0.8.60"></script>
+
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { font-family: var(--typography-font-family-base, system-ui, sans-serif); background: var(--context-base-background-color, #fff); }
+    #app { display: flex; flex-direction: column; height: 100vh; }
+    nldd-app-view { flex: 1 1 auto; min-height: 0; }
+    .auth-center { display: flex; justify-content: center; align-items: flex-start; padding: 48px 16px; }
+    .auth-card { width: 100%; max-width: 440px; }
+    .full > nldd-button { display: block; }
+    .muted { text-align: center; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- SSO Rijk: centrale inlogdienst. Organisatietitel = Kamer van Koophandel -->
+    <nldd-top-navigation-bar
+      logo-title="Rijksoverheid"
+      logo-subtitle="SSO Rijk"
+      website-title="Single Sign-On Rijk">
+    </nldd-top-navigation-bar>
+
+    <nldd-app-view background="tinted">
+      <nldd-page>
+        <nldd-simple-section>
+          <div class="auth-center">
+            <nldd-card class="auth-card">
+              <nldd-container padding="24" gap="16">
+
+                <nldd-title size="2">
+                  <p slot="overline">Inloggen bij</p>
+                  <h1>Kamer van Koophandel</h1>
+                  <p slot="subtitle">Log in met uw Rijksaccount om door te gaan.</p>
+                </nldd-title>
+
+                <nldd-divider></nldd-divider>
+
+                <nldd-form-field label="Gebruikersnaam of e-mailadres">
+                  <nldd-text-field id="u" placeholder="naam@kvk.nl"></nldd-text-field>
+                </nldd-form-field>
+                <nldd-form-field label="Wachtwoord">
+                  <nldd-password-field id="p"></nldd-password-field>
+                </nldd-form-field>
+
+                <div class="full">
+                  <nldd-button id="login-btn" variant="primary" size="lg" end-icon="arrow-right" text="Inloggen"></nldd-button>
+                </div>
+
+                <nldd-rich-text><p class="muted">Wachtwoord vergeten? Neem contact op met uw lokale beheerder.</p></nldd-rich-text>
+
+              </nldd-container>
+            </nldd-card>
+          </div>
+        </nldd-simple-section>
+      </nldd-page>
+    </nldd-app-view>
+  </div>
+
+  <script>
+    // Inloggen → dashboard van het portaal.
+    document.getElementById('login-btn').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+    // Demo-gemak: een gebruikersnaam voorinvullen.
+    customElements.whenDefined('nldd-text-field').then(() => {
+      const u = document.getElementById('u');
+      if (u) u.value = 'sanne.deboer@kvk.nl';
+    });
+  </script>
+</body>
+</html>

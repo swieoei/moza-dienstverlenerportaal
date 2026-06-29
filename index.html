@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MijnOverheid - Dienstverleners</title>
+
+  <!-- Echte NLDD design system: design tokens (settings.css importeert palettes.generated.css) -->
+  <link rel="stylesheet" href="https://esm.sh/@nldd/design-system@0.8.60/dist/css/settings.css" />
+  <!-- Echte NLDD design system: registreert alle <nldd-*> custom elements -->
+  <script type="module" src="https://esm.sh/@nldd/design-system@0.8.60"></script>
+
+  <style>
+    /* Alleen layout-lijm; geen component-styling — die komt volledig uit het design system. */
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { font-family: var(--typography-font-family-base, system-ui, sans-serif); background: var(--context-base-background-color, #fff); }
+    #app { display: flex; flex-direction: column; height: 100vh; }
+    nldd-app-view { flex: 1 1 auto; min-height: 0; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .view { display: none; }
+    .view.is-active { display: block; }
+    .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .stack { display: flex; flex-direction: column; gap: 16px; }
+    .inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .lang-grid { display: flex; flex-wrap: wrap; gap: 16px 32px; }
+    .lang-opt { display: flex; align-items: center; gap: 8px; }
+    .between { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+
+    /* Footer met presentatie-link (patroon zoals bg.rijks.app) */
+    .app-footer { display: flex; align-items: center; gap: 20px; padding: 12px 24px; border-top: 1px solid var(--context-border-color, #e3e3e3); background: var(--context-base-background-color, #fff); flex-wrap: wrap; }
+    .app-footer a { color: #154273; text-decoration: none; font-size: 0.9rem; cursor: pointer; }
+    .app-footer a:hover { text-decoration: underline; }
+    .app-footer .muted { color: #5a5a5a; font-size: 0.85rem; }
+    .spacer { flex: 1 1 auto; }
+
+    /* Presentatiemodus — look & feel zoals bg.rijks.app (Begane Grond) */
+    .present { position: fixed; inset: 0; z-index: 1000; background: #154273; color: #fff; display: none; flex-direction: column; }
+    .present.open { display: flex; }
+    .present-stage { flex: 1 1 auto; min-height: 0; display: flex; overflow: auto; }
+    .present-slide { display: none; flex-direction: column; justify-content: center; gap: 24px; width: 100%; max-width: 1180px; margin: 0 auto; padding: 48px clamp(40px, 8vw, 140px); box-sizing: border-box; }
+    .present-slide.active { display: flex; }
+    .present .eyebrow { color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.8rem; }
+    .slide-title { font-family: 'RijksoverheidSerif','Rijksoverheid Serif', Georgia, 'Times New Roman', serif; font-weight: 700; color: #fff; margin: 0; line-height: 1.05; font-size: clamp(2.4rem, 5.2vw, 4.6rem); }
+    .slide-lead { font-size: clamp(1.25rem, 2.2vw, 1.9rem); line-height: 1.45; color: #fff; margin: 0; max-width: 60ch; font-weight: 600; }
+    .slide-body { font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.6; color: rgba(255,255,255,0.92); margin: 0; max-width: 64ch; }
+    .slide-list { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; max-width: 72ch; }
+    .slide-list li { position: relative; padding-left: 28px; font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.5; color: rgba(255,255,255,0.92); }
+    .slide-list li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 9px; height: 9px; border-radius: 50%; background: #8fb8e0; }
+    .kerntaken { display: flex; flex-direction: column; gap: 20px; max-width: 82ch; }
+    .kt { display: flex; gap: 18px; align-items: flex-start; }
+    .kt nldd-icon { color: #8fb8e0; flex: 0 0 auto; line-height: 1; }
+    .kt p { margin: 0; font-size: clamp(1rem, 1.35vw, 1.15rem); line-height: 1.55; color: rgba(255,255,255,0.92); }
+    .kt strong { color: #fff; }
+    /* Navigatiebalk onderaan */
+    .present-bar { display: flex; align-items: center; gap: 18px; padding: 20px clamp(40px, 8vw, 140px); flex-wrap: wrap; }
+    .pv-counter { font-family: ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: 0.15em; color: rgba(255,255,255,0.85); font-size: 0.95rem; }
+    .pv-link { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 0.95rem; padding: 0; }
+    .pv-link:hover { color: #fff; }
+    .pv-hints { width: 100%; color: rgba(255,255,255,0.5); font-size: 0.8rem; letter-spacing: 0.02em; margin: 0; }
+    .pv-round { width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.5); background: transparent; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .pv-round:hover { background: rgba(255,255,255,0.12); }
+    .pv-round:disabled { opacity: 0.3; cursor: default; }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== Rijkshuisstijl topbalk ===== -->
+    <nldd-top-navigation-bar
+      logo-title="Rijksoverheid"
+      logo-subtitle="voor dienstverleners"
+      website-title="MijnOverheid - Dienstverleners"
+      website-href="#dashboard">
+      <nldd-menu-bar slot="utility">
+        <nldd-menu-bar-item text="Zoeken" icon="magnifier"></nldd-menu-bar-item>
+        <nldd-menu-bar-item text="Sanne de Boer · KvK" icon="person"></nldd-menu-bar-item>
+        <nldd-menu-bar-item id="logout" text="Uitloggen" icon="arrow-right-out-bucket"></nldd-menu-bar-item>
+      </nldd-menu-bar>
+    </nldd-top-navigation-bar>
+
+    <!-- ===== App-shell met zijnavigatie + hoofdvenster ===== -->
+    <nldd-app-view background="tinted">
+      <nldd-navigation-split-view>
+
+        <!-- ---- Zijbalk: sectienavigatie ---- -->
+        <nldd-page slot="sidebar" sticky-header>
+          <nldd-container slot="header" padding="16">
+            <nldd-title size="5">
+              <h2>Notificatiebeheer</h2>
+              <p slot="subtitle">Kamer van Koophandel</p>
+            </nldd-title>
+          </nldd-container>
+
+          <nldd-container padding="8">
+            <nldd-list id="nav">
+              <nldd-list-item button selected data-view="dashboard" data-title="Dashboard">
+                <nldd-icon-cell slot="start"><nldd-icon name="house"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="Dashboard"></nldd-text-cell>
+              </nldd-list-item>
+              <nldd-list-item button data-view="berichten" data-title="Berichten">
+                <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="Berichten"></nldd-text-cell>
+                <nldd-cell slot="end"><nldd-badge color="critical" number="3"></nldd-badge></nldd-cell>
+              </nldd-list-item>
+              <nldd-list-item button data-view="contactherstel" data-title="Contactherstel">
+                <nldd-icon-cell slot="start"><nldd-icon name="handshake"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="Contactherstel"></nldd-text-cell>
+                <nldd-cell slot="end"><nldd-badge color="accent" number="4"></nldd-badge></nldd-cell>
+              </nldd-list-item>
+              <nldd-list-item button data-view="apikey" data-title="API key">
+                <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="API key"></nldd-text-cell>
+              </nldd-list-item>
+              <nldd-list-item button data-view="rapportages" data-title="Rapportages">
+                <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="Rapportages"></nldd-text-cell>
+              </nldd-list-item>
+              <nldd-list-item button data-view="analytics" data-title="Analytics">
+                <nldd-icon-cell slot="start"><nldd-icon name="chart-x-y-axis-line"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="Analytics"></nldd-text-cell>
+              </nldd-list-item>
+              <nldd-list-item button data-view="organisatie" data-title="Instellingen organisatie">
+                <nldd-icon-cell slot="start"><nldd-icon name="gear"></nldd-icon></nldd-icon-cell>
+                <nldd-text-cell text="Instellingen organisatie"></nldd-text-cell>
+              </nldd-list-item>
+            </nldd-list>
+          </nldd-container>
+        </nldd-page>
+
+        <!-- ---- Hoofdvenster ---- -->
+        <nldd-page slot="main" sticky-header>
+          <nldd-top-title-bar id="titlebar" slot="header" text="Dashboard"></nldd-top-title-bar>
+
+          <nldd-simple-section>
+            <nldd-container padding="24">
+
+              <!-- ====================== DASHBOARD ====================== -->
+              <section class="view is-active" data-view="dashboard">
+                <div class="stack">
+                  <nldd-banner
+                    variant="accent"
+                    text="Welkom terug, Sanne."
+                    supporting-text="Vandaag zijn er 1.248 notificaties verzonden. 4 ondernemers wachten op contactherstel via de KvK.">
+                  </nldd-banner>
+
+                  <div class="kpi-grid">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>1.248</h2><p slot="subtitle">Verzonden vandaag</p></nldd-title>
+                        <nldd-tag color="accent" text="+8% t.o.v. gisteren"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>98,4%</h2><p slot="subtitle">Afgeleverd</p></nldd-title>
+                        <nldd-tag color="success" text="binnen norm"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>4</h2><p slot="subtitle">Openstaand contactherstel</p></nldd-title>
+                        <nldd-tag color="accent" text="actie nodig"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>6</h2><p slot="subtitle">Actieve API-keys</p></nldd-title>
+                        <nldd-tag color="neutral" text="2 verlopen binnenkort"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+
+                  <nldd-title size="4"><h2>Recente activiteit</h2></nldd-title>
+                  <nldd-table columns="minmax(200px,1.6fr) minmax(150px,1fr) 140px 130px" accessible-label="Recente activiteit">
+                    <nldd-table-row slot="header">
+                      <nldd-text-cell text="**Gebeurtenis**"></nldd-text-cell>
+                      <nldd-text-cell text="**Organisatie**"></nldd-text-cell>
+                      <nldd-text-cell text="**Tijd**"></nldd-text-cell>
+                      <nldd-text-cell text="**Status**"></nldd-text-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Notificatiebatch: wijziging Handelsregisterwet — afscherming woonadres per 1 jul 2026 (320)"></nldd-text-cell>
+                      <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
+                      <nldd-text-cell text="09:42"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="success" text="afgeleverd"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Levering mislukt — endpoint timeout"></nldd-text-cell>
+                      <nldd-text-cell text="Gemeente Utrecht"></nldd-text-cell>
+                      <nldd-text-cell text="09:15"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="critical" text="mislukt"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Nieuwe API-key gegenereerd"></nldd-text-cell>
+                      <nldd-text-cell text="RVO"></nldd-text-cell>
+                      <nldd-text-cell text="08:51"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="neutral" text="beheer"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Maandrapportage gegenereerd"></nldd-text-cell>
+                      <nldd-text-cell text="UWV"></nldd-text-cell>
+                      <nldd-text-cell text="08:00"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="accent" text="rapport"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                  </nldd-table>
+                </div>
+              </section>
+
+              <!-- ====================== BERICHTEN ====================== -->
+              <section class="view" data-view="berichten">
+                <div class="stack">
+                  <nldd-tab-bar id="ber-tabs" accessible-label="Berichten">
+                    <nldd-tab-bar-item selected text="Overzicht" icon="bullet-list" data-panel="overzicht"></nldd-tab-bar-item>
+                    <nldd-tab-bar-item text="Nieuw bericht" icon="pencil" data-panel="nieuw"></nldd-tab-bar-item>
+                    <nldd-tab-bar-item text="Kanaalvoorkeur" icon="person-badge-gear" data-panel="kanaal"></nldd-tab-bar-item>
+                    <nldd-tab-bar-item text="Templatebibliotheek" icon="books-vertical" data-panel="templates"></nldd-tab-bar-item>
+                  </nldd-tab-bar>
+
+                  <!-- ---------- Panel: Overzicht ---------- -->
+                  <div data-ber-panel="overzicht">
+                    <div class="stack">
+                      <div class="inline">
+                        <nldd-button variant="primary" start-icon="plus" text="Nieuw bericht" data-goto="nieuw"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="file-box" text="Archief"></nldd-button>
+                      </div>
+                      <nldd-list variant="box">
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="**Nieuwe regelgeving vanaf 1 januari 2027** — Alle ondernemers · NL · EN · DE · FR"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="accent" text="ingepland"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="**Herinnering: aanvulling zaak ZA-2026-0481** — Jansen Installatietechniek · reminder bij zaak"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="warning" text="reminder"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="arrow-2-counter-clockwise"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="**Jaarlijkse opgave Handelsregister** — Alle ondernemers · jaarlijks"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="neutral" text="terugkerend"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="message-rectangle-text"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="Wijziging Handelsregisterwet — afscherming woonadres · 16 jun 2026"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="success" text="verzonden"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="pencil"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="Welkomstbericht nieuwe inschrijving — concept"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="neutral" text="concept"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                      </nldd-list>
+                    </div>
+                  </div>
+
+                  <!-- ---------- Panel: Nieuw bericht (composer) ---------- -->
+                  <div data-ber-panel="nieuw" hidden>
+                    <div class="stack">
+                      <nldd-banner variant="neutral" text="Stel een bericht aan ondernemers samen op basis van een template, kies het type en bied het meertalig aan."></nldd-banner>
+
+                      <!-- 1. Template -->
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>1. Template</h2><p slot="subtitle">Uit de bibliotheek of vrije tekst</p></nldd-title>
+                          <nldd-form-field label="Kies een template">
+                            <nldd-dropdown>
+                              <select id="tpl" aria-label="Kies een template">
+                                <option value="" selected>— Kies een template —</option>
+                                <option value="regelgeving">Wetswijziging / nieuwe regelgeving</option>
+                                <option value="reminder">Herinnering openstaande zaak</option>
+                                <option value="terugkerend">Terugkerend: jaarlijkse opgave Handelsregister</option>
+                                <option value="vrij">Vrije tekst (zelf opstellen)</option>
+                              </select>
+                            </nldd-dropdown>
+                          </nldd-form-field>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- 2. Type bericht -->
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>2. Type bericht</h2></nldd-title>
+                          <nldd-segmented-control id="msgtype" value="eenmalig" type="radio" variant="icon-and-text" width="full" accessible-label="Type bericht">
+                            <nldd-segmented-control-item value="eenmalig" text="Eenmalig" icon="paper-plane"></nldd-segmented-control-item>
+                            <nldd-segmented-control-item value="terugkerend" text="Terugkerend" icon="arrow-2-counter-clockwise"></nldd-segmented-control-item>
+                            <nldd-segmented-control-item value="reminder" text="Reminder bij zaak" icon="bell"></nldd-segmented-control-item>
+                          </nldd-segmented-control>
+
+                          <div id="opt-doelgroep">
+                            <nldd-form-field label="Doelgroep">
+                              <nldd-dropdown>
+                                <select aria-label="Doelgroep">
+                                  <option value="alle" selected>Alle ondernemers</option>
+                                  <option value="sector">Per sector…</option>
+                                  <option value="nieuw">Nieuwe inschrijvingen</option>
+                                  <option value="specifiek">Specifieke ondernemer…</option>
+                                </select>
+                              </nldd-dropdown>
+                            </nldd-form-field>
+                          </div>
+
+                          <div id="opt-terugkerend" hidden>
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Frequentie">
+                                <nldd-dropdown>
+                                  <select aria-label="Frequentie">
+                                    <option value="maand">Maandelijks</option>
+                                    <option value="kwartaal">Per kwartaal</option>
+                                    <option value="half">Halfjaarlijks</option>
+                                    <option value="jaar" selected>Jaarlijks</option>
+                                  </select>
+                                </nldd-dropdown>
+                              </nldd-form-field>
+                              <nldd-form-field label="Startdatum">
+                                <nldd-text-field id="start-datum" placeholder="dd-mm-jjjj"></nldd-text-field>
+                              </nldd-form-field>
+                            </nldd-container>
+                          </div>
+
+                          <div id="opt-reminder" hidden>
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Koppel aan zaak">
+                                <nldd-dropdown>
+                                  <select aria-label="Koppel aan zaak">
+                                    <option value="0481" selected>ZA-2026-0481 · Jansen Installatietechniek</option>
+                                    <option value="0467">ZA-2026-0467 · Bakkerij De Korenbloem</option>
+                                    <option value="0443">ZA-2026-0443 · Café De Brug</option>
+                                  </select>
+                                </nldd-dropdown>
+                              </nldd-form-field>
+                              <nldd-form-field label="Aantal dagen vóór vervaldatum">
+                                <nldd-dropdown>
+                                  <select aria-label="Aantal dagen vóór vervaldatum">
+                                    <option value="14">14 dagen</option>
+                                    <option value="7" selected>7 dagen</option>
+                                    <option value="3">3 dagen</option>
+                                    <option value="1">1 dag</option>
+                                  </select>
+                                </nldd-dropdown>
+                              </nldd-form-field>
+                            </nldd-container>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- 3. Talen -->
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>3. Talen</h2><p slot="subtitle">Bied het bericht meertalig aan</p></nldd-title>
+                          <div class="lang-grid">
+                            <label class="lang-opt">
+                              <nldd-checkbox checked disabled accessible-label="Nederlands"></nldd-checkbox>
+                              <nldd-rich-text><span>Nederlands (NL)</span></nldd-rich-text>
+                            </label>
+                            <label class="lang-opt">
+                              <nldd-checkbox id="chk-en" data-langtoggle="en" accessible-label="Engels"></nldd-checkbox>
+                              <nldd-rich-text><span>Engels (EN)</span></nldd-rich-text>
+                            </label>
+                            <label class="lang-opt">
+                              <nldd-checkbox id="chk-de" data-langtoggle="de" accessible-label="Duits"></nldd-checkbox>
+                              <nldd-rich-text><span>Duits (DE)</span></nldd-rich-text>
+                            </label>
+                            <label class="lang-opt">
+                              <nldd-checkbox id="chk-fr" data-langtoggle="fr" accessible-label="Frans"></nldd-checkbox>
+                              <nldd-rich-text><span>Frans (FR)</span></nldd-rich-text>
+                            </label>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- 4. Inhoud per taal -->
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>4. Inhoud per taal</h2></nldd-title>
+                          <nldd-tab-bar id="lang-tabs" accessible-label="Taal">
+                            <nldd-tab-bar-item selected text="NL" data-lang="nl"></nldd-tab-bar-item>
+                            <nldd-tab-bar-item hidden text="EN" data-lang="en"></nldd-tab-bar-item>
+                            <nldd-tab-bar-item hidden text="DE" data-lang="de"></nldd-tab-bar-item>
+                            <nldd-tab-bar-item hidden text="FR" data-lang="fr"></nldd-tab-bar-item>
+                          </nldd-tab-bar>
+
+                          <div data-langpane="nl">
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-nl"></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Bericht"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                            </nldd-container>
+                          </div>
+                          <div data-langpane="en" hidden>
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Subject"><nldd-text-field id="subj-en"></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Message"><nldd-multi-line-text-field id="body-en" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                            </nldd-container>
+                          </div>
+                          <div data-langpane="de" hidden>
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Betreff"><nldd-text-field id="subj-de"></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Nachricht"><nldd-multi-line-text-field id="body-de" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                            </nldd-container>
+                          </div>
+                          <div data-langpane="fr" hidden>
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Objet"><nldd-text-field id="subj-fr"></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Message"><nldd-multi-line-text-field id="body-fr" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                            </nldd-container>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- 5. Acties -->
+                      <div class="row-actions">
+                        <nldd-button variant="primary" start-icon="paper-plane" text="Versturen"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="calendar-event" text="Inplannen"></nldd-button>
+                        <nldd-button variant="secondary" text="Opslaan als concept"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="bookmark" text="Opslaan als template"></nldd-button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ---------- Panel: Templatebibliotheek ---------- -->
+                  <div data-ber-panel="templates" hidden>
+                    <div class="stack">
+                      <nldd-banner variant="neutral" text="Standaardtemplates en eigen, door de KvK aangemaakte templates. Bewerk een template of maak een nieuwe — meertalig."></nldd-banner>
+                      <div class="inline">
+                        <nldd-button variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
+                      </div>
+                      <nldd-list variant="box">
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="**Wetswijziging / nieuwe regelgeving** — NL · EN · DE · FR"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="accent" text="eigen (KvK)"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="**Herinnering openstaande zaak** — NL · EN"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="neutral" text="standaard"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="**Terugkerend: jaarlijkse opgave Handelsregister** — NL · EN"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="accent" text="eigen (KvK)"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                        <nldd-list-item button>
+                          <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                          <nldd-text-cell text="Welkomstbericht nieuwe inschrijving — NL"></nldd-text-cell>
+                          <nldd-cell slot="end"><nldd-tag color="neutral" text="standaard"></nldd-tag></nldd-cell>
+                        </nldd-list-item>
+                      </nldd-list>
+                    </div>
+                  </div>
+
+                  <!-- ---------- Panel: Kanaalvoorkeur ---------- -->
+                  <div data-ber-panel="kanaal" hidden>
+                    <div class="stack">
+                      <nldd-banner variant="neutral" text="Zoek een ondernemer op BSN en/of KvK-nummer, bekijk de kanaalvoorkeur (e-mail, SMS of post) en pas die aan. De ondernemer wordt automatisch via het gekozen kanaal geïnformeerd. Let op: fictieve gegevens."></nldd-banner>
+
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>Ondernemer zoeken</h2><p slot="subtitle">Op BSN en/of KvK-nummer</p></nldd-title>
+                          <nldd-form-field label="BSN">
+                            <nldd-text-field id="zoek-bsn" placeholder="9 cijfers"></nldd-text-field>
+                          </nldd-form-field>
+                          <nldd-form-field label="KvK-nummer">
+                            <nldd-text-field id="zoek-kvk" placeholder="8 cijfers"></nldd-text-field>
+                          </nldd-form-field>
+                          <div class="inline">
+                            <nldd-button id="zoek-btn" variant="primary" start-icon="magnifier" text="Zoeken"></nldd-button>
+                            <span class="muted" style="color:#5a5a5a;font-size:.85rem;">Probeer KvK 81234567, 84567123 of 87651234</span>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <nldd-banner id="kanaal-leeg" variant="warning" text="Geen ondernemer gevonden voor deze gegevens. Controleer het BSN of KvK-nummer." hidden></nldd-banner>
+
+                      <div id="kanaal-result" hidden>
+                        <div class="stack">
+                          <nldd-card>
+                            <nldd-container padding="16" gap="12">
+                              <div class="between">
+                                <nldd-title size="5"><h2 id="res-naam">—</h2><p slot="subtitle" id="res-sub">—</p></nldd-title>
+                                <nldd-tag id="res-huidig" color="accent" text="—"></nldd-tag>
+                              </div>
+
+                              <nldd-title size="6"><h3>Voorkeurskanaal</h3></nldd-title>
+                              <nldd-segmented-control id="kanaal-keuze" value="email" type="radio" variant="icon-and-text" width="full" accessible-label="Voorkeurskanaal">
+                                <nldd-segmented-control-item value="email" text="E-mail" icon="envelope"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="sms" text="SMS" icon="message-rectangle-text"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="post" text="Post" icon="inbox"></nldd-segmented-control-item>
+                              </nldd-segmented-control>
+
+                              <nldd-form-field label="E-mailadres">
+                                <nldd-text-field id="ct-email"></nldd-text-field>
+                              </nldd-form-field>
+                              <nldd-form-field label="Mobiel nummer (SMS)">
+                                <nldd-text-field id="ct-sms"></nldd-text-field>
+                              </nldd-form-field>
+                              <nldd-form-field label="Postadres">
+                                <nldd-text-field id="ct-post"></nldd-text-field>
+                              </nldd-form-field>
+
+                              <div class="row-actions">
+                                <nldd-button id="kanaal-opslaan" variant="primary" start-icon="check-mark" text="Opslaan en ondernemer informeren"></nldd-button>
+                                <nldd-button id="kanaal-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+                              </div>
+                            </nldd-container>
+                          </nldd-card>
+
+                          <nldd-banner id="kanaal-bevestig" variant="success" text="" hidden></nldd-banner>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ====================== CONTACTHERSTEL ====================== -->
+              <section class="view" data-view="contactherstel">
+                <div class="stack">
+                  <nldd-banner
+                    variant="accent"
+                    text="Contactherstel."
+                    supporting-text="Ondernemers herstellen via de KvK hun contact met de overheid. Dit is centraal georganiseerd: één bevestiging werkt de contactgegevens bij voor álle aangesloten overheidsorganisaties.">
+                  </nldd-banner>
+
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <div class="between">
+                        <nldd-title size="5">
+                          <h2>Bakkerij De Korenbloem</h2>
+                          <p slot="subtitle">KvK 81234567 · geïnitieerd door ondernemer · 16 jun 2026</p>
+                        </nldd-title>
+                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                      </div>
+                      <nldd-rich-text>
+                        <p>Het e-mailadres was onbereikbaar, waardoor notificaties niet aankwamen. De ondernemer geeft via de KvK een <strong>nieuw contactadres</strong> door. Na bevestiging wordt dit centraal gedeeld met alle aangesloten overheidsorganisaties.</p>
+                      </nldd-rich-text>
+                      <div class="row-actions">
+                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
+                        <nldd-button variant="secondary" text="Details"></nldd-button>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <div class="between">
+                        <nldd-title size="5">
+                          <h2>Jansen Installatietechniek BV</h2>
+                          <p slot="subtitle">KvK 84567123 · geïnitieerd door ondernemer · 15 jun 2026</p>
+                        </nldd-title>
+                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                      </div>
+                      <nldd-rich-text>
+                        <p>Na een bedrijfsoverdracht is er een <strong>nieuwe contactpersoon</strong>. De ondernemer herstelt via de KvK het contact zodat berichten van de overheid weer op de juiste plek aankomen.</p>
+                      </nldd-rich-text>
+                      <div class="row-actions">
+                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
+                        <nldd-button variant="secondary" text="Details"></nldd-button>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <div class="between">
+                        <nldd-title size="5">
+                          <h2>Groene Vingers Hoveniers</h2>
+                          <p slot="subtitle">KvK 83219876 · geïnitieerd door ondernemer · 14 jun 2026</p>
+                        </nldd-title>
+                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                      </div>
+                      <nldd-rich-text>
+                        <p>De onderneming is verhuisd en de contactgegevens waren verouderd. De ondernemer geeft via de KvK de actuele gegevens door voor centraal herstel.</p>
+                      </nldd-rich-text>
+                      <div class="row-actions">
+                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
+                        <nldd-button variant="secondary" text="Details"></nldd-button>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <div class="between">
+                        <nldd-title size="5">
+                          <h2>Transport Van Dijk</h2>
+                          <p slot="subtitle">KvK 87651234 · geïnitieerd door ondernemer · 13 jun 2026</p>
+                        </nldd-title>
+                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                      </div>
+                      <nldd-rich-text>
+                        <p>Het account was eerder ontkoppeld. De ondernemer wil via de KvK het contact met de overheid herstellen om weer notificaties te ontvangen.</p>
+                      </nldd-rich-text>
+                      <div class="row-actions">
+                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
+                        <nldd-button variant="secondary" text="Details"></nldd-button>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
+                </div>
+              </section>
+
+              <!-- ====================== API KEY ====================== -->
+              <section class="view" data-view="apikey">
+                <div class="stack">
+                  <nldd-banner variant="neutral" text="API-keys waarmee organisaties notificaties aanleveren bij het portaal. Bewaar een nieuwe sleutel veilig — hij is maar één keer zichtbaar."></nldd-banner>
+                  <div class="inline">
+                    <nldd-button variant="primary" start-icon="plus" text="Nieuwe API-key genereren"></nldd-button>
+                  </div>
+                  <nldd-table columns="minmax(150px,1fr) minmax(180px,1.2fr) 140px 130px 110px" accessible-label="API-keys">
+                    <nldd-table-row slot="header">
+                      <nldd-text-cell text="**Naam**"></nldd-text-cell>
+                      <nldd-text-cell text="**Sleutel**"></nldd-text-cell>
+                      <nldd-text-cell text="**Laatst gebruikt**"></nldd-text-cell>
+                      <nldd-text-cell text="**Verloopt**"></nldd-text-cell>
+                      <nldd-text-cell text="**Status**"></nldd-text-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Belastingdienst-prod"></nldd-text-cell>
+                      <nldd-text-cell text="nmp_live_••••••4f9a"></nldd-text-cell>
+                      <nldd-text-cell text="16 jun 2026"></nldd-text-cell>
+                      <nldd-text-cell text="01 jan 2027"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="success" text="actief"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="RVO-prod"></nldd-text-cell>
+                      <nldd-text-cell text="nmp_live_••••••a17c"></nldd-text-cell>
+                      <nldd-text-cell text="16 jun 2026"></nldd-text-cell>
+                      <nldd-text-cell text="30 jun 2026"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="warning" text="verloopt bijna"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Gemeente Utrecht-test"></nldd-text-cell>
+                      <nldd-text-cell text="nmp_test_••••••0b22"></nldd-text-cell>
+                      <nldd-text-cell text="12 jun 2026"></nldd-text-cell>
+                      <nldd-text-cell text="01 jan 2027"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="success" text="actief"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="UWV-prod (oud)"></nldd-text-cell>
+                      <nldd-text-cell text="nmp_live_••••••9d04"></nldd-text-cell>
+                      <nldd-text-cell text="02 mei 2026"></nldd-text-cell>
+                      <nldd-text-cell text="01 jun 2026"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="critical" text="ingetrokken"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                  </nldd-table>
+                </div>
+              </section>
+
+              <!-- ====================== RAPPORTAGES ====================== -->
+              <section class="view" data-view="rapportages">
+                <div class="stack">
+                  <nldd-banner variant="neutral" text="Genereer en download rapportages over verzonden notificaties, leveringen en storingen."></nldd-banner>
+                  <nldd-list variant="box">
+                    <nldd-list-item button>
+                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                      <nldd-text-cell text="**Maandrapportage notificaties** — mei 2026 · PDF"></nldd-text-cell>
+                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
+                    </nldd-list-item>
+                    <nldd-list-item button>
+                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                      <nldd-text-cell text="**Leveringsrapport per organisatie** — Q2 2026 · CSV"></nldd-text-cell>
+                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
+                    </nldd-list-item>
+                    <nldd-list-item button>
+                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                      <nldd-text-cell text="**Storingen en contractherstel** — mei 2026 · PDF"></nldd-text-cell>
+                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
+                    </nldd-list-item>
+                    <nldd-list-item button>
+                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                      <nldd-text-cell text="API-gebruik per sleutel — mei 2026 · CSV"></nldd-text-cell>
+                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
+                    </nldd-list-item>
+                  </nldd-list>
+                  <div class="inline">
+                    <nldd-button variant="primary" start-icon="plus" text="Nieuwe rapportage samenstellen"></nldd-button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ====================== ANALYTICS ====================== -->
+              <section class="view" data-view="analytics">
+                <div class="stack">
+                  <nldd-banner variant="neutral" text="Inzicht in verzendvolume, afleverpercentages en doorlooptijden per kanaal."></nldd-banner>
+
+                  <div class="kpi-grid">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>34.812</h2><p slot="subtitle">Verzonden deze maand</p></nldd-title>
+                        <nldd-tag color="accent" text="+12%"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>98,7%</h2><p slot="subtitle">Gem. afleverpercentage</p></nldd-title>
+                        <nldd-tag color="success" text="binnen norm"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>1,8 s</h2><p slot="subtitle">Gem. doorlooptijd</p></nldd-title>
+                        <nldd-tag color="success" text="stabiel"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>211</h2><p slot="subtitle">Mislukte leveringen</p></nldd-title>
+                        <nldd-tag color="warning" text="0,6%"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+
+                  <nldd-title size="4"><h2>Per kanaal</h2></nldd-title>
+                  <nldd-table columns="minmax(140px,1fr) 140px 140px 130px" accessible-label="Statistieken per kanaal">
+                    <nldd-table-row slot="header">
+                      <nldd-text-cell text="**Kanaal**"></nldd-text-cell>
+                      <nldd-text-cell text="**Verzonden**"></nldd-text-cell>
+                      <nldd-text-cell text="**Afgeleverd**"></nldd-text-cell>
+                      <nldd-text-cell text="**Trend**"></nldd-text-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="Berichtenbox"></nldd-text-cell>
+                      <nldd-text-cell text="21.940"></nldd-text-cell>
+                      <nldd-text-cell text="99,2%"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="success" text="stijgend"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="E-mail"></nldd-text-cell>
+                      <nldd-text-cell text="10.105"></nldd-text-cell>
+                      <nldd-text-cell text="97,8%"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="neutral" text="stabiel"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row>
+                      <nldd-text-cell text="SMS"></nldd-text-cell>
+                      <nldd-text-cell text="2.767"></nldd-text-cell>
+                      <nldd-text-cell text="96,4%"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="warning" text="dalend"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                  </nldd-table>
+                </div>
+              </section>
+
+              <!-- ====================== INSTELLINGEN ORGANISATIE ====================== -->
+              <section class="view" data-view="organisatie">
+                <div class="stack">
+                  <nldd-title size="4"><h2>Organisatiegegevens</h2></nldd-title>
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <nldd-form-field label="Organisatie">
+                        <nldd-text-field id="f-org"></nldd-text-field>
+                      </nldd-form-field>
+                      <nldd-form-field label="Afdeling">
+                        <nldd-text-field id="f-afd"></nldd-text-field>
+                      </nldd-form-field>
+                      <nldd-form-field label="Contact-e-mail voor storingen">
+                        <nldd-text-field id="f-mail"></nldd-text-field>
+                      </nldd-form-field>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <nldd-title size="4"><h2>Notificatie-instellingen</h2></nldd-title>
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <nldd-form-field label="Kanaal Berichtenbox actief">
+                        <nldd-switch checked></nldd-switch>
+                      </nldd-form-field>
+                      <nldd-form-field label="Kanaal e-mail actief">
+                        <nldd-switch checked></nldd-switch>
+                      </nldd-form-field>
+                      <nldd-form-field label="Kanaal SMS actief">
+                        <nldd-switch></nldd-switch>
+                      </nldd-form-field>
+                      <nldd-form-field label="Contactherstel centraal delen met aangesloten organisaties">
+                        <nldd-switch checked></nldd-switch>
+                      </nldd-form-field>
+                      <nldd-form-field label="E-mailwaarschuwing bij mislukte levering">
+                        <nldd-switch checked></nldd-switch>
+                      </nldd-form-field>
+                      <div class="row-actions">
+                        <nldd-button variant="primary" text="Opslaan"></nldd-button>
+                        <nldd-button variant="secondary" text="Annuleren"></nldd-button>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
+                </div>
+              </section>
+
+            </nldd-container>
+          </nldd-simple-section>
+        </nldd-page>
+
+      </nldd-navigation-split-view>
+    </nldd-app-view>
+
+    <!-- ===== Footer met presentatie-link ===== -->
+    <footer class="app-footer">
+      <span class="muted">MijnOverheid - Dienstverleners</span>
+      <span class="spacer"></span>
+      <a id="open-present" role="button">Presentatie</a>
+      <a href="#">Toegankelijkheid</a>
+      <a href="#">Privacy</a>
+      <a href="#">Contact</a>
+    </footer>
+
+    <!-- ===== Presentatiemodus (full-screen slides, stijl Begane Grond) ===== -->
+    <div class="present" id="present" aria-hidden="true">
+      <div class="present-stage">
+
+        <div class="present-slide active" data-slide="1">
+          <div class="eyebrow">01 · Waarom</div>
+          <h2 class="slide-title">MijnOverheid — Dienstverlener Portaal</h2>
+          <p class="slide-lead">Eén plek voor publieke dienstverleners om notificaties te beheren, te monitoren en te verbeteren.</p>
+          <p class="slide-body">Publieke dienstverleners willen ondernemers proactief en betrouwbaar informeren: efficiënter, met minder fouten, en conform de Wet MEBV.</p>
+          <p class="slide-body">Maar zodra je notificaties op schaal verstuurt, verdwijnt het zicht. Komt het bericht wel aan? Klopt de template? Bereik ik de juiste ondernemer? Dat zicht — en die grip — geeft dit portaal terug.</p>
+        </div>
+
+        <div class="present-slide" data-slide="2">
+          <div class="eyebrow">02 · Voor wie</div>
+          <h2 class="slide-title">Doelgroep</h2>
+          <p class="slide-lead">Publieke dienstverleners die notificaties versturen — beheerders, content-eigenaren en techniek binnen de organisatie.</p>
+          <p class="slide-body">En indirect de ondernemer, die daardoor op het juiste moment het juiste bericht ontvangt.</p>
+        </div>
+
+        <div class="present-slide" data-slide="3">
+          <div class="eyebrow">03 · Wat lossen we op</div>
+          <h2 class="slide-title">De problemen die we wegnemen</h2>
+          <ul class="slide-list">
+            <li>Geen zicht op of berichten daadwerkelijk aankomen.</li>
+            <li>Fouten blijven onopgemerkt: een digitaal bericht dat strandt op een serverfout, fysieke post die misgaat in de printstraat, of een template die niet bestaat.</li>
+            <li>Templates beheren is omslachtig — zeker meertalig.</li>
+            <li>Contact zoeken met een ondernemer is lastig, juist bij een onvolledige of foutieve aanvraag.</li>
+          </ul>
+        </div>
+
+        <div class="present-slide" data-slide="4">
+          <div class="eyebrow">04 · Wat &amp; hoe</div>
+          <h2 class="slide-title">Wat het portaal biedt — kerntaken</h2>
+          <div class="kerntaken">
+            <div class="kt">
+              <nldd-icon name="chart-x-y-axis-line" size="32"></nldd-icon>
+              <p><strong>Monitoren</strong> — volg verzonden notificaties per case en klantreis, met alerting op unhappy cases. Plus rapportages &amp; analytics over het gebruik.</p>
+            </div>
+            <div class="kt">
+              <nldd-icon name="gear" size="32"></nldd-icon>
+              <p><strong>Configureren</strong> — beheer content-templates (inclusief meertalig) en de instellingen van je organisatie.</p>
+            </div>
+            <div class="kt">
+              <nldd-icon name="key" size="32"></nldd-icon>
+              <p><strong>Beheren</strong> — regel toegang en koppelingen in zelfservice: per aangesloten applicatie een API-key aanvragen of vervangen, en contactherstel richting de ondernemer (profielinformatie ophalen, templates inzetten, laagdrempelig contact leggen om een aanvraag aan te vullen of te corrigeren).</p>
+            </div>
+            <div class="kt">
+              <nldd-icon name="lock-closed" size="32"></nldd-icon>
+              <p><strong>Veilig inloggen</strong> via SSO Overheid.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="present-slide" data-slide="5">
+          <div class="eyebrow">05 · De waarde</div>
+          <h2 class="slide-title">De opbrengst</h2>
+          <p class="slide-lead">Meer grip, minder fouten, betere dienstverlening.</p>
+          <p class="slide-body">Je weet precies wat er met je notificaties gebeurt, lost problemen snel op, en bereikt ondernemers op het juiste moment — in zelfservice, zonder telkens techniek nodig te hebben.</p>
+        </div>
+
+      </div>
+
+      <div class="present-bar">
+        <span class="pv-counter" id="pv-counter">01 / 05</span>
+        <button class="pv-link" id="pv-close" type="button">← Naar het portaal</button>
+        <span class="spacer"></span>
+        <button class="pv-round" id="pv-prev" type="button" aria-label="Vorige slide"><nldd-icon name="chevron-left" size="24"></nldd-icon></button>
+        <button class="pv-round" id="pv-next" type="button" aria-label="Volgende slide"><nldd-icon name="chevron-right" size="24"></nldd-icon></button>
+        <p class="pv-hints">Esc sluit · ← → bladeren · f volledig scherm</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sectienavigatie: toon de gekozen view, markeer het actieve menu-item, werk de titelbalk bij.
+    const nav = document.getElementById('nav');
+    const titlebar = document.getElementById('titlebar');
+    const views = Array.from(document.querySelectorAll('.view'));
+
+    function showView(name, title) {
+      views.forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
+      nav.querySelectorAll('nldd-list-item').forEach(item => {
+        if (item.dataset.view === name) item.setAttribute('selected', '');
+        else item.removeAttribute('selected');
+      });
+      if (title && titlebar) titlebar.setAttribute('text', title);
+    }
+
+    nav.addEventListener('click', (e) => {
+      const item = e.target.closest('nldd-list-item');
+      if (!item || !item.dataset.view) return;
+      showView(item.dataset.view, item.dataset.title);
+    });
+
+    // Uitloggen → terug naar de inlogpagina.
+    const logout = document.getElementById('logout');
+    if (logout) logout.addEventListener('click', () => { window.location.href = 'login.html'; });
+
+    // Demo: kaart-acties (herstellen / negeren) werken de status visueel bij.
+    const ACTION_RESULT = {
+      restore: { color: 'success', text: 'hersteld' },
+      ignore:  { color: 'neutral', text: 'genegeerd' },
+      approve: { color: 'success', text: 'goedgekeurd' },
+      reject:  { color: 'critical', text: 'afgewezen' },
+    };
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('nldd-button[data-action]');
+      if (!btn) return;
+      const card = btn.closest('nldd-card');
+      const tag = card && card.querySelector('nldd-tag');
+      const actions = card && card.querySelector('.row-actions');
+      const result = ACTION_RESULT[btn.dataset.action];
+      if (tag && result) {
+        tag.setAttribute('color', result.color);
+        tag.setAttribute('text', result.text);
+      }
+      if (actions) actions.setAttribute('hidden', '');
+    });
+
+    // Beginwaarden voor de tekstvelden zetten via de .value-property (na component-upgrade).
+    customElements.whenDefined('nldd-text-field').then(() => {
+      const vals = {
+        'f-org': 'Kamer van Koophandel',
+        'f-afd': 'Notificatiebeheer',
+        'f-mail': 'storingen@kvk.nl',
+      };
+      Object.entries(vals).forEach(([id, v]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = v;
+      });
+    });
+
+    // ====================== Berichtenmodule ======================
+    (function () {
+      const root = document.querySelector('section[data-view="berichten"]');
+      if (!root) return;
+
+      // --- Tabs: Overzicht / Nieuw bericht / Templatebibliotheek ---
+      const berTabs = root.querySelector('#ber-tabs');
+      const panels = root.querySelectorAll('[data-ber-panel]');
+      function showPanel(name) {
+        panels.forEach(p => p.toggleAttribute('hidden', p.dataset.berPanel !== name));
+        berTabs.querySelectorAll('nldd-tab-bar-item').forEach(t =>
+          t.toggleAttribute('selected', t.dataset.panel === name));
+      }
+      berTabs.addEventListener('click', e => {
+        const t = e.target.closest('nldd-tab-bar-item');
+        if (t && t.dataset.panel) showPanel(t.dataset.panel);
+      });
+      root.querySelectorAll('[data-goto]').forEach(b =>
+        b.addEventListener('click', () => showPanel(b.dataset.goto)));
+
+      // --- Type bericht (segmented control) toont de juiste opties ---
+      const typeCtrl = root.querySelector('#msgtype');
+      const optDoel = root.querySelector('#opt-doelgroep');
+      const optTerug = root.querySelector('#opt-terugkerend');
+      const optRem = root.querySelector('#opt-reminder');
+      function applyType(val) {
+        optTerug.toggleAttribute('hidden', val !== 'terugkerend');
+        optRem.toggleAttribute('hidden', val !== 'reminder');
+        optDoel.toggleAttribute('hidden', val === 'reminder');
+      }
+      function currentType() {
+        const sel = typeCtrl.querySelector('nldd-segmented-control-item[selected]');
+        return (sel && sel.getAttribute('value')) || typeCtrl.value || typeCtrl.getAttribute('value') || 'eenmalig';
+      }
+      typeCtrl.addEventListener('click', e => {
+        const it = e.target.closest('nldd-segmented-control-item');
+        if (it) applyType(it.getAttribute('value'));
+      });
+      typeCtrl.addEventListener('change', () => applyType(currentType()));
+
+      // --- Talen: checkbox toont/verbergt de bijbehorende taal-tab ---
+      const langTabs = root.querySelector('#lang-tabs');
+      function setLang(lang) {
+        langTabs.querySelectorAll('nldd-tab-bar-item').forEach(t =>
+          t.toggleAttribute('selected', t.dataset.lang === lang));
+        root.querySelectorAll('[data-langpane]').forEach(p =>
+          p.toggleAttribute('hidden', p.dataset.langpane !== lang));
+      }
+      langTabs.addEventListener('click', e => {
+        const t = e.target.closest('nldd-tab-bar-item');
+        if (t && !t.hasAttribute('hidden')) setLang(t.dataset.lang);
+      });
+      root.querySelectorAll('[data-langtoggle]').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const lang = chk.dataset.langtoggle;
+          const tab = langTabs.querySelector('nldd-tab-bar-item[data-lang="' + lang + '"]');
+          if (tab) tab.toggleAttribute('hidden', !chk.checked);
+          if (!chk.checked) setLang('nl');
+        });
+      });
+
+      // --- Templatebibliotheek: vult onderwerp + bericht per taal ---
+      const TEMPLATES = {
+        regelgeving: {
+          type: 'eenmalig',
+          nl: { subject: 'Nieuwe regelgeving vanaf 1 januari 2027',
+                body: 'Geachte ondernemer,\n\nPer 1 januari 2027 wijzigt de regelgeving voor inschrijving in het Handelsregister. Wij informeren u tijdig zodat u uw administratie kunt aanpassen.\n\nMeer informatie vindt u op kvk.nl.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
+          en: { subject: 'New regulations as of 1 January 2027',
+                body: 'Dear entrepreneur,\n\nAs of 1 January 2027, the rules for registration in the Business Register will change. We are informing you in good time so you can update your records.\n\nMore information at kvk.nl.\n\nKind regards,\nNetherlands Chamber of Commerce' },
+          de: { subject: 'Neue Vorschriften ab dem 1. Januar 2027',
+                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nzum 1. Januar 2027 ändern sich die Vorschriften für die Eintragung im Handelsregister. Wir informieren Sie rechtzeitig, damit Sie Ihre Unterlagen anpassen können.\n\nWeitere Informationen unter kvk.nl.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer' },
+          fr: { subject: 'Nouvelle réglementation à partir du 1er janvier 2027',
+                body: 'Madame, Monsieur,\n\nÀ partir du 1er janvier 2027, la réglementation relative à l\'inscription au registre du commerce change. Nous vous informons à temps afin que vous puissiez adapter vos documents.\n\nPlus d\'informations sur kvk.nl.\n\nCordialement,\nChambre de commerce des Pays-Bas' },
+        },
+        reminder: {
+          type: 'reminder',
+          nl: { subject: 'Herinnering: actie vereist voor uw zaak',
+                body: 'Geachte ondernemer,\n\nVoor uw lopende zaak ontbreekt nog een aanvulling. Wij verzoeken u deze vóór de vervaldatum aan te leveren.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
+          en: { subject: 'Reminder: action required for your case',
+                body: 'Dear entrepreneur,\n\nYour ongoing case is still missing additional information. Please provide this before the due date.\n\nKind regards,\nNetherlands Chamber of Commerce' },
+          de: { subject: '', body: '' },
+          fr: { subject: '', body: '' },
+        },
+        terugkerend: {
+          type: 'terugkerend',
+          nl: { subject: 'Jaarlijkse opgave Handelsregister',
+                body: 'Geachte ondernemer,\n\nHet is weer tijd voor uw jaarlijkse opgave voor het Handelsregister. Controleer en bevestig uw gegevens vóór de gestelde datum.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
+          en: { subject: 'Annual Business Register filing',
+                body: 'Dear entrepreneur,\n\nIt is time for your annual Business Register filing. Please review and confirm your details before the deadline.\n\nKind regards,\nNetherlands Chamber of Commerce' },
+          de: { subject: '', body: '' },
+          fr: { subject: '', body: '' },
+        },
+        vrij: {
+          type: 'eenmalig',
+          nl: { subject: '', body: '' }, en: { subject: '', body: '' },
+          de: { subject: '', body: '' }, fr: { subject: '', body: '' },
+        },
+      };
+
+      const tplSelect = root.querySelector('#tpl');
+      function fillTemplate(key) {
+        const t = TEMPLATES[key];
+        if (!t) return;
+        ['nl', 'en', 'de', 'fr'].forEach(l => {
+          const s = root.querySelector('#subj-' + l);
+          const b = root.querySelector('#body-' + l);
+          if (s) s.value = (t[l] && t[l].subject) || '';
+          if (b) b.value = (t[l] && t[l].body) || '';
+        });
+        if (t.type) {
+          typeCtrl.setAttribute('value', t.type);
+          typeCtrl.querySelectorAll('nldd-segmented-control-item').forEach(it =>
+            it.toggleAttribute('selected', it.getAttribute('value') === t.type));
+          applyType(t.type);
+        }
+      }
+      tplSelect.addEventListener('change', () => fillTemplate(tplSelect.value));
+
+      // --- Kanaalvoorkeur: zoek op BSN/KvK, toon & pas aan, informeer ondernemer ---
+      const ONDERNEMERS = {
+        '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782', kanaal: 'email',
+          email: 'info@dekorenbloem.nl', sms: '06-21345678', post: 'Dorpsstraat 12, 3811 AB Amersfoort' },
+        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891', kanaal: 'sms',
+          email: 'administratie@jansen-it.nl', sms: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer' },
+        '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916', kanaal: 'post',
+          email: 'planning@vandijktransport.nl', sms: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam' },
+      };
+      const KANAAL = {
+        email: { label: 'e-mail', veld: 'ct-email' },
+        sms: { label: 'SMS', veld: 'ct-sms' },
+        post: { label: 'post', veld: 'ct-post' },
+      };
+      const zoekBtn = root.querySelector('#zoek-btn');
+      if (zoekBtn) {
+        const elLeeg = root.querySelector('#kanaal-leeg');
+        const elResult = root.querySelector('#kanaal-result');
+        const elBevestig = root.querySelector('#kanaal-bevestig');
+        const kanaalKeuze = root.querySelector('#kanaal-keuze');
+        let huidigeOndernemer = null;
+        let gekozenKanaal = 'email';
+
+        kanaalKeuze.addEventListener('click', e => {
+          const it = e.target.closest('nldd-segmented-control-item');
+          if (it) gekozenKanaal = it.getAttribute('value');
+        });
+
+        function toon(o) {
+          huidigeOndernemer = o;
+          gekozenKanaal = o.kanaal;
+          root.querySelector('#res-naam').textContent = o.naam;
+          root.querySelector('#res-sub').textContent = 'KvK ' + o.kvk + ' · BSN ' + o.bsn;
+          root.querySelector('#res-huidig').setAttribute('text', 'voorkeur: ' + KANAAL[o.kanaal].label);
+          root.querySelector('#ct-email').value = o.email;
+          root.querySelector('#ct-sms').value = o.sms;
+          root.querySelector('#ct-post').value = o.post;
+          kanaalKeuze.setAttribute('value', o.kanaal);
+          kanaalKeuze.querySelectorAll('nldd-segmented-control-item').forEach(it =>
+            it.toggleAttribute('selected', it.getAttribute('value') === o.kanaal));
+          elBevestig.setAttribute('hidden', '');
+          elLeeg.setAttribute('hidden', '');
+          elResult.removeAttribute('hidden');
+        }
+
+        function zoek() {
+          const kvk = (root.querySelector('#zoek-kvk').value || '').trim();
+          const bsn = (root.querySelector('#zoek-bsn').value || '').trim();
+          let match = kvk && ONDERNEMERS[kvk];
+          if (!match && bsn) match = Object.values(ONDERNEMERS).find(o => o.bsn === bsn);
+          if (match) { toon(match); }
+          else { elResult.setAttribute('hidden', ''); elLeeg.removeAttribute('hidden'); }
+        }
+        zoekBtn.addEventListener('click', zoek);
+
+        root.querySelector('#kanaal-opslaan').addEventListener('click', () => {
+          if (!huidigeOndernemer) return;
+          const k = KANAAL[gekozenKanaal];
+          const waarde = root.querySelector('#' + k.veld).value;
+          elBevestig.setAttribute('text',
+            'Kanaalvoorkeur opgeslagen op "' + k.label + '". ' + huidigeOndernemer.naam +
+            ' is via ' + k.label + ' geïnformeerd over de wijziging: ' + waarde + '.');
+          elBevestig.removeAttribute('hidden');
+          root.querySelector('#res-huidig').setAttribute('text', 'voorkeur: ' + k.label);
+        });
+
+        root.querySelector('#kanaal-annuleer').addEventListener('click', () => {
+          if (huidigeOndernemer) toon(huidigeOndernemer);
+        });
+      }
+
+      // init
+      Promise.all([
+        customElements.whenDefined('nldd-multi-line-text-field'),
+        customElements.whenDefined('nldd-segmented-control'),
+      ]).then(() => { applyType('eenmalig'); setLang('nl'); });
+    })();
+  </script>
+
+  <script>
+    // ====================== Presentatiemodus ======================
+    // Patroon hergebruikt van bg.rijks.app: full-screen slides + ?present=1&slide=N deeplink.
+    (function () {
+      const present = document.getElementById('present');
+      if (!present) return;
+      const slides = Array.from(present.querySelectorAll('.present-slide'));
+      const total = slides.length;
+      const counter = document.getElementById('pv-counter');
+      const prevBtn = document.getElementById('pv-prev');
+      const nextBtn = document.getElementById('pv-next');
+      let cur = 1;
+      const pad = n => String(n).padStart(2, '0');
+
+      function syncUrl(active) {
+        const u = new URL(location.href);
+        if (active) {
+          u.searchParams.set('present', '1');
+          u.searchParams.set('slide', cur);
+        } else {
+          u.searchParams.delete('present');
+          u.searchParams.delete('slide');
+          u.searchParams.delete('tour');
+        }
+        const qs = u.searchParams.toString();
+        history.replaceState({}, '', u.pathname + (qs ? '?' + qs : ''));
+      }
+      function render() {
+        slides.forEach(s => s.classList.toggle('active', +s.dataset.slide === cur));
+        counter.textContent = pad(cur) + ' / ' + pad(total);
+        prevBtn.toggleAttribute('disabled', cur === 1);
+        nextBtn.toggleAttribute('disabled', cur === total);
+        syncUrl(true);
+      }
+      function go(n) { cur = Math.min(total, Math.max(1, n)); render(); }
+      function open(slide) {
+        present.classList.add('open');
+        present.setAttribute('aria-hidden', 'false');
+        go(slide || 1);
+      }
+      function close() {
+        present.classList.remove('open');
+        present.setAttribute('aria-hidden', 'true');
+        syncUrl(false);
+      }
+
+      document.getElementById('open-present').addEventListener('click', e => { e.preventDefault(); open(1); });
+      prevBtn.addEventListener('click', () => go(cur - 1));
+      nextBtn.addEventListener('click', () => go(cur + 1));
+      document.getElementById('pv-close').addEventListener('click', close);
+      document.addEventListener('keydown', e => {
+        if (!present.classList.contains('open')) return;
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+        else if (e.key === 'Escape') { close(); }
+        else if (e.key === 'f' || e.key === 'F') {
+          if (document.fullscreenElement) document.exitFullscreen();
+          else if (present.requestFullscreen) present.requestFullscreen();
+        }
+      });
+
+      // Deeplink: open direct in presentatiemodus bij ?present=1&slide=N
+      const p = new URLSearchParams(location.search);
+      if (p.get('present') === '1') {
+        open(parseInt(p.get('slide') || '1', 10) || 1);
+      }
+    })();
+  </script>
+</body>
+</html>
