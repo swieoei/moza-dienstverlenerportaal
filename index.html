@@ -35,10 +35,15 @@
     /* Menu-trigger alleen tonen wanneer de sidebar-section is ingeklapt tot een sheet */
     .sb-trigger { display: none; margin-bottom: 12px; }
     nldd-sidebar-section[collapsed] .sb-trigger { display: block; }
-    /* Marktplaats: dienstkaarten */
-    .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    /* Marktplaats: tegels + dienstpagina's */
+    .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
     .svc-caps { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
     .svc-caps li { line-height: 1.45; }
+    .mp-tile[data-svc] { cursor: pointer; }
+    .mp-tile[data-svc]:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
+    .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
+    .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .rv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     /* Contactherstel: afleverbalk in één oogopslag (layout-lijm) */
     .deliver-bar { display: flex; height: 16px; border-radius: 8px; overflow: hidden; background: var(--context-border-color, #e3e3e3); }
     .deliver-bar > span { display: block; height: 100%; }
@@ -816,119 +821,197 @@
 
               <!-- ====================== MARKTPLAATS (voorheen API key) ====================== -->
               <section class="view" data-view="marktplaats">
-                <div class="stack">
-                  <nldd-tab-bar id="markt-tabs" accessible-label="Marktplaats">
-                    <nldd-tab-bar-item selected text="Diensten" icon="blocks-9" data-panel="diensten"></nldd-tab-bar-item>
-                    <nldd-tab-bar-item text="Mijn koppelingen &amp; API-keys" icon="key" data-panel="keys"></nldd-tab-bar-item>
-                  </nldd-tab-bar>
 
-                  <!-- ---------- Panel: Diensten (catalogus) ---------- -->
-                  <div data-markt-panel="diensten">
-                    <div class="stack">
-                      <nldd-banner variant="neutral" text="Overheidsbrede diensten die je organisatie kan afnemen en koppelen. Vraag per dienst een API-key aan om te integreren in je eigen processen en applicaties."></nldd-banner>
+                <!-- ---------- Overzicht: dienstentegels ---------- -->
+                <div data-mp-page="overzicht">
+                  <div class="stack">
+                    <nldd-banner variant="neutral" text="Overheidsbrede diensten voor je organisatie. Open een afgenomen dienst voor de API-key en het beheer, of koppel een nieuwe dienst — in demovorm of voor productie."></nldd-banner>
 
-                      <div class="svc-grid">
-                        <!-- Profieldienst -->
-                        <nldd-card>
-                          <nldd-container padding="16" gap="12">
-                            <div class="between">
-                              <nldd-title size="4">
-                                <h2>Profieldienst</h2>
-                                <p slot="subtitle">Overheidsbrede dienst</p>
-                              </nldd-title>
-                              <nldd-tag color="success" text="gekoppeld"></nldd-tag>
-                            </div>
-                            <nldd-rich-text>
-                              <p>Antwoord op de vraag: hoe wil de burger of ondernemer benaderd worden en welke gegevens horen daarbij?</p>
-                              <ul class="svc-caps">
-                                <li>(De)centrale interactie op contactgegevens en voorkeuren</li>
-                                <li>Verificatie van contactgegevens</li>
-                                <li>Toepassing in de centrale notificatiedienst</li>
-                                <li>Toepassing in decentrale processen (bijv. een KCC)</li>
-                                <li>Ontsluiten van profielinformatie uit verschillende bronnen</li>
-                              </ul>
-                            </nldd-rich-text>
-                            <div class="row-actions">
-                              <nldd-button variant="secondary" start-icon="book" text="Documentatie"></nldd-button>
-                              <nldd-button variant="primary" start-icon="key" text="API-key aanvragen" data-goto-keys></nldd-button>
-                            </div>
-                          </nldd-container>
-                        </nldd-card>
+                    <div class="svc-grid">
+                      <!-- Notificatiedienst (afgenomen: demo) -->
+                      <nldd-card class="mp-tile" data-svc="notificatiedienst" role="button" tabindex="0" aria-label="Notificatiedienst openen">
+                        <nldd-container padding="16" gap="12">
+                          <div class="between">
+                            <nldd-title size="5"><h2>Notificatiedienst</h2></nldd-title>
+                            <nldd-tag color="accent" text="demo"></nldd-tag>
+                          </div>
+                          <nldd-rich-text><p>Verstuur notificaties naar ondernemers via één centrale dienst: ontvangerbepaling, verzending, response handling en contactherstel.</p></nldd-rich-text>
+                        </nldd-container>
+                      </nldd-card>
 
-                        <!-- Notificatiedienst -->
-                        <nldd-card>
-                          <nldd-container padding="16" gap="12">
-                            <div class="between">
-                              <nldd-title size="4">
-                                <h2>Notificatiedienst</h2>
-                                <p slot="subtitle">Overheidsbrede dienst</p>
-                              </nldd-title>
-                              <nldd-tag color="success" text="gekoppeld"></nldd-tag>
-                            </div>
-                            <nldd-rich-text>
-                              <p>Een totaaloplossing rondom het versturen van (digitale) berichten.</p>
-                              <ul class="svc-caps">
-                                <li>Bepalen ontvanger(s) — voorkeur én bijbehorend contactgegeven</li>
-                                <li>Verzending — samenstellen en daadwerkelijk verzenden</li>
-                                <li>Response handling — opvangen en registreren van responses</li>
-                                <li>Bepalen contactherstel — nut en benodigde gegevens vaststellen</li>
-                                <li>Uitvoeren contactherstel — initiëren, monitoren en opvolgen</li>
-                              </ul>
-                            </nldd-rich-text>
-                            <div class="row-actions">
-                              <nldd-button variant="secondary" start-icon="book" text="Documentatie"></nldd-button>
-                              <nldd-button variant="primary" start-icon="key" text="API-key aanvragen" data-goto-keys></nldd-button>
-                            </div>
-                          </nldd-container>
-                        </nldd-card>
-                      </div>
+                      <!-- Profieldienst (afgenomen: productie) -->
+                      <nldd-card class="mp-tile" data-svc="profieldienst" role="button" tabindex="0" aria-label="Profieldienst openen">
+                        <nldd-container padding="16" gap="12">
+                          <div class="between">
+                            <nldd-title size="5"><h2>Profieldienst</h2></nldd-title>
+                            <nldd-tag color="success" text="productie"></nldd-tag>
+                          </div>
+                          <nldd-rich-text><p>Weet hoe de burger of ondernemer benaderd wil worden: contactgegevens en voorkeuren uit één overheidsbrede bron.</p></nldd-rich-text>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- DigiD -->
+                      <nldd-card class="mp-tile">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>DigiD</h2></nldd-title>
+                          <nldd-rich-text><p>Laat burgers veilig inloggen bij je digitale dienstverlening met hun DigiD.</p></nldd-rich-text>
+                          <div class="row-actions">
+                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digid"></nldd-button>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- eHerkenning -->
+                      <nldd-card class="mp-tile">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>eHerkenning</h2></nldd-title>
+                          <nldd-rich-text><p>Laat ondernemers en organisaties veilig en gemachtigd inloggen namens hun bedrijf.</p></nldd-rich-text>
+                          <div class="row-actions">
+                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="eherkenning"></nldd-button>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- Digimelding & Digilevering -->
+                      <nldd-card class="mp-tile">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>Digimelding &amp; Digilevering</h2></nldd-title>
+                          <nldd-rich-text><p>Meld wijzigingen terug aan basisregistraties en ontvang automatisch gebeurtenissen uit die registraties.</p></nldd-rich-text>
+                          <div class="row-actions">
+                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digimelding"></nldd-button>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
+                      <!-- SBR & e-Factureren -->
+                      <nldd-card class="mp-tile">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>SBR &amp; e-Factureren</h2></nldd-title>
+                          <nldd-rich-text><p>Wissel gestandaardiseerde bedrijfsrapportages en e-facturen uit met de overheid via Digipoort.</p></nldd-rich-text>
+                          <div class="row-actions">
+                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="sbr"></nldd-button>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
                     </div>
                   </div>
+                </div>
 
-                  <!-- ---------- Panel: Mijn koppelingen & API-keys ---------- -->
-                  <div data-markt-panel="keys" hidden>
-                    <div class="stack">
-                      <nldd-banner variant="neutral" text="API-keys waarmee je organisatie de afgenomen diensten aanroept. Bewaar een nieuwe sleutel veilig — hij is maar één keer zichtbaar."></nldd-banner>
-                      <div class="inline">
-                        <nldd-button variant="primary" start-icon="plus" text="Nieuwe API-key genereren"></nldd-button>
-                      </div>
-                      <nldd-table columns="minmax(150px,1fr) minmax(130px,0.9fr) minmax(180px,1.2fr) 130px 110px" accessible-label="API-keys">
-                        <nldd-table-row slot="header">
-                          <nldd-text-cell text="**Naam**"></nldd-text-cell>
-                          <nldd-text-cell text="**Dienst**"></nldd-text-cell>
-                          <nldd-text-cell text="**Sleutel**"></nldd-text-cell>
-                          <nldd-text-cell text="**Verloopt**"></nldd-text-cell>
-                          <nldd-text-cell text="**Status**"></nldd-text-cell>
-                        </nldd-table-row>
-                        <nldd-table-row>
-                          <nldd-text-cell text="Belastingdienst-prod"></nldd-text-cell>
-                          <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
-                          <nldd-text-cell text="nmp_live_••••••4f9a"></nldd-text-cell>
-                          <nldd-text-cell text="01 jan 2027"></nldd-text-cell>
-                          <nldd-cell><nldd-tag color="success" text="actief"></nldd-tag></nldd-cell>
-                        </nldd-table-row>
-                        <nldd-table-row>
-                          <nldd-text-cell text="RVO-prod"></nldd-text-cell>
-                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
-                          <nldd-text-cell text="nmp_live_••••••a17c"></nldd-text-cell>
-                          <nldd-text-cell text="30 jun 2026"></nldd-text-cell>
-                          <nldd-cell><nldd-tag color="warning" text="verloopt bijna"></nldd-tag></nldd-cell>
-                        </nldd-table-row>
-                        <nldd-table-row>
-                          <nldd-text-cell text="Gemeente Utrecht-test"></nldd-text-cell>
-                          <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
-                          <nldd-text-cell text="nmp_test_••••••0b22"></nldd-text-cell>
-                          <nldd-text-cell text="01 jan 2027"></nldd-text-cell>
-                          <nldd-cell><nldd-tag color="success" text="actief"></nldd-tag></nldd-cell>
-                        </nldd-table-row>
-                        <nldd-table-row>
-                          <nldd-text-cell text="UWV-prod (oud)"></nldd-text-cell>
-                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
-                          <nldd-text-cell text="nmp_live_••••••9d04"></nldd-text-cell>
-                          <nldd-text-cell text="01 jun 2026"></nldd-text-cell>
-                          <nldd-cell><nldd-tag color="critical" text="ingetrokken"></nldd-tag></nldd-cell>
-                        </nldd-table-row>
-                      </nldd-table>
+                <!-- ---------- Koppelpagina: dienst afnemen ---------- -->
+                <div data-mp-page="koppelen" hidden>
+                  <div class="stack">
+                    <div class="inline">
+                      <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar marktplaats" data-mp-back></nldd-button>
+                    </div>
+                    <nldd-title size="3"><h2 id="kp-titel">—</h2><p slot="subtitle">Dienst afnemen</p></nldd-title>
+                    <nldd-rich-text><p id="kp-desc">—</p></nldd-rich-text>
+
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>1. Kies de vorm</h3></nldd-title>
+                        <nldd-segmented-control id="kp-vorm" value="demo" type="radio" variant="icon-and-text" width="full" accessible-label="Vorm van afname">
+                          <nldd-segmented-control-item value="demo" text="Demo-omgeving" icon="blocks-9"></nldd-segmented-control-item>
+                          <nldd-segmented-control-item value="productie" text="Productie" icon="shield-check-mark"></nldd-segmented-control-item>
+                        </nldd-segmented-control>
+                        <nldd-banner id="kp-vorm-uitleg" variant="neutral" text=""></nldd-banner>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <nldd-title size="5"><h3>2. Randvoorwaarden</h3></nldd-title>
+                    <div class="rv-grid">
+                      <nldd-card>
+                        <nldd-container padding="16" gap="8">
+                          <nldd-title size="6"><h4>Technisch</h4></nldd-title>
+                          <nldd-rich-text><ul class="svc-caps" id="kp-rv-tech"></ul></nldd-rich-text>
+                        </nldd-container>
+                      </nldd-card>
+                      <nldd-card>
+                        <nldd-container padding="16" gap="8">
+                          <nldd-title size="6"><h4>Procesmatig</h4></nldd-title>
+                          <nldd-rich-text><ul class="svc-caps" id="kp-rv-proces"></ul></nldd-rich-text>
+                        </nldd-container>
+                      </nldd-card>
+                      <nldd-card>
+                        <nldd-container padding="16" gap="8">
+                          <nldd-title size="6"><h4>Business</h4></nldd-title>
+                          <nldd-rich-text><ul class="svc-caps" id="kp-rv-business"></ul></nldd-rich-text>
+                        </nldd-container>
+                      </nldd-card>
+                    </div>
+
+                    <div class="row-actions">
+                      <nldd-button id="kp-aanvraag" variant="primary" start-icon="paper-plane" text="Koppeling aanvragen"></nldd-button>
+                    </div>
+                    <nldd-banner id="kp-bevestig" variant="success" text="" hidden></nldd-banner>
+                  </div>
+                </div>
+
+                <!-- ---------- Dienstpagina: afgenomen dienst beheren ---------- -->
+                <div data-mp-page="dienst" hidden>
+                  <div class="stack">
+                    <div class="inline">
+                      <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar marktplaats" data-mp-back></nldd-button>
+                    </div>
+                    <div class="between">
+                      <nldd-title size="3"><h2 id="dp-titel">—</h2><p slot="subtitle" id="dp-sub">—</p></nldd-title>
+                      <nldd-tag id="dp-status" color="accent" text="demo"></nldd-tag>
+                    </div>
+                    <nldd-rich-text><p id="dp-desc">—</p></nldd-rich-text>
+
+                    <!-- API-key -->
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5">
+                          <h3>API-key</h3>
+                          <p slot="subtitle" id="dp-key-sub">Nodig voor de implementatie in het systeem van de Kamer van Koophandel</p>
+                        </nldd-title>
+                        <div class="mp-keyrow">
+                          <span class="mp-key" id="dp-key">••••••••••••••••••••••••••••</span>
+                          <nldd-button id="dp-toon" variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
+                          <nldd-button id="dp-kopieer" variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
+                        </div>
+                        <div class="row-actions">
+                          <nldd-button id="dp-valideer" variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
+                          <nldd-button id="dp-vernieuw" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
+                        </div>
+                        <nldd-banner id="dp-key-melding" variant="success" text="" hidden></nldd-banner>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <!-- Productieversie aanvragen (alleen zichtbaar in demo-fase) -->
+                    <div id="dp-prod" hidden>
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5">
+                            <h3>Productieversie aanvragen</h3>
+                            <p slot="subtitle">Aansluitvoorwaarden voor de overstap van demo naar productie</p>
+                          </nldd-title>
+                          <div class="rv-grid">
+                            <nldd-card>
+                              <nldd-container padding="16" gap="8">
+                                <nldd-title size="6"><h4>Technisch</h4></nldd-title>
+                                <nldd-rich-text><ul class="svc-caps" id="dp-rv-tech"></ul></nldd-rich-text>
+                              </nldd-container>
+                            </nldd-card>
+                            <nldd-card>
+                              <nldd-container padding="16" gap="8">
+                                <nldd-title size="6"><h4>Procesmatig</h4></nldd-title>
+                                <nldd-rich-text><ul class="svc-caps" id="dp-rv-proces"></ul></nldd-rich-text>
+                              </nldd-container>
+                            </nldd-card>
+                            <nldd-card>
+                              <nldd-container padding="16" gap="8">
+                                <nldd-title size="6"><h4>Business</h4></nldd-title>
+                                <nldd-rich-text><ul class="svc-caps" id="dp-rv-business"></ul></nldd-rich-text>
+                              </nldd-container>
+                            </nldd-card>
+                          </div>
+                          <div class="row-actions">
+                            <nldd-button id="dp-prod-aanvraag" variant="primary" start-icon="paper-plane" text="Productieversie aanvragen"></nldd-button>
+                          </div>
+                          <nldd-banner id="dp-prod-bevestig" variant="success" text="" hidden></nldd-banner>
+                        </nldd-container>
+                      </nldd-card>
                     </div>
                   </div>
                 </div>
@@ -1511,24 +1594,206 @@
       });
     })();
 
-    // ====================== Marktplaats: tabs ======================
+    // ====================== Marktplaats ======================
     (function () {
       const root = document.querySelector('section[data-view="marktplaats"]');
       if (!root) return;
-      const tabs = root.querySelector('#markt-tabs');
-      const panels = root.querySelectorAll('[data-markt-panel]');
-      function showPanel(name) {
-        panels.forEach(p => p.toggleAttribute('hidden', p.dataset.marktPanel !== name));
-        tabs.querySelectorAll('nldd-tab-bar-item').forEach(t =>
-          t.toggleAttribute('selected', t.dataset.panel === name));
+
+      // Randvoorwaarden voor de demovorm zijn voor elke dienst gelijk (vrijblijvend testen).
+      const RV_DEMO = {
+        tech: ['Alleen een demo-API-key nodig — direct te genereren', 'HTTPS-verbinding met de demo-omgeving', 'Fictieve testdata — geen echte persoonsgegevens'],
+        proces: ['Zelfservice: vandaag starten, geen aansluitproces', 'Support op basis van best effort (geen SLA)'],
+        business: ['Kosteloos', 'Geen overeenkomst nodig — de demovoorwaarden gelden'],
+      };
+
+      const DIENSTEN = {
+        notificatiedienst: {
+          naam: 'Notificatiedienst', status: 'demo',
+          desc: 'Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.',
+          key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs',
+          rvProd: {
+            tech: ['PKIoverheid-certificaat voor de productie-koppeling', 'Implementatie getest tegen de acceptatieomgeving', 'Foutafhandeling en retry-beleid ingericht'],
+            proces: ['Beheer- en incidentproces ingericht (contactpunt voor storingen)', 'Ketentest met de notificatiedienst afgerond', 'Go-live-moment ingepland met de beheerorganisatie'],
+            business: ['Aansluitovereenkomst ondertekend', 'Verwerkersafspraken en DPIA afgerond', 'Kosten per notificatie akkoord'],
+          },
+        },
+        profieldienst: {
+          naam: 'Profieldienst', status: 'productie',
+          desc: 'Overheidsbrede dienst die antwoord geeft op de vraag: hoe wil de burger of ondernemer benaderd worden en welke gegevens horen daarbij?',
+          key: 'pfd_live_2mV8xKqR5tWc7pLj9dFg',
+        },
+        digid: {
+          naam: 'DigiD',
+          desc: 'Laat burgers veilig inloggen bij je digitale dienstverlening met hun DigiD.',
+          rvProd: {
+            tech: ['PKIoverheid-certificaat en koppelvlak conform Logius-specificaties (SAML)', 'Jaarlijks ICT-beveiligingsassessment (DigiD-audit) door een RE-auditor', 'Ketentest in de preproductieomgeving afgerond'],
+            proces: ['Aansluitproces bij Logius doorlopen (aanvraag t/m go-live)', 'Incident- en beheerproces ingericht met contactpunt voor Logius', 'Jaarlijkse hertoetsing geborgd in de planning'],
+            business: ['Aansluitovereenkomst met Logius ondertekend', 'Kosten per authenticatie geaccepteerd', 'Privacytoets (DPIA) op het inlogproces afgerond'],
+          },
+        },
+        eherkenning: {
+          naam: 'eHerkenning',
+          desc: 'Laat ondernemers en organisaties veilig en gemachtigd inloggen namens hun bedrijf.',
+          rvProd: {
+            tech: ['Koppeling via een erkende eHerkenning-makelaar', 'Diensten gepubliceerd in de dienstencatalogus met betrouwbaarheidsniveau (min. EH3)', 'SAML-koppelvlak getest in de acceptatieomgeving'],
+            proces: ['Machtigingencontrole ingericht in het aanmeldproces', 'Beheerafspraken met de makelaar vastgelegd', 'Ketentest en go-live ingepland'],
+            business: ['Contract met een erkende makelaar', 'Kosten per authenticatie of abonnement akkoord', 'Toegangsbeleid (wie handelt namens wie) vastgesteld'],
+          },
+        },
+        digimelding: {
+          naam: 'Digimelding & Digilevering',
+          desc: 'Meld wijzigingen terug aan basisregistraties (Digimelding) en ontvang automatisch gebeurtenissen uit die registraties (Digilevering).',
+          rvProd: {
+            tech: ['Digikoppeling-adapter (ebMS/WUS) met PKIoverheid-certificaat', 'Abonnementen op gebeurtenissen geconfigureerd (Digilevering)', 'Terugmeldproces gekoppeld aan de eigen registratie (Digimelding)'],
+            proces: ['Autorisatie op de basisregistraties (BRP/Handelsregister) geregeld', 'Werkproces voor terugmelden en verwerken van gebeurtenissen ingericht', 'Ketentest met Logius afgerond'],
+            business: ['Aansluitvoorwaarden basisregistraties geaccepteerd', 'Doelbinding en grondslag vastgelegd (DPIA)', 'Beheerkosten en abonnementskeuze akkoord'],
+          },
+        },
+        sbr: {
+          naam: 'SBR & e-Factureren',
+          desc: 'Wissel gestandaardiseerde bedrijfsrapportages en e-facturen uit met de overheid via Digipoort.',
+          rvProd: {
+            tech: ['Aansluiting op Digipoort met PKIoverheid-certificaat', 'Rapportages conform de geldende XBRL-taxonomie', 'e-Factureren via Peppol of het Digipoort-koppelvlak'],
+            proces: ['Ketentest met Digipoort afgerond', 'Verwerkingsproces voor status- en foutberichten ingericht', 'Taxonomie-releasekalender geborgd in het beheerproces'],
+            business: ['Aansluitovereenkomst Digipoort ondertekend', 'Softwareleverancier(s) SBR-gecertificeerd', 'Volume en kosten akkoord (business case)'],
+          },
+        },
+      };
+
+      const pages = root.querySelectorAll('[data-mp-page]');
+      function showPage(name) {
+        pages.forEach(p => p.toggleAttribute('hidden', p.dataset.mpPage !== name));
       }
-      tabs.addEventListener('click', e => {
-        const t = e.target.closest('nldd-tab-bar-item');
-        if (t && t.dataset.panel) showPanel(t.dataset.panel);
+      function fillList(id, items) {
+        const el = root.querySelector('#' + id);
+        el.innerHTML = '';
+        (items || []).forEach(t => { const li = document.createElement('li'); li.textContent = t; el.appendChild(li); });
+      }
+      const maskKey = k => '•'.repeat(Math.max(12, k.length - 4)) + k.slice(-4);
+
+      // Tegels: afgenomen diensten openen de dienstpagina.
+      root.querySelectorAll('.mp-tile[data-svc]').forEach(tile => {
+        tile.addEventListener('click', () => openDienst(tile.dataset.svc));
+        tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDienst(tile.dataset.svc); } });
       });
-      // "API-key aanvragen" springt naar het keys-tabblad.
-      root.querySelectorAll('[data-goto-keys]').forEach(b =>
-        b.addEventListener('click', () => showPanel('keys')));
+      // "Koppelen" opent de koppelpagina.
+      root.querySelectorAll('[data-koppel]').forEach(b =>
+        b.addEventListener('click', () => openKoppel(b.dataset.koppel)));
+      root.querySelectorAll('[data-mp-back]').forEach(b =>
+        b.addEventListener('click', () => showPage('overzicht')));
+      // Marktplaats in de zijnav → altijd terug naar het overzicht.
+      const navTile = document.querySelector('nldd-list-item[data-view="marktplaats"]');
+      if (navTile) navTile.addEventListener('click', () => showPage('overzicht'));
+
+      // ---------- Koppelpagina ----------
+      const VORM_UITLEG = {
+        demo: 'Demo-omgeving: direct en vrijblijvend testen met fictieve gegevens — kosteloos, zonder aansluitproces.',
+        productie: 'Productie: echte gegevens en afspraken over beschikbaarheid. Onderstaande randvoorwaarden gelden vóór go-live.',
+      };
+      const kpVorm = root.querySelector('#kp-vorm');
+      let koppelDienst = null;
+      let gekozenVorm = 'demo';
+
+      function renderVoorwaarden(vorm) {
+        const rv = vorm === 'productie' ? (koppelDienst.rvProd || RV_DEMO) : RV_DEMO;
+        fillList('kp-rv-tech', rv.tech);
+        fillList('kp-rv-proces', rv.proces);
+        fillList('kp-rv-business', rv.business);
+        root.querySelector('#kp-vorm-uitleg').setAttribute('text', VORM_UITLEG[vorm]);
+      }
+      function openKoppel(id) {
+        koppelDienst = DIENSTEN[id];
+        gekozenVorm = 'demo';
+        root.querySelector('#kp-titel').textContent = koppelDienst.naam;
+        root.querySelector('#kp-desc').textContent = koppelDienst.desc;
+        kpVorm.setAttribute('value', 'demo');
+        kpVorm.querySelectorAll('nldd-segmented-control-item').forEach(it =>
+          it.toggleAttribute('selected', it.getAttribute('value') === 'demo'));
+        renderVoorwaarden('demo');
+        root.querySelector('#kp-bevestig').setAttribute('hidden', '');
+        showPage('koppelen');
+      }
+      kpVorm.addEventListener('click', e => {
+        const it = e.target.closest('nldd-segmented-control-item');
+        if (it) { gekozenVorm = it.getAttribute('value'); renderVoorwaarden(gekozenVorm); }
+      });
+      root.querySelector('#kp-aanvraag').addEventListener('click', () => {
+        if (!koppelDienst) return;
+        const vorm = gekozenVorm;
+        const b = root.querySelector('#kp-bevestig');
+        b.setAttribute('text', vorm === 'demo'
+          ? 'Aanvraag verstuurd. De demo-omgeving van ' + koppelDienst.naam + ' wordt klaargezet; de API-key verschijnt bij de dienst in de marktplaats.'
+          : 'Aanvraag verstuurd. De beheerorganisatie neemt contact op om de aansluitvoorwaarden voor productie van ' + koppelDienst.naam + ' door te nemen.');
+        b.removeAttribute('hidden');
+      });
+
+      // ---------- Dienstpagina ----------
+      let dienst = null;
+      let keyZichtbaar = false;
+      const dpKey = root.querySelector('#dp-key');
+      const dpToon = root.querySelector('#dp-toon');
+      const dpMelding = root.querySelector('#dp-key-melding');
+
+      function renderKey() {
+        dpKey.textContent = keyZichtbaar ? dienst.key : maskKey(dienst.key);
+        dpToon.setAttribute('text', keyZichtbaar ? 'Verbergen' : 'Tonen');
+        dpToon.setAttribute('start-icon', keyZichtbaar ? 'eye-slash' : 'eye');
+      }
+      function melding(variant, text) {
+        dpMelding.setAttribute('variant', variant);
+        dpMelding.setAttribute('text', text);
+        dpMelding.removeAttribute('hidden');
+      }
+      function openDienst(id) {
+        dienst = DIENSTEN[id];
+        keyZichtbaar = false;
+        root.querySelector('#dp-titel').textContent = dienst.naam;
+        root.querySelector('#dp-sub').textContent = 'Afgenomen door Kamer van Koophandel · ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productie');
+        root.querySelector('#dp-desc').textContent = dienst.desc;
+        const tag = root.querySelector('#dp-status');
+        tag.setAttribute('color', dienst.status === 'demo' ? 'accent' : 'success');
+        tag.setAttribute('text', dienst.status);
+        renderKey();
+        dpMelding.setAttribute('hidden', '');
+        const prod = root.querySelector('#dp-prod');
+        if (dienst.status === 'demo' && dienst.rvProd) {
+          fillList('dp-rv-tech', dienst.rvProd.tech);
+          fillList('dp-rv-proces', dienst.rvProd.proces);
+          fillList('dp-rv-business', dienst.rvProd.business);
+          root.querySelector('#dp-prod-bevestig').setAttribute('hidden', '');
+          prod.removeAttribute('hidden');
+        } else {
+          prod.setAttribute('hidden', '');
+        }
+        showPage('dienst');
+      }
+      dpToon.addEventListener('click', () => { keyZichtbaar = !keyZichtbaar; renderKey(); });
+      root.querySelector('#dp-kopieer').addEventListener('click', () => {
+        if (!dienst) return;
+        const done = () => melding('success', 'API-key gekopieerd naar het klembord.');
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dienst.key).then(done, done);
+        else done();
+      });
+      root.querySelector('#dp-valideer').addEventListener('click', () => {
+        if (!dienst) return;
+        melding('success', 'Key gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' van de ' + dienst.naam.toLowerCase() + ' geslaagd (HTTP 200, testbericht geaccepteerd).');
+      });
+      root.querySelector('#dp-vernieuw').addEventListener('click', () => {
+        if (!dienst) return;
+        const prefix = dienst.key.split('_').slice(0, 2).join('_') + '_';
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        let suffix = '';
+        for (let i = 0; i < 20; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+        dienst.key = prefix + suffix;
+        keyZichtbaar = true;
+        renderKey();
+        melding('warning', 'Nieuwe API-key aangemaakt; de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
+      });
+      root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => {
+        const b = root.querySelector('#dp-prod-bevestig');
+        b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met Sanne de Boer (Kamer van Koophandel).');
+        b.removeAttribute('hidden');
+      });
     })();
   </script>
 
