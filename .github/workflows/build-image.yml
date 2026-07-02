@@ -1,4 +1,4 @@
-name: Build and push container image
+name: Build, push and deploy container image
 
 on:
   push:
@@ -38,3 +38,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  # Rolt de zojuist gebouwde image automatisch uit naar ZAD (dienstverlener-moza.rijksapp.dev).
+  # Het project-id staat hier vast, zodat een release nooit per ongeluk op een ander
+  # ZAD-project kan landen. Vereist het repo-secret ZAD_API_KEY (API key van project mozad-dle).
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to ZAD
+        uses: RijksICTGilde/zad-actions/deploy@v4
+        with:
+          api-key: ${{ secrets.ZAD_API_KEY }}
+          project-id: mozad-dle
+          deployment-name: portaal-poc
+          component: frontend
+          image: ghcr.io/${{ github.repository }}:sha-${{ github.sha }}
+          wait-for-ready: 'true'
