@@ -6,9 +6,11 @@
   <title>MijnOverheid - Dienstverleners</title>
 
   <!-- Echte NLDD design system: design tokens (settings.css importeert palettes.generated.css) -->
-  <link rel="stylesheet" href="https://esm.sh/@nldd/design-system@0.8.60/dist/css/settings.css" />
+  <link rel="stylesheet" href="https://esm.sh/@nldd/design-system@0.8.64/dist/css/settings.css" />
   <!-- Echte NLDD design system: registreert alle <nldd-*> custom elements -->
-  <script type="module" src="https://esm.sh/@nldd/design-system@0.8.60"></script>
+  <script type="module" src="https://esm.sh/@nldd/design-system@0.8.64"></script>
+  <!-- sidebar-section wordt niet door de hoofd-entry geregistreerd: expliciet laden -->
+  <script type="module" src="https://esm.sh/@nldd/design-system@0.8.64/sidebar-section"></script>
 
   <style>
     /* Alleen layout-lijm; geen component-styling — die komt volledig uit het design system. */
@@ -30,6 +32,9 @@
     .nav-group-label { padding: 12px 16px 4px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5a5a5a; }
     .nav-sub nldd-list-item { --_indent: 12px; }
     #navwrap nldd-divider { display: block; margin: 10px 8px; }
+    /* Menu-trigger alleen tonen wanneer de sidebar-section is ingeklapt tot een sheet */
+    .sb-trigger { display: none; margin-bottom: 12px; }
+    nldd-sidebar-section[collapsed] .sb-trigger { display: block; }
     /* Marktplaats: dienstkaarten */
     .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
     .svc-caps { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
@@ -85,28 +90,36 @@
 <body>
   <div id="app">
 
-    <!-- ===== Rijkshuisstijl topbalk ===== -->
-    <nldd-top-navigation-bar
-      logo-title="Rijksoverheid"
-      logo-subtitle="voor dienstverleners"
-      website-title="MijnOverheid - Dienstverleners"
-      website-href="#dashboard">
-      <nldd-menu-bar slot="utility">
-        <nldd-menu-bar-item text="Zoeken" icon="magnifier"></nldd-menu-bar-item>
-        <nldd-menu-bar-item id="prof-org" text="Kamer van Koophandel" icon="person-badge-gear"></nldd-menu-bar-item>
-        <nldd-menu-bar-item id="prof-user" text="Sanne de Boer · Developer administrator" icon="person"></nldd-menu-bar-item>
-        <nldd-menu-bar-item id="go-organisatie" text="Instellingen organisatie" icon="gear" data-view="organisatie" data-title="Instellingen organisatie"></nldd-menu-bar-item>
-        <nldd-menu-bar-item id="logout" text="Uitloggen" icon="arrow-right-out-bucket"></nldd-menu-bar-item>
-      </nldd-menu-bar>
-    </nldd-top-navigation-bar>
-
-    <!-- ===== App-shell met zijnavigatie + hoofdvenster ===== -->
+    <!-- ===== App-shell: page met top nav (header), sidebar-section (main) en page-footer ===== -->
     <nldd-app-view background="tinted">
-      <nldd-navigation-split-view>
+      <nldd-page sticky-header sticky-footer>
 
-        <!-- ---- Zijbalk: sectienavigatie ---- -->
-        <nldd-page slot="sidebar" sticky-header>
-          <nldd-container padding="8">
+        <!-- ---- Rijkshuisstijl topbalk in de page-header ---- -->
+        <nldd-top-navigation-bar
+          slot="header"
+          logo-title="Rijksoverheid"
+          logo-subtitle="voor dienstverleners"
+          website-title="MijnOverheid - Dienstverleners"
+          website-href="#dashboard">
+          <nldd-menu-bar slot="utility">
+            <nldd-menu-bar-item text="Zoeken" icon="magnifier"></nldd-menu-bar-item>
+            <nldd-menu-bar-item id="prof-org" text="Kamer van Koophandel" icon="person-badge-gear"></nldd-menu-bar-item>
+            <nldd-menu-bar-item id="prof-user" text="Sanne de Boer · Developer administrator" icon="person"></nldd-menu-bar-item>
+            <nldd-menu-bar-item id="go-organisatie" text="Instellingen organisatie" icon="gear" data-view="organisatie" data-title="Instellingen organisatie"></nldd-menu-bar-item>
+            <nldd-menu-bar-item id="logout" text="Uitloggen" icon="arrow-right-out-bucket"></nldd-menu-bar-item>
+          </nldd-menu-bar>
+        </nldd-top-navigation-bar>
+
+        <!-- ---- Sidebar-section: navigatie links, content in de main area ---- -->
+        <nldd-sidebar-section id="sbsec" width="full" sidebar-label="Hoofdnavigatie" sticky-top="88px">
+
+          <!-- Trigger: alleen zichtbaar wanneer de sidebar tot een sheet is ingeklapt (smal venster) -->
+          <div slot="header" class="sb-trigger">
+            <nldd-button variant="secondary" start-icon="bullet-list" text="Menu" data-open-nav></nldd-button>
+          </div>
+
+          <!-- Zijbalk: sectienavigatie -->
+          <nldd-container slot="sidebar" padding="8">
             <div id="navwrap">
               <nldd-list type="navigation" aria-label="Hoofdnavigatie" class="nav-list">
                 <nldd-list-item button selected data-view="dashboard" data-title="Dashboard">
@@ -153,12 +166,9 @@
               </nldd-list>
             </div>
           </nldd-container>
-        </nldd-page>
 
-        <!-- ---- Hoofdvenster ---- -->
-        <nldd-page slot="main" sticky-header>
-          <nldd-top-title-bar id="titlebar" slot="header" text="Dashboard"></nldd-top-title-bar>
-
+          <!-- ---- Hoofdinhoud (main area) ---- -->
+          <nldd-top-title-bar id="titlebar" text="Dashboard"></nldd-top-title-bar>
           <nldd-simple-section>
             <nldd-container padding="24">
 
@@ -1065,20 +1075,23 @@
 
             </nldd-container>
           </nldd-simple-section>
-        </nldd-page>
+        </nldd-sidebar-section>
 
-      </nldd-navigation-split-view>
+        <!-- ---- Page-footer ---- -->
+        <nldd-page-footer slot="footer">
+          <nldd-container>
+            <nldd-rich-text><p>MijnOverheid - Dienstverleners — proeftuin/prototype met fictieve gegevens.</p></nldd-rich-text>
+          </nldd-container>
+          <nldd-page-footer-legal-bar slot="legal-bar">
+            <nldd-page-footer-legal-bar-item slot="start" text="© 2026 Rijksoverheid"></nldd-page-footer-legal-bar-item>
+            <nldd-page-footer-legal-bar-item slot="end" id="open-present" text="Presentatie"></nldd-page-footer-legal-bar-item>
+            <nldd-page-footer-legal-bar-item slot="end" text="Toegankelijkheid" href="#"></nldd-page-footer-legal-bar-item>
+            <nldd-page-footer-legal-bar-item slot="end" text="Privacy" href="#"></nldd-page-footer-legal-bar-item>
+            <nldd-page-footer-legal-bar-item slot="end" text="Contact" href="#"></nldd-page-footer-legal-bar-item>
+          </nldd-page-footer-legal-bar>
+        </nldd-page-footer>
+      </nldd-page>
     </nldd-app-view>
-
-    <!-- ===== Footer met presentatie-link ===== -->
-    <footer class="app-footer">
-      <span class="muted">MijnOverheid - Dienstverleners</span>
-      <span class="spacer"></span>
-      <a id="open-present" role="button">Presentatie</a>
-      <a href="#">Toegankelijkheid</a>
-      <a href="#">Privacy</a>
-      <a href="#">Contact</a>
-    </footer>
 
     <!-- ===== Presentatiemodus (full-screen slides, stijl Begane Grond) ===== -->
     <div class="present" id="present" aria-hidden="true">
@@ -1169,11 +1182,19 @@
       if (title && titlebar) titlebar.setAttribute('text', title);
     }
 
+    const sbsec = document.getElementById('sbsec');
+
     navwrap.addEventListener('click', (e) => {
       const item = e.target.closest('nldd-list-item');
       if (!item || !item.dataset.view) return;
       showView(item.dataset.view, item.dataset.title);
+      // In een smal venster staat de nav in een sheet: sluit die na een keuze.
+      if (sbsec && sbsec.collapsed && sbsec.hide) sbsec.hide();
     });
+
+    // Menu-trigger (zichtbaar wanneer de sidebar is ingeklapt) opent de nav-sheet.
+    const openNav = document.querySelector('[data-open-nav]');
+    if (openNav && sbsec) openNav.addEventListener('click', () => sbsec.show && sbsec.show());
 
     // "Instellingen organisatie" opent nu vanuit het profiel in de header.
     const goOrg = document.getElementById('go-organisatie');
