@@ -34,6 +34,15 @@
     .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
     .svc-caps { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
     .svc-caps li { line-height: 1.45; }
+    /* Contactherstel: afleverbalk in één oogopslag (layout-lijm) */
+    .deliver-bar { display: flex; height: 16px; border-radius: 8px; overflow: hidden; background: var(--context-border-color, #e3e3e3); }
+    .deliver-bar > span { display: block; height: 100%; }
+    .deliver-bar .seg-ok { background: #39870c; }
+    .deliver-bar .seg-warn { background: #e17000; min-width: 6px; }
+    .deliver-bar .seg-attn { background: #d52b1e; min-width: 6px; }
+    .deliver-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: #5a5a5a; }
+    .deliver-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .deliver-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
     /* Footer met presentatie-link (patroon zoals bg.rijks.app) */
     .app-footer { display: flex; align-items: center; gap: 20px; padding: 12px 24px; border-top: 1px solid var(--context-border-color, #e3e3e3); background: var(--context-base-background-color, #fff); flex-wrap: wrap; }
@@ -645,10 +654,61 @@
               <section class="view" data-view="contactherstel">
                 <div class="stack">
                   <nldd-banner
-                    variant="accent"
-                    text="Contactherstel."
-                    supporting-text="Ondernemers herstellen via de KvK hun contact met de overheid. Dit is centraal georganiseerd: één bevestiging werkt de contactgegevens bij voor álle aangesloten overheidsorganisaties.">
+                    variant="success"
+                    text="Het gros van de verzendingen ging vandaag goed."
+                    supporting-text="Van de 1.248 notificaties is 98,4% afgeleverd. 4 ondernemers hebben aandacht nodig: het bericht kwam niet aan en contactherstel is vereist.">
                   </nldd-banner>
+
+                  <div class="kpi-grid">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>1.248</h2><p slot="subtitle">Verzonden vandaag</p></nldd-title>
+                        <nldd-tag color="neutral" text="dagelijks duizenden"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>1.228</h2><p slot="subtitle">Afgeleverd</p></nldd-title>
+                        <nldd-tag color="success" text="98,4% — gros goed"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>16</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
+                        <nldd-tag color="warning" text="automatisch herzonden"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>4</h2><p slot="subtitle">Contactherstel nodig</p></nldd-title>
+                        <nldd-tag color="critical" text="actie nodig"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+
+                  <nldd-card>
+                    <nldd-container padding="16" gap="8">
+                      <nldd-title size="6"><h3>Afleverstatus vandaag</h3></nldd-title>
+                      <div class="deliver-bar" role="img" aria-label="98,4% afgeleverd, 16 niet afgeleverd, 4 contactherstel nodig">
+                        <span class="seg-ok" style="width:98.4%"></span>
+                        <span class="seg-warn" style="width:1.3%"></span>
+                        <span class="seg-attn" style="width:0.3%"></span>
+                      </div>
+                      <div class="deliver-legend">
+                        <span><i style="background:#39870c"></i> Afgeleverd — 1.228</span>
+                        <span><i style="background:#e17000"></i> Niet afgeleverd — 16</span>
+                        <span><i style="background:#d52b1e"></i> Contactherstel nodig — 4</span>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <div class="between">
+                    <nldd-title size="4">
+                      <h2>Aandacht nodig</h2>
+                      <p slot="subtitle">4 ondernemers — bericht kwam niet aan, contactherstel vereist</p>
+                    </nldd-title>
+                    <nldd-tag color="critical" text="4 openstaand"></nldd-tag>
+                  </div>
 
                   <nldd-card>
                     <nldd-container padding="16" gap="12">
@@ -657,7 +717,10 @@
                           <h2>Bakkerij De Korenbloem</h2>
                           <p slot="subtitle">KvK 81234567 · geïnitieerd door ondernemer · 16 jun 2026</p>
                         </nldd-title>
-                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        <div class="inline">
+                          <nldd-tag color="warning" text="e-mail onbereikbaar"></nldd-tag>
+                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        </div>
                       </div>
                       <nldd-rich-text>
                         <p>Het e-mailadres was onbereikbaar, waardoor notificaties niet aankwamen. De ondernemer geeft via de KvK een <strong>nieuw contactadres</strong> door. Na bevestiging wordt dit centraal gedeeld met alle aangesloten overheidsorganisaties.</p>
@@ -677,7 +740,10 @@
                           <h2>Jansen Installatietechniek BV</h2>
                           <p slot="subtitle">KvK 84567123 · geïnitieerd door ondernemer · 15 jun 2026</p>
                         </nldd-title>
-                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        <div class="inline">
+                          <nldd-tag color="warning" text="nieuwe contactpersoon"></nldd-tag>
+                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        </div>
                       </div>
                       <nldd-rich-text>
                         <p>Na een bedrijfsoverdracht is er een <strong>nieuwe contactpersoon</strong>. De ondernemer herstelt via de KvK het contact zodat berichten van de overheid weer op de juiste plek aankomen.</p>
@@ -697,7 +763,10 @@
                           <h2>Groene Vingers Hoveniers</h2>
                           <p slot="subtitle">KvK 83219876 · geïnitieerd door ondernemer · 14 jun 2026</p>
                         </nldd-title>
-                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        <div class="inline">
+                          <nldd-tag color="warning" text="adres verouderd"></nldd-tag>
+                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        </div>
                       </div>
                       <nldd-rich-text>
                         <p>De onderneming is verhuisd en de contactgegevens waren verouderd. De ondernemer geeft via de KvK de actuele gegevens door voor centraal herstel.</p>
@@ -717,7 +786,10 @@
                           <h2>Transport Van Dijk</h2>
                           <p slot="subtitle">KvK 87651234 · geïnitieerd door ondernemer · 13 jun 2026</p>
                         </nldd-title>
-                        <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        <div class="inline">
+                          <nldd-tag color="warning" text="account ontkoppeld"></nldd-tag>
+                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
+                        </div>
                       </div>
                       <nldd-rich-text>
                         <p>Het account was eerder ontkoppeld. De ondernemer wil via de KvK het contact met de overheid herstellen om weer notificaties te ontvangen.</p>
@@ -1122,7 +1194,8 @@
       const btn = e.target.closest('nldd-button[data-action]');
       if (!btn) return;
       const card = btn.closest('nldd-card');
-      const tag = card && card.querySelector('nldd-tag');
+      // Laatste tag in de kaart = statustag (een eventuele eerste tag is de reden).
+      const tag = card && Array.from(card.querySelectorAll('nldd-tag')).pop();
       const actions = card && card.querySelector('.row-actions');
       const result = ACTION_RESULT[btn.dataset.action];
       if (tag && result) {
