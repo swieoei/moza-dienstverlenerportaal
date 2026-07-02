@@ -29,7 +29,7 @@
     /* Zijnavigatie: groepslabel + scheidingslijn (alleen layout-lijm) */
     .nav-group-label { padding: 12px 16px 4px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5a5a5a; }
     .nav-sub nldd-list-item { --_indent: 12px; }
-    .nav-divider { height: 1px; background: var(--context-border-color, #e3e3e3); margin: 10px 16px; }
+    #navwrap nldd-divider { display: block; margin: 10px 8px; }
     /* Marktplaats: dienstkaarten */
     .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
     .svc-caps { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
@@ -106,7 +106,7 @@
 
           <nldd-container padding="8">
             <div id="navwrap">
-              <nldd-list class="nav-list">
+              <nldd-list type="navigation" aria-label="Hoofdnavigatie" class="nav-list">
                 <nldd-list-item button selected data-view="dashboard" data-title="Dashboard">
                   <nldd-icon-cell slot="start"><nldd-icon name="house"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Dashboard"></nldd-text-cell>
@@ -117,8 +117,8 @@
                 </nldd-list-item>
               </nldd-list>
 
-              <div class="nav-group-label">Notificatiedienst</div>
-              <nldd-list class="nav-list nav-sub">
+              <div class="nav-group-label" id="nav-notif-label">Notificatiedienst</div>
+              <nldd-list type="navigation" aria-labelledby="nav-notif-label" class="nav-list nav-sub">
                 <nldd-list-item button data-view="berichten" data-title="Berichten">
                   <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Berichten"></nldd-text-cell>
@@ -131,7 +131,7 @@
                 </nldd-list-item>
               </nldd-list>
 
-              <nldd-list class="nav-list">
+              <nldd-list type="navigation" aria-label="Rapportage en analyse" class="nav-list">
                 <nldd-list-item button data-view="rapportages" data-title="Rapportages">
                   <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Rapportages"></nldd-text-cell>
@@ -142,8 +142,8 @@
                 </nldd-list-item>
               </nldd-list>
 
-              <div class="nav-divider"></div>
-              <nldd-list class="nav-list">
+              <nldd-divider></nldd-divider>
+              <nldd-list type="navigation" aria-label="Marktplaats" class="nav-list">
                 <nldd-list-item button data-view="marktplaats" data-title="Marktplaats">
                   <nldd-icon-cell slot="start"><nldd-icon name="shopping-cart"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Marktplaats"></nldd-text-cell>
