@@ -92,7 +92,7 @@
 
     <!-- ===== App-shell: page met top nav (header), sidebar-section (main) en page-footer ===== -->
     <nldd-app-view background="tinted">
-      <nldd-page sticky-header sticky-footer>
+      <nldd-page>
 
         <!-- ---- Rijkshuisstijl topbalk in de page-header ---- -->
         <nldd-top-navigation-bar
@@ -111,7 +111,7 @@
         </nldd-top-navigation-bar>
 
         <!-- ---- Sidebar-section: navigatie links, content in de main area ---- -->
-        <nldd-sidebar-section id="sbsec" width="full" sidebar-label="Hoofdnavigatie" sticky-top="88px">
+        <nldd-sidebar-section id="sbsec" width="full" sidebar-label="Hoofdnavigatie">
 
           <!-- Trigger: alleen zichtbaar wanneer de sidebar tot een sheet is ingeklapt (smal venster) -->
           <div slot="header" class="sb-trigger">
