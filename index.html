@@ -38,6 +38,10 @@
     .svc-caps li { line-height: 1.45; }
     .mp-tile[data-svc] { cursor: pointer; }
     .mp-tile[data-svc]:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
+    .mp-tile--on { box-shadow: inset 4px 0 0 #39870c; border-radius: 8px; }
+    .svc-status { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; }
+    .svc-status--on { color: #39870c; font-weight: 600; }
+    .svc-status--off { color: #5a5a5a; }
     .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .rv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
@@ -825,34 +829,47 @@
                   <div class="stack">
                     <nldd-banner variant="neutral" text="Overheidsbrede diensten voor je organisatie. Open een afgenomen dienst voor de API-key en het beheer, of koppel een nieuwe dienst — in demovorm of voor productie."></nldd-banner>
 
+                    <nldd-title size="5">
+                      <h3>Afgenomen door je organisatie</h3>
+                      <p slot="subtitle">Open een dienst voor de API-key en het beheer</p>
+                    </nldd-title>
                     <div class="svc-grid">
                       <!-- Notificatiedienst (afgenomen: demo) -->
-                      <nldd-card class="mp-tile" data-svc="notificatiedienst" role="button" tabindex="0" aria-label="Notificatiedienst openen">
+                      <nldd-card class="mp-tile mp-tile--on" data-svc="notificatiedienst" role="button" tabindex="0" aria-label="Notificatiedienst openen">
                         <nldd-container padding="16" gap="12">
                           <div class="between">
                             <nldd-title size="5"><h2>Notificatiedienst</h2></nldd-title>
                             <nldd-tag color="accent" text="demo"></nldd-tag>
                           </div>
                           <nldd-rich-text><p>Verstuur notificaties naar ondernemers via één centrale dienst: ontvangerbepaling, verzending, response handling en contactherstel.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
                         </nldd-container>
                       </nldd-card>
 
                       <!-- Profieldienst (afgenomen: productie) -->
-                      <nldd-card class="mp-tile" data-svc="profieldienst" role="button" tabindex="0" aria-label="Profieldienst openen">
+                      <nldd-card class="mp-tile mp-tile--on" data-svc="profieldienst" role="button" tabindex="0" aria-label="Profieldienst openen">
                         <nldd-container padding="16" gap="12">
                           <div class="between">
                             <nldd-title size="5"><h2>Profieldienst</h2></nldd-title>
                             <nldd-tag color="success" text="productie"></nldd-tag>
                           </div>
                           <nldd-rich-text><p>Weet hoe de burger of ondernemer benaderd wil worden: contactgegevens en voorkeuren uit één overheidsbrede bron.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
                         </nldd-container>
                       </nldd-card>
+                    </div>
 
+                    <nldd-title size="5">
+                      <h3>Beschikbaar om te koppelen</h3>
+                      <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
+                    </nldd-title>
+                    <div class="svc-grid">
                       <!-- DigiD -->
                       <nldd-card class="mp-tile">
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5"><h2>DigiD</h2></nldd-title>
                           <nldd-rich-text><p>Laat burgers veilig inloggen bij je digitale dienstverlening met hun DigiD.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
                           <div class="row-actions">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digid"></nldd-button>
                           </div>
@@ -864,6 +881,7 @@
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5"><h2>eHerkenning</h2></nldd-title>
                           <nldd-rich-text><p>Laat ondernemers en organisaties veilig en gemachtigd inloggen namens hun bedrijf.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
                           <div class="row-actions">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="eherkenning"></nldd-button>
                           </div>
@@ -875,6 +893,7 @@
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5"><h2>Digimelding &amp; Digilevering</h2></nldd-title>
                           <nldd-rich-text><p>Meld wijzigingen terug aan basisregistraties en ontvang automatisch gebeurtenissen uit die registraties.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
                           <div class="row-actions">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digimelding"></nldd-button>
                           </div>
@@ -886,6 +905,7 @@
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5"><h2>SBR &amp; e-Factureren</h2></nldd-title>
                           <nldd-rich-text><p>Wissel gestandaardiseerde bedrijfsrapportages en e-facturen uit met de overheid via Digipoort.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
                           <div class="row-actions">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="sbr"></nldd-button>
                           </div>
