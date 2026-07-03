@@ -46,6 +46,7 @@
     .svc-status--off { color: #5a5a5a; }
     .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .muted-note { color: #5a5a5a; font-size: 0.85rem; margin: 0; }
     .rv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     /* Contactherstel: afleverbalk in één oogopslag (layout-lijm) */
     .deliver-bar { display: flex; height: 16px; border-radius: 8px; overflow: hidden; background: var(--context-border-color, #e3e3e3); }
@@ -377,9 +378,28 @@
                           <nldd-button data-ak-toon variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
                           <nldd-button data-ak-kopieer variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
                         </div>
+                        <div class="inline">
+                          <nldd-tag data-ak-geldig color="neutral" text="—"></nldd-tag>
+                        </div>
                         <div class="row-actions">
                           <nldd-button data-ak-valideer variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
                           <nldd-button data-ak-vernieuw variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
+                        </div>
+                        <div data-ak-vernieuw-panel hidden>
+                          <nldd-container gap="12">
+                            <nldd-form-field label="Geldigheidsduur van de nieuwe key">
+                              <nldd-segmented-control data-ak-duur value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
+                                <nldd-segmented-control-item value="30" text="30 dagen"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="90" text="90 dagen"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="none" text="Geen vervaldatum"></nldd-segmented-control-item>
+                              </nldd-segmented-control>
+                            </nldd-form-field>
+                            <p class="muted-note">Standaard 90 dagen — een vervaldatum beperkt de schade van een gelekte key.</p>
+                            <div class="row-actions">
+                              <nldd-button data-ak-vernieuw-bevestig variant="primary" start-icon="key" text="Nieuwe key aanmaken"></nldd-button>
+                              <nldd-button data-ak-vernieuw-annuleer variant="secondary" text="Annuleren"></nldd-button>
+                            </div>
+                          </nldd-container>
                         </div>
                         <nldd-banner data-ak-melding variant="success" text="" hidden></nldd-banner>
                       </nldd-container>
@@ -419,9 +439,28 @@
                           <nldd-button data-ak-toon variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
                           <nldd-button data-ak-kopieer variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
                         </div>
+                        <div class="inline">
+                          <nldd-tag data-ak-geldig color="neutral" text="—"></nldd-tag>
+                        </div>
                         <div class="row-actions">
                           <nldd-button data-ak-valideer variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
                           <nldd-button data-ak-vernieuw variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
+                        </div>
+                        <div data-ak-vernieuw-panel hidden>
+                          <nldd-container gap="12">
+                            <nldd-form-field label="Geldigheidsduur van de nieuwe key">
+                              <nldd-segmented-control data-ak-duur value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
+                                <nldd-segmented-control-item value="30" text="30 dagen"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="90" text="90 dagen"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="none" text="Geen vervaldatum"></nldd-segmented-control-item>
+                              </nldd-segmented-control>
+                            </nldd-form-field>
+                            <p class="muted-note">Standaard 90 dagen — een vervaldatum beperkt de schade van een gelekte key.</p>
+                            <div class="row-actions">
+                              <nldd-button data-ak-vernieuw-bevestig variant="primary" start-icon="key" text="Nieuwe key aanmaken"></nldd-button>
+                              <nldd-button data-ak-vernieuw-annuleer variant="secondary" text="Annuleren"></nldd-button>
+                            </div>
+                          </nldd-container>
                         </div>
                         <nldd-banner data-ak-melding variant="success" text="" hidden></nldd-banner>
                       </nldd-container>
@@ -1029,9 +1068,28 @@
                           <nldd-button id="dp-toon" variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
                           <nldd-button id="dp-kopieer" variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
                         </div>
+                        <div class="inline">
+                          <nldd-tag id="dp-key-geldig" color="neutral" text="—"></nldd-tag>
+                        </div>
                         <div class="row-actions">
                           <nldd-button id="dp-valideer" variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
                           <nldd-button id="dp-vernieuw" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
+                        </div>
+                        <div id="dp-vernieuw-panel" hidden>
+                          <nldd-container gap="12">
+                            <nldd-form-field label="Geldigheidsduur van de nieuwe key">
+                              <nldd-segmented-control id="dp-duur" value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
+                                <nldd-segmented-control-item value="30" text="30 dagen"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="90" text="90 dagen"></nldd-segmented-control-item>
+                                <nldd-segmented-control-item value="none" text="Geen vervaldatum"></nldd-segmented-control-item>
+                              </nldd-segmented-control>
+                            </nldd-form-field>
+                            <p class="muted-note">Standaard 90 dagen — een vervaldatum beperkt de schade van een gelekte key.</p>
+                            <div class="row-actions">
+                              <nldd-button id="dp-vernieuw-bevestig" variant="primary" start-icon="key" text="Nieuwe key aanmaken"></nldd-button>
+                              <nldd-button id="dp-vernieuw-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+                            </div>
+                          </nldd-container>
                         </div>
                         <nldd-banner id="dp-key-melding" variant="success" text="" hidden></nldd-banner>
                       </nldd-container>
@@ -1661,6 +1719,22 @@
     // API-key-blokken in de dienstviews, zodat een vernieuwde key overal doorwerkt.
     let MP_DIENSTEN;
 
+    // Geldigheid van API-keys — helpers gedeeld door marktplaats en dienstviews.
+    const fmtDatum = iso => new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));
+    function keyGeldigheidTag(dienst) {
+      if (!dienst.geldigTot) return { color: 'warning', text: 'geen vervaldatum' };
+      const dagen = Math.ceil((new Date(dienst.geldigTot) - Date.now()) / 86400000);
+      if (dagen < 0) return { color: 'critical', text: 'verlopen op ' + fmtDatum(dienst.geldigTot) };
+      if (dagen <= 14) return { color: 'warning', text: 'geldig tot ' + fmtDatum(dienst.geldigTot) + ' — nog ' + dagen + ' dagen' };
+      return { color: 'neutral', text: 'geldig tot ' + fmtDatum(dienst.geldigTot) };
+    }
+    function nieuweGeldigheid(duur) {
+      if (duur === 'none') return null;
+      const d = new Date();
+      d.setDate(d.getDate() + parseInt(duur, 10));
+      return d.toISOString().slice(0, 10);
+    }
+
     // ====================== Marktplaats ======================
     (function () {
       const root = document.querySelector('section[data-view="marktplaats"]');
@@ -1678,6 +1752,7 @@
           naam: 'Notificatiedienst', status: 'demo',
           desc: 'Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.',
           key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs',
+          geldigTot: '2026-09-30',
           rvProd: {
             tech: ['PKIoverheid-certificaat voor de productie-koppeling', 'Implementatie getest tegen de acceptatieomgeving', 'Foutafhandeling en retry-beleid ingericht'],
             proces: ['Beheer- en incidentproces ingericht (contactpunt voor storingen)', 'Ketentest met de notificatiedienst afgerond', 'Go-live-moment ingepland met de beheerorganisatie'],
@@ -1688,6 +1763,7 @@
           naam: 'Profieldienst', status: 'productie',
           desc: 'Overheidsbrede dienst die antwoord geeft op de vraag: hoe wil de burger of ondernemer benaderd worden en welke gegevens horen daarbij?',
           key: 'pfd_live_2mV8xKqR5tWc7pLj9dFg',
+          geldigTot: '2026-12-28',
         },
         digid: {
           naam: 'DigiD',
@@ -1806,6 +1882,12 @@
         dpToon.setAttribute('text', keyZichtbaar ? 'Verbergen' : 'Tonen');
         dpToon.setAttribute('start-icon', keyZichtbaar ? 'eye-slash' : 'eye');
       }
+      function renderGeldig() {
+        const g = keyGeldigheidTag(dienst);
+        const t = root.querySelector('#dp-key-geldig');
+        t.setAttribute('color', g.color);
+        t.setAttribute('text', g.text);
+      }
       function melding(variant, text) {
         dpMelding.setAttribute('variant', variant);
         dpMelding.setAttribute('text', text);
@@ -1821,6 +1903,8 @@
         tag.setAttribute('color', dienst.status === 'demo' ? 'accent' : 'success');
         tag.setAttribute('text', dienst.status);
         renderKey();
+        renderGeldig();
+        root.querySelector('#dp-vernieuw-panel').setAttribute('hidden', '');
         dpMelding.setAttribute('hidden', '');
         const prod = root.querySelector('#dp-prod');
         if (dienst.status === 'demo' && dienst.rvProd) {
@@ -1845,16 +1929,36 @@
         if (!dienst) return;
         melding('success', 'Key gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' van de ' + dienst.naam.toLowerCase() + ' geslaagd (HTTP 200, testbericht geaccepteerd).');
       });
+      // Opnieuw aanvragen: eerst geldigheidsduur kiezen (default 90 dagen), dan aanmaken.
+      const dpPanel = root.querySelector('#dp-vernieuw-panel');
+      const dpDuur = root.querySelector('#dp-duur');
+      let dpGekozenDuur = '90';
+      dpDuur.addEventListener('click', e => {
+        const it = e.target.closest('nldd-segmented-control-item');
+        if (it) dpGekozenDuur = it.getAttribute('value');
+      });
       root.querySelector('#dp-vernieuw').addEventListener('click', () => {
+        if (!dienst) return;
+        dpGekozenDuur = '90';
+        dpDuur.setAttribute('value', '90');
+        dpDuur.querySelectorAll('nldd-segmented-control-item').forEach(it =>
+          it.toggleAttribute('selected', it.getAttribute('value') === '90'));
+        dpPanel.toggleAttribute('hidden');
+      });
+      root.querySelector('#dp-vernieuw-annuleer').addEventListener('click', () => dpPanel.setAttribute('hidden', ''));
+      root.querySelector('#dp-vernieuw-bevestig').addEventListener('click', () => {
         if (!dienst) return;
         const prefix = dienst.key.split('_').slice(0, 2).join('_') + '_';
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
         let suffix = '';
         for (let i = 0; i < 20; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
         dienst.key = prefix + suffix;
+        dienst.geldigTot = nieuweGeldigheid(dpGekozenDuur);
         keyZichtbaar = true;
         renderKey();
-        melding('warning', 'Nieuwe API-key aangemaakt; de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
+        renderGeldig();
+        dpPanel.setAttribute('hidden', '');
+        melding('warning', 'Nieuwe API-key aangemaakt (' + (dienst.geldigTot ? 'geldig tot ' + fmtDatum(dienst.geldigTot) : 'zonder vervaldatum') + '); de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
       });
       root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => {
         const b = root.querySelector('#dp-prod-bevestig');
@@ -1894,17 +1998,43 @@
         });
         block.querySelector('[data-ak-valideer]').addEventListener('click', () =>
           melding('success', 'Key gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' van de ' + dienst.naam.toLowerCase() + ' geslaagd (HTTP 200, testbericht geaccepteerd).'));
+        // Opnieuw aanvragen: eerst geldigheidsduur kiezen (default 90 dagen), dan aanmaken.
+        const geldigTag = block.querySelector('[data-ak-geldig]');
+        function renderGeldig() {
+          const g = keyGeldigheidTag(dienst);
+          geldigTag.setAttribute('color', g.color);
+          geldigTag.setAttribute('text', g.text);
+        }
+        const panel = block.querySelector('[data-ak-vernieuw-panel]');
+        const duurCtrl = block.querySelector('[data-ak-duur]');
+        let gekozenDuur = '90';
+        duurCtrl.addEventListener('click', e => {
+          const it = e.target.closest('nldd-segmented-control-item');
+          if (it) gekozenDuur = it.getAttribute('value');
+        });
         block.querySelector('[data-ak-vernieuw]').addEventListener('click', () => {
+          gekozenDuur = '90';
+          duurCtrl.setAttribute('value', '90');
+          duurCtrl.querySelectorAll('nldd-segmented-control-item').forEach(it =>
+            it.toggleAttribute('selected', it.getAttribute('value') === '90'));
+          panel.toggleAttribute('hidden');
+        });
+        block.querySelector('[data-ak-vernieuw-annuleer]').addEventListener('click', () => panel.setAttribute('hidden', ''));
+        block.querySelector('[data-ak-vernieuw-bevestig]').addEventListener('click', () => {
           const prefix = dienst.key.split('_').slice(0, 2).join('_') + '_';
           const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
           let suffix = '';
           for (let i = 0; i < 20; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
           dienst.key = prefix + suffix;
+          dienst.geldigTot = nieuweGeldigheid(gekozenDuur);
           zichtbaar = true;
           render();
-          melding('warning', 'Nieuwe API-key aangemaakt; de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
+          renderGeldig();
+          panel.setAttribute('hidden', '');
+          melding('warning', 'Nieuwe API-key aangemaakt (' + (dienst.geldigTot ? 'geldig tot ' + fmtDatum(dienst.geldigTot) : 'zonder vervaldatum') + '); de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
         });
         render();
+        renderGeldig();
       });
     })();
   </script>
