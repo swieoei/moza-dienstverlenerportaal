@@ -29,6 +29,8 @@
     .between { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 
     /* Zijnavigatie: children springen in via nldd-spacer-cell in de start-slot */
+    /* Paginatitel: prominente h1 bovenaan de content, uitgelijnd met de bovenkant van het menu */
+    .page-title { display: block; margin: 0 0 20px; }
     /* Menu-trigger alleen tonen wanneer de sidebar-section is ingeklapt tot een sheet */
     .sb-trigger { display: none; margin-bottom: 12px; }
     nldd-sidebar-section[collapsed] .sb-trigger { display: block; }
@@ -175,9 +177,11 @@
           </nldd-container>
 
           <!-- ---- Hoofdinhoud (main area) ---- -->
-          <nldd-simple-section>
-            <nldd-container padding="24">
-              <nldd-top-title-bar id="titlebar" class="page-titlebar" text="Dashboard"></nldd-top-title-bar>
+          <nldd-simple-section padding-top="0">
+            <nldd-container padding="24" padding-top="0">
+              <nldd-title size="2" class="page-title">
+                <h1 id="titlebar">Dashboard</h1>
+              </nldd-title>
 
 
               <!-- ====================== DASHBOARD ====================== -->
@@ -1345,7 +1349,7 @@
         if (item.dataset.view === name) item.setAttribute('selected', '');
         else item.removeAttribute('selected');
       });
-      if (title && titlebar) titlebar.setAttribute('text', title);
+      if (title && titlebar) titlebar.textContent = title;
     }
 
     const sbsec = document.getElementById('sbsec');
