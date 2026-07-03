@@ -161,13 +161,19 @@
                   <nldd-text-cell text="Dashboard"></nldd-text-cell>
                 </nldd-list-item>
 
+                <!-- Profieldienst: parent met API keys als child -->
                 <nldd-list-item button data-view="profieldienst" data-title="Profieldienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Profieldienst"></nldd-text-cell>
                   <nldd-cell slot="end"><nldd-tag color="success" text="productie"></nldd-tag></nldd-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="apikeys-profieldienst" data-title="API keys">
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="API keys"></nldd-text-cell>
+                </nldd-list-item>
 
-                <!-- Notificatiedienst: parent met Berichten en Contactherstel als children -->
+                <!-- Notificatiedienst: parent met Berichten, Contactherstel en API keys als children -->
                 <nldd-list-item button data-view="notificatiedienst" data-title="Notificatiedienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
@@ -184,6 +190,11 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="handshake"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Contactherstel"></nldd-text-cell>
                   <nldd-cell slot="end"><nldd-badge color="accent" number="4"></nldd-badge></nldd-cell>
+                </nldd-list-item>
+                <nldd-list-item button data-view="apikeys-notificatiedienst" data-title="API keys">
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="API keys"></nldd-text-cell>
                 </nldd-list-item>
 
                 <nldd-list-item button data-view="rapportages" data-title="Rapportages">
@@ -390,13 +401,46 @@
                     </div>
                   </div>
 
-                  <!-- API-key van de afgenomen profieldienst -->
+                </div>
+              </section>
+
+              <!-- ====================== NOTIFICATIEDIENST ====================== -->
+              <section class="view" data-view="notificatiedienst">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4">
+                      <h2>Notificatiedienst</h2>
+                      <p slot="subtitle">Afgenomen door Kamer van Koophandel · demo-omgeving</p>
+                    </nldd-title>
+                    <nldd-tag color="accent" text="demo"></nldd-tag>
+                  </div>
+                  <nldd-rich-text>
+                    <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
+                  </nldd-rich-text>
+                  <div class="inline">
+                    <nldd-button variant="secondary" start-icon="envelope" text="Naar Berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button>
+                    <nldd-button variant="secondary" start-icon="handshake" text="Naar Contactherstel" data-nav-view="contactherstel" data-nav-title="Contactherstel"></nldd-button>
+                    <nldd-button variant="secondary" start-icon="key" text="Naar API keys" data-nav-view="apikeys-notificatiedienst" data-nav-title="API keys"></nldd-button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ====================== API KEYS - PROFIELDIENST ====================== -->
+              <section class="view" data-view="apikeys-profieldienst">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4">
+                      <h2>Profieldienst</h2>
+                      <p slot="subtitle">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
+                    </nldd-title>
+                    <nldd-tag color="success" text="productie"></nldd-tag>
+                  </div>
                   <div class="api-key-block" data-dienst="profieldienst">
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5">
                           <h3>API-key</h3>
-                          <p slot="subtitle">Voor de implementatie in het systeem van de Kamer van Koophandel · productieomgeving</p>
+                          <p slot="subtitle">Productieomgeving</p>
                         </nldd-title>
                         <div class="mp-keyrow">
                           <span class="mp-key" data-ak-key>••••••••••••••••••••••••••••</span>
@@ -433,31 +477,22 @@
                 </div>
               </section>
 
-              <!-- ====================== NOTIFICATIEDIENST ====================== -->
-              <section class="view" data-view="notificatiedienst">
+              <!-- ====================== API KEYS - NOTIFICATIEDIENST ====================== -->
+              <section class="view" data-view="apikeys-notificatiedienst">
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
                       <h2>Notificatiedienst</h2>
-                      <p slot="subtitle">Afgenomen door Kamer van Koophandel · demo-omgeving</p>
+                      <p slot="subtitle">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
                     </nldd-title>
                     <nldd-tag color="accent" text="demo"></nldd-tag>
                   </div>
-                  <nldd-rich-text>
-                    <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
-                  </nldd-rich-text>
-                  <div class="inline">
-                    <nldd-button variant="secondary" start-icon="envelope" text="Naar Berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button>
-                    <nldd-button variant="secondary" start-icon="handshake" text="Naar Contactherstel" data-nav-view="contactherstel" data-nav-title="Contactherstel"></nldd-button>
-                  </div>
-
-                  <!-- API-key van de afgenomen notificatiedienst -->
                   <div class="api-key-block" data-dienst="notificatiedienst">
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5">
                           <h3>API-key</h3>
-                          <p slot="subtitle">Voor de implementatie in het systeem van de Kamer van Koophandel · demo-omgeving</p>
+                          <p slot="subtitle">Demo-omgeving</p>
                         </nldd-title>
                         <div class="mp-keyrow">
                           <span class="mp-key" data-ak-key>••••••••••••••••••••••••••••</span>
@@ -1081,44 +1116,8 @@
                     </div>
                     <nldd-rich-text><p id="dp-desc">-</p></nldd-rich-text>
 
-                    <!-- API-key -->
-                    <nldd-card>
-                      <nldd-container padding="16" gap="12">
-                        <nldd-title size="5">
-                          <h3>API-key</h3>
-                          <p slot="subtitle" id="dp-key-sub">Nodig voor de implementatie in het systeem van de Kamer van Koophandel</p>
-                        </nldd-title>
-                        <div class="mp-keyrow">
-                          <span class="mp-key" id="dp-key">••••••••••••••••••••••••••••</span>
-                          <nldd-button id="dp-toon" variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
-                          <nldd-button id="dp-kopieer" variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
-                        </div>
-                        <div class="inline">
-                          <nldd-tag id="dp-key-geldig" color="neutral" text="-"></nldd-tag>
-                        </div>
-                        <div class="row-actions">
-                          <nldd-button id="dp-valideer" variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
-                          <nldd-button id="dp-vernieuw" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
-                        </div>
-                        <div id="dp-vernieuw-panel" hidden>
-                          <nldd-container gap="12">
-                            <nldd-form-field label="Geldigheidsduur van de nieuwe key">
-                              <nldd-segmented-control id="dp-duur" value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
-                                <nldd-segmented-control-item value="30" text="30 dagen"></nldd-segmented-control-item>
-                                <nldd-segmented-control-item value="90" text="90 dagen"></nldd-segmented-control-item>
-                                <nldd-segmented-control-item value="none" text="Geen vervaldatum"></nldd-segmented-control-item>
-                              </nldd-segmented-control>
-                            </nldd-form-field>
-                            <p class="muted-note">Standaard 90 dagen - een vervaldatum beperkt de schade van een gelekte key.</p>
-                            <div class="row-actions">
-                              <nldd-button id="dp-vernieuw-bevestig" variant="primary" start-icon="key" text="Nieuwe key aanmaken"></nldd-button>
-                              <nldd-button id="dp-vernieuw-annuleer" variant="secondary" text="Annuleren"></nldd-button>
-                            </div>
-                          </nldd-container>
-                        </div>
-                        <nldd-banner id="dp-key-melding" variant="success" text="" hidden></nldd-banner>
-                      </nldd-container>
-                    </nldd-card>
+                    <!-- API keys worden beheerd bij de dienst zelf (subpagina "API keys" in het menu) -->
+                    <nldd-banner id="dp-keys-verwijzing" variant="neutral" text="" hidden></nldd-banner>
 
                     <!-- Productieversie aanvragen (alleen zichtbaar in demo-fase) -->
                     <div id="dp-prod" hidden>
@@ -1896,41 +1895,20 @@
       });
 
       // ---------- Dienstpagina ----------
+      // API-keys worden beheerd op de "API keys"-subpagina van de dienst zelf;
+      // hier alleen de dienstinfo en (bij demo) de productie-aanvraag.
       let dienst = null;
-      let keyZichtbaar = false;
-      const dpKey = root.querySelector('#dp-key');
-      const dpToon = root.querySelector('#dp-toon');
-      const dpMelding = root.querySelector('#dp-key-melding');
-
-      function renderKey() {
-        dpKey.textContent = keyZichtbaar ? dienst.key : maskKey(dienst.key);
-        dpToon.setAttribute('text', keyZichtbaar ? 'Verbergen' : 'Tonen');
-        dpToon.setAttribute('start-icon', keyZichtbaar ? 'eye-slash' : 'eye');
-      }
-      function renderGeldig() {
-        const g = keyGeldigheidTag(dienst);
-        const t = root.querySelector('#dp-key-geldig');
-        t.setAttribute('color', g.color);
-        t.setAttribute('text', g.text);
-      }
-      function melding(variant, text) {
-        dpMelding.setAttribute('variant', variant);
-        dpMelding.setAttribute('text', text);
-        dpMelding.removeAttribute('hidden');
-      }
       function openDienst(id) {
         dienst = DIENSTEN[id];
-        keyZichtbaar = false;
         root.querySelector('#dp-titel').textContent = dienst.naam;
         root.querySelector('#dp-sub').textContent = 'Afgenomen door Kamer van Koophandel · ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productie');
         root.querySelector('#dp-desc').textContent = dienst.desc;
         const tag = root.querySelector('#dp-status');
         tag.setAttribute('color', dienst.status === 'demo' ? 'accent' : 'success');
         tag.setAttribute('text', dienst.status);
-        renderKey();
-        renderGeldig();
-        root.querySelector('#dp-vernieuw-panel').setAttribute('hidden', '');
-        dpMelding.setAttribute('hidden', '');
+        const verwijzing = root.querySelector('#dp-keys-verwijzing');
+        verwijzing.setAttribute('text', 'De API-keys van deze dienst beheer je via het menu: ' + dienst.naam + ' > API keys.');
+        verwijzing.removeAttribute('hidden');
         const prod = root.querySelector('#dp-prod');
         if (dienst.status === 'demo' && dienst.rvProd) {
           fillList('dp-rv-tech', dienst.rvProd.tech);
@@ -1943,48 +1921,6 @@
         }
         showPage('dienst');
       }
-      dpToon.addEventListener('click', () => { keyZichtbaar = !keyZichtbaar; renderKey(); });
-      root.querySelector('#dp-kopieer').addEventListener('click', () => {
-        if (!dienst) return;
-        const done = () => melding('success', 'API-key gekopieerd naar het klembord.');
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dienst.key).then(done, done);
-        else done();
-      });
-      root.querySelector('#dp-valideer').addEventListener('click', () => {
-        if (!dienst) return;
-        melding('success', 'Key gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' van de ' + dienst.naam.toLowerCase() + ' geslaagd (HTTP 200, testbericht geaccepteerd).');
-      });
-      // Opnieuw aanvragen: eerst geldigheidsduur kiezen (default 90 dagen), dan aanmaken.
-      const dpPanel = root.querySelector('#dp-vernieuw-panel');
-      const dpDuur = root.querySelector('#dp-duur');
-      let dpGekozenDuur = '90';
-      dpDuur.addEventListener('click', e => {
-        const it = e.target.closest('nldd-segmented-control-item');
-        if (it) dpGekozenDuur = it.getAttribute('value');
-      });
-      root.querySelector('#dp-vernieuw').addEventListener('click', () => {
-        if (!dienst) return;
-        dpGekozenDuur = '90';
-        dpDuur.setAttribute('value', '90');
-        dpDuur.querySelectorAll('nldd-segmented-control-item').forEach(it =>
-          it.toggleAttribute('selected', it.getAttribute('value') === '90'));
-        dpPanel.toggleAttribute('hidden');
-      });
-      root.querySelector('#dp-vernieuw-annuleer').addEventListener('click', () => dpPanel.setAttribute('hidden', ''));
-      root.querySelector('#dp-vernieuw-bevestig').addEventListener('click', () => {
-        if (!dienst) return;
-        const prefix = dienst.key.split('_').slice(0, 2).join('_') + '_';
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-        let suffix = '';
-        for (let i = 0; i < 20; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
-        dienst.key = prefix + suffix;
-        dienst.geldigTot = nieuweGeldigheid(dpGekozenDuur);
-        keyZichtbaar = true;
-        renderKey();
-        renderGeldig();
-        dpPanel.setAttribute('hidden', '');
-        melding('warning', 'Nieuwe API-key aangemaakt (' + (dienst.geldigTot ? 'geldig tot ' + fmtDatum(dienst.geldigTot) : 'zonder vervaldatum') + '); de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
-      });
       root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => {
         const b = root.querySelector('#dp-prod-bevestig');
         b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met Sanne de Boer (Kamer van Koophandel).');
