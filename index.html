@@ -93,11 +93,36 @@
     .pv-round:hover { background: rgba(255,255,255,0.12); }
     .pv-round:disabled { opacity: 0.3; cursor: default; }
 
+    /* Concept-ribbon rechtsbovenin (zelfde patroon als proef.moza.rijksapp.dev,
+       kleuren en spacing via NLDD-tokens) */
+    .concept-banner {
+      position: fixed;
+      inset-block-start: 2rem;
+      inset-inline-end: -5rem;
+      inline-size: 256px;
+      transform: rotate(45deg);
+      transform-origin: center;
+      z-index: 900;
+      text-align: center;
+      padding-block: var(--primitives-space-8, 8px);
+      padding-inline: var(--primitives-space-24, 24px);
+      background: var(--components-status-bar-accent-background-color, #154273);
+      color: var(--components-status-bar-accent-content-color, #fff);
+      font-family: var(--typography-font-family-base, system-ui, sans-serif);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <div id="app">
+
+    <!-- Concept-ribbon -->
+    <span class="concept-banner">Concept</span>
 
     <!-- ===== App-shell: page met top nav (header), sidebar-section (main) en page-footer ===== -->
     <nldd-app-view>
