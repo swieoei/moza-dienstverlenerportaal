@@ -140,7 +140,7 @@
                 </nldd-list-item>
 
                 <!-- Notificatiedienst: parent met Berichten en Contactherstel als children -->
-                <nldd-list-item>
+                <nldd-list-item button data-view="notificatiedienst" data-title="Notificatiedienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
                   <nldd-cell slot="end"><nldd-tag color="accent" text="demo"></nldd-tag></nldd-cell>
@@ -175,9 +175,10 @@
           </nldd-container>
 
           <!-- ---- Hoofdinhoud (main area) ---- -->
-          <nldd-top-title-bar id="titlebar" text="Dashboard"></nldd-top-title-bar>
           <nldd-simple-section>
             <nldd-container padding="24">
+              <nldd-top-title-bar id="titlebar" class="page-titlebar" text="Dashboard"></nldd-top-title-bar>
+
 
               <!-- ====================== DASHBOARD ====================== -->
               <section class="view is-active" data-view="dashboard">
@@ -357,6 +358,70 @@
 
                       <nldd-banner id="pf-bevestig" variant="success" text="" hidden></nldd-banner>
                     </div>
+                  </div>
+
+                  <!-- API-key van de afgenomen profieldienst -->
+                  <div class="api-key-block" data-dienst="profieldienst">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5">
+                          <h3>API-key</h3>
+                          <p slot="subtitle">Voor de implementatie in het systeem van de Kamer van Koophandel · productieomgeving</p>
+                        </nldd-title>
+                        <div class="mp-keyrow">
+                          <span class="mp-key" data-ak-key>••••••••••••••••••••••••••••</span>
+                          <nldd-button data-ak-toon variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
+                          <nldd-button data-ak-kopieer variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
+                        </div>
+                        <div class="row-actions">
+                          <nldd-button data-ak-valideer variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
+                          <nldd-button data-ak-vernieuw variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
+                        </div>
+                        <nldd-banner data-ak-melding variant="success" text="" hidden></nldd-banner>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ====================== NOTIFICATIEDIENST ====================== -->
+              <section class="view" data-view="notificatiedienst">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4">
+                      <h2>Notificatiedienst</h2>
+                      <p slot="subtitle">Afgenomen door Kamer van Koophandel · demo-omgeving</p>
+                    </nldd-title>
+                    <nldd-tag color="accent" text="demo"></nldd-tag>
+                  </div>
+                  <nldd-rich-text>
+                    <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
+                  </nldd-rich-text>
+                  <div class="inline">
+                    <nldd-button variant="secondary" start-icon="envelope" text="Naar Berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button>
+                    <nldd-button variant="secondary" start-icon="handshake" text="Naar Contactherstel" data-nav-view="contactherstel" data-nav-title="Contactherstel"></nldd-button>
+                  </div>
+
+                  <!-- API-key van de afgenomen notificatiedienst -->
+                  <div class="api-key-block" data-dienst="notificatiedienst">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5">
+                          <h3>API-key</h3>
+                          <p slot="subtitle">Voor de implementatie in het systeem van de Kamer van Koophandel · demo-omgeving</p>
+                        </nldd-title>
+                        <div class="mp-keyrow">
+                          <span class="mp-key" data-ak-key>••••••••••••••••••••••••••••</span>
+                          <nldd-button data-ak-toon variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
+                          <nldd-button data-ak-kopieer variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
+                        </div>
+                        <div class="row-actions">
+                          <nldd-button data-ak-valideer variant="secondary" start-icon="seal-check-mark" text="Key valideren / testen"></nldd-button>
+                          <nldd-button data-ak-vernieuw variant="secondary" start-icon="arrow-2-counter-clockwise" text="Opnieuw aanvragen"></nldd-button>
+                        </div>
+                        <nldd-banner data-ak-melding variant="success" text="" hidden></nldd-banner>
+                      </nldd-container>
+                    </nldd-card>
                   </div>
                 </div>
               </section>
@@ -1301,6 +1366,10 @@
     const goOrg = document.getElementById('go-organisatie');
     if (goOrg) goOrg.addEventListener('click', () => showView('organisatie', 'Instellingen organisatie'));
 
+    // Knoppen die naar een andere view springen (bv. vanuit de notificatiedienst-pagina).
+    document.querySelectorAll('nldd-button[data-nav-view]').forEach(b =>
+      b.addEventListener('click', () => showView(b.dataset.navView, b.dataset.navTitle)));
+
     // Uitloggen → terug naar de inlogpagina.
     const logout = document.getElementById('logout');
     if (logout) logout.addEventListener('click', () => { window.location.href = 'login.html'; });
@@ -1612,6 +1681,10 @@
       });
     })();
 
+    // Gedeelde dienstdata: één object per dienst voor zowel de marktplaats als de
+    // API-key-blokken in de dienstviews, zodat een vernieuwde key overal doorwerkt.
+    let MP_DIENSTEN;
+
     // ====================== Marktplaats ======================
     (function () {
       const root = document.querySelector('section[data-view="marktplaats"]');
@@ -1624,7 +1697,7 @@
         business: ['Kosteloos', 'Geen overeenkomst nodig — de demovoorwaarden gelden'],
       };
 
-      const DIENSTEN = {
+      const DIENSTEN = MP_DIENSTEN = {
         notificatiedienst: {
           naam: 'Notificatiedienst', status: 'demo',
           desc: 'Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.',
@@ -1811,6 +1884,51 @@
         const b = root.querySelector('#dp-prod-bevestig');
         b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met Sanne de Boer (Kamer van Koophandel).');
         b.removeAttribute('hidden');
+      });
+    })();
+
+    // ====================== API-key-blokken in de dienstviews ======================
+    // Zelfde functionaliteit als op de marktplaats-dienstpagina, hergebruikt in de
+    // views Profieldienst en Notificatiedienst via .api-key-block[data-dienst].
+    (function () {
+      document.querySelectorAll('.api-key-block[data-dienst]').forEach(block => {
+        const dienst = MP_DIENSTEN[block.dataset.dienst];
+        if (!dienst) return;
+        const keyEl = block.querySelector('[data-ak-key]');
+        const toon = block.querySelector('[data-ak-toon]');
+        const meldingEl = block.querySelector('[data-ak-melding]');
+        let zichtbaar = false;
+        const mask = k => '•'.repeat(Math.max(12, k.length - 4)) + k.slice(-4);
+
+        function render() {
+          keyEl.textContent = zichtbaar ? dienst.key : mask(dienst.key);
+          toon.setAttribute('text', zichtbaar ? 'Verbergen' : 'Tonen');
+          toon.setAttribute('start-icon', zichtbaar ? 'eye-slash' : 'eye');
+        }
+        function melding(variant, text) {
+          meldingEl.setAttribute('variant', variant);
+          meldingEl.setAttribute('text', text);
+          meldingEl.removeAttribute('hidden');
+        }
+        toon.addEventListener('click', () => { zichtbaar = !zichtbaar; render(); });
+        block.querySelector('[data-ak-kopieer]').addEventListener('click', () => {
+          const done = () => melding('success', 'API-key gekopieerd naar het klembord.');
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(dienst.key).then(done, done);
+          else done();
+        });
+        block.querySelector('[data-ak-valideer]').addEventListener('click', () =>
+          melding('success', 'Key gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' van de ' + dienst.naam.toLowerCase() + ' geslaagd (HTTP 200, testbericht geaccepteerd).'));
+        block.querySelector('[data-ak-vernieuw]').addEventListener('click', () => {
+          const prefix = dienst.key.split('_').slice(0, 2).join('_') + '_';
+          const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+          let suffix = '';
+          for (let i = 0; i < 20; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+          dienst.key = prefix + suffix;
+          zichtbaar = true;
+          render();
+          melding('warning', 'Nieuwe API-key aangemaakt; de oude key is per direct ingetrokken. Bewaar de nieuwe key veilig en werk de implementatie bij.');
+        });
+        render();
       });
     })();
   </script>
