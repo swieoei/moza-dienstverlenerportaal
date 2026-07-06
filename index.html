@@ -47,6 +47,11 @@
     .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted-note { color: #5a5a5a; font-size: 0.85rem; margin: 0; }
+    /* Voorkeurskanaal: prioriteit per kanaal */
+    .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
+    .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .prio-kanaal { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+    .prio-rij nldd-dropdown { min-width: 180px; }
     /* Uitklapbare zijnav: caret naast de status-tag van een parent */
     .nav-parent-end { display: inline-flex; align-items: center; gap: 8px; }
     .nav-caret { color: #5a5a5a; flex: 0 0 auto; }
@@ -555,6 +560,32 @@
                               </nldd-segmented-control>
                             </nldd-form-field>
                             <p class="muted-note">Standaard 90 dagen - een vervaldatum beperkt de schade van een gelekte key.</p>
+
+                            <nldd-button data-nk-adv-toggle variant="secondary" start-icon="gear" text="Geavanceerde instellingen"></nldd-button>
+                            <div data-nk-adv hidden>
+                              <nldd-container gap="12">
+                                <nldd-form-field label="IP-allowlist">
+                                  <nldd-text-field data-nk-ip placeholder="bijv. 145.21.0.0/16, 92.64.12.3 - leeg = alle IP's"></nldd-text-field>
+                                </nldd-form-field>
+                                <nldd-form-field label="Rate limit">
+                                  <nldd-dropdown>
+                                    <select data-nk-rate aria-label="Rate limit">
+                                      <option value="60">60 verzoeken / min</option>
+                                      <option value="600" selected>600 verzoeken / min</option>
+                                      <option value="6000">6.000 verzoeken / min</option>
+                                      <option value="0">Onbeperkt</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </nldd-form-field>
+                                <nldd-form-field label="Webhook-URL voor statusmeldingen">
+                                  <nldd-text-field data-nk-webhook placeholder="https://... (optioneel)"></nldd-text-field>
+                                </nldd-form-field>
+                                <nldd-form-field label="IP-binding verplicht">
+                                  <nldd-switch data-nk-ipbind></nldd-switch>
+                                </nldd-form-field>
+                              </nldd-container>
+                            </div>
+
                             <div class="row-actions">
                               <nldd-button data-nk-aanmaken variant="primary" start-icon="key" text="Key aanmaken"></nldd-button>
                               <nldd-button data-nk-annuleer variant="secondary" text="Annuleren"></nldd-button>
@@ -604,6 +635,32 @@
                               </nldd-segmented-control>
                             </nldd-form-field>
                             <p class="muted-note">Standaard 90 dagen - een vervaldatum beperkt de schade van een gelekte key.</p>
+
+                            <nldd-button data-nk-adv-toggle variant="secondary" start-icon="gear" text="Geavanceerde instellingen"></nldd-button>
+                            <div data-nk-adv hidden>
+                              <nldd-container gap="12">
+                                <nldd-form-field label="IP-allowlist">
+                                  <nldd-text-field data-nk-ip placeholder="bijv. 145.21.0.0/16, 92.64.12.3 - leeg = alle IP's"></nldd-text-field>
+                                </nldd-form-field>
+                                <nldd-form-field label="Rate limit">
+                                  <nldd-dropdown>
+                                    <select data-nk-rate aria-label="Rate limit">
+                                      <option value="60">60 verzoeken / min</option>
+                                      <option value="600" selected>600 verzoeken / min</option>
+                                      <option value="6000">6.000 verzoeken / min</option>
+                                      <option value="0">Onbeperkt</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </nldd-form-field>
+                                <nldd-form-field label="Webhook-URL voor statusmeldingen">
+                                  <nldd-text-field data-nk-webhook placeholder="https://... (optioneel)"></nldd-text-field>
+                                </nldd-form-field>
+                                <nldd-form-field label="IP-binding verplicht">
+                                  <nldd-switch data-nk-ipbind></nldd-switch>
+                                </nldd-form-field>
+                              </nldd-container>
+                            </div>
+
                             <div class="row-actions">
                               <nldd-button data-nk-aanmaken variant="primary" start-icon="key" text="Key aanmaken"></nldd-button>
                               <nldd-button data-nk-annuleer variant="secondary" text="Annuleren"></nldd-button>
@@ -943,12 +1000,42 @@
                                 <nldd-tag id="res-huidig" color="accent" text="-"></nldd-tag>
                               </div>
 
-                              <nldd-title size="6"><h3>Voorkeurskanaal</h3></nldd-title>
-                              <nldd-segmented-control id="kanaal-keuze" value="email" type="radio" variant="icon-and-text" width="full" accessible-label="Voorkeurskanaal">
-                                <nldd-segmented-control-item value="email" text="E-mail" icon="envelope"></nldd-segmented-control-item>
-                                <nldd-segmented-control-item value="sms" text="SMS" icon="message-rectangle-text"></nldd-segmented-control-item>
-                                <nldd-segmented-control-item value="post" text="Post" icon="inbox"></nldd-segmented-control-item>
-                              </nldd-segmented-control>
+                              <nldd-title size="6"><h3>Voorkeurskanalen</h3><p slot="subtitle">Geef per kanaal de prioriteit; er wordt via het hoogst geprioriteerde beschikbare kanaal genotificeerd</p></nldd-title>
+                              <div class="prio-lijst" id="kanaal-prio">
+                                <div class="prio-rij">
+                                  <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span>
+                                  <nldd-dropdown>
+                                    <select class="prio-select" data-kanaal="email" aria-label="Prioriteit e-mail">
+                                      <option value="1">1e keuze</option>
+                                      <option value="2">2e keuze</option>
+                                      <option value="3">3e keuze</option>
+                                      <option value="0">Niet gebruiken</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </div>
+                                <div class="prio-rij">
+                                  <span class="prio-kanaal"><nldd-icon name="message-rectangle-text" size="20"></nldd-icon> SMS</span>
+                                  <nldd-dropdown>
+                                    <select class="prio-select" data-kanaal="sms" aria-label="Prioriteit SMS">
+                                      <option value="1">1e keuze</option>
+                                      <option value="2">2e keuze</option>
+                                      <option value="3">3e keuze</option>
+                                      <option value="0">Niet gebruiken</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </div>
+                                <div class="prio-rij">
+                                  <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Post</span>
+                                  <nldd-dropdown>
+                                    <select class="prio-select" data-kanaal="post" aria-label="Prioriteit post">
+                                      <option value="1">1e keuze</option>
+                                      <option value="2">2e keuze</option>
+                                      <option value="3">3e keuze</option>
+                                      <option value="0">Niet gebruiken</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </div>
+                              </div>
 
                               <nldd-form-field label="E-mailadres">
                                 <nldd-text-field id="ct-email"></nldd-text-field>
@@ -1928,11 +2015,11 @@
 
       // --- Kanaalvoorkeur: zoek op BSN/KvK, toon & pas aan, informeer ondernemer ---
       const ONDERNEMERS = {
-        '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782', kanaal: 'email',
+        '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782', prioriteit: { email: 1, sms: 2, post: 3 },
           email: 'info@dekorenbloem.nl', sms: '06-21345678', post: 'Dorpsstraat 12, 3811 AB Amersfoort' },
-        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891', kanaal: 'sms',
+        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891', prioriteit: { sms: 1, email: 2, post: 0 },
           email: 'administratie@jansen-it.nl', sms: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer' },
-        '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916', kanaal: 'post',
+        '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916', prioriteit: { post: 1, email: 2, sms: 3 },
           email: 'planning@vandijktransport.nl', sms: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam' },
       };
       const KANAAL = {
@@ -1940,32 +2027,36 @@
         sms: { label: 'SMS', veld: 'ct-sms' },
         post: { label: 'post', veld: 'ct-post' },
       };
+      const KANAAL_VOLGORDE = ['email', 'sms', 'post'];
       const zoekBtn = root.querySelector('#zoek-btn');
       if (zoekBtn) {
         const elLeeg = root.querySelector('#kanaal-leeg');
         const elResult = root.querySelector('#kanaal-result');
         const elBevestig = root.querySelector('#kanaal-bevestig');
-        const kanaalKeuze = root.querySelector('#kanaal-keuze');
+        const prioSelects = Array.from(root.querySelectorAll('#kanaal-prio .prio-select'));
         let huidigeOndernemer = null;
-        let gekozenKanaal = 'email';
 
-        kanaalKeuze.addEventListener('click', e => {
-          const it = e.target.closest('nldd-segmented-control-item');
-          if (it) gekozenKanaal = it.getAttribute('value');
-        });
+        // Kanalen op prioriteit (1 = hoogst), 0 = niet gebruiken; gelijke prio's op vaste kanaalvolgorde.
+        function prioVolgorde() {
+          return prioSelects
+            .map(s => ({ kanaal: s.dataset.kanaal, prio: parseInt(s.value, 10) || 0 }))
+            .filter(x => x.prio > 0)
+            .sort((a, b) => a.prio - b.prio || KANAAL_VOLGORDE.indexOf(a.kanaal) - KANAAL_VOLGORDE.indexOf(b.kanaal));
+        }
 
         function toon(o) {
           huidigeOndernemer = o;
-          gekozenKanaal = o.kanaal;
           root.querySelector('#res-naam').textContent = o.naam;
           root.querySelector('#res-sub').textContent = 'KvK ' + o.kvk + ' · BSN ' + o.bsn;
-          root.querySelector('#res-huidig').setAttribute('text', 'voorkeur: ' + KANAAL[o.kanaal].label);
           root.querySelector('#ct-email').value = o.email;
           root.querySelector('#ct-sms').value = o.sms;
           root.querySelector('#ct-post').value = o.post;
-          kanaalKeuze.setAttribute('value', o.kanaal);
-          kanaalKeuze.querySelectorAll('nldd-segmented-control-item').forEach(it =>
-            it.toggleAttribute('selected', it.getAttribute('value') === o.kanaal));
+          prioSelects.forEach(s => {
+            s.value = String((o.prioriteit && o.prioriteit[s.dataset.kanaal]) || 0);
+            s.dispatchEvent(new Event('change', { bubbles: true })); // nldd-dropdown-weergave bijwerken
+          });
+          const top = prioVolgorde()[0];
+          root.querySelector('#res-huidig').setAttribute('text', top ? 'voorkeur: ' + KANAAL[top.kanaal].label : 'geen kanaal gekozen');
           elBevestig.setAttribute('hidden', '');
           elLeeg.setAttribute('hidden', '');
           elResult.removeAttribute('hidden');
@@ -1983,13 +2074,23 @@
 
         root.querySelector('#kanaal-opslaan').addEventListener('click', () => {
           if (!huidigeOndernemer) return;
-          const k = KANAAL[gekozenKanaal];
-          const waarde = root.querySelector('#' + k.veld).value;
+          const volgorde = prioVolgorde();
+          if (!volgorde.length) {
+            elBevestig.setAttribute('variant', 'warning');
+            elBevestig.setAttribute('text', 'Kies minstens één kanaal met een prioriteit voordat je opslaat.');
+            elBevestig.removeAttribute('hidden');
+            return;
+          }
+          const top = volgorde[0];
+          const rij = volgorde.map((x, i) => (i + 1) + '. ' + KANAAL[x.kanaal].label).join(' → ');
+          const waarde = root.querySelector('#' + KANAAL[top.kanaal].veld).value;
+          elBevestig.setAttribute('variant', 'success');
           elBevestig.setAttribute('text',
-            'Kanaalvoorkeur opgeslagen op "' + k.label + '". ' + huidigeOndernemer.naam +
-            ' is via ' + k.label + ' geïnformeerd over de wijziging: ' + waarde + '.');
+            'Kanaalprioriteit opgeslagen: ' + rij + '. ' + huidigeOndernemer.naam +
+            ' is via het hoogste kanaal (' + KANAAL[top.kanaal].label + ') geïnformeerd: ' + waarde +
+            '. Komt een kanaal niet aan, dan volgt automatisch het volgende in de rij.');
           elBevestig.removeAttribute('hidden');
-          root.querySelector('#res-huidig').setAttribute('text', 'voorkeur: ' + k.label);
+          root.querySelector('#res-huidig').setAttribute('text', 'voorkeur: ' + KANAAL[top.kanaal].label);
         });
 
         root.querySelector('#kanaal-annuleer').addEventListener('click', () => {
@@ -2329,6 +2430,7 @@
                   <nldd-button class="k-toon" variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
                   <nldd-button class="k-kopieer" variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
                 </div>
+                <p class="muted-note k-adv"></p>
                 <div class="row-actions">
                   <nldd-button class="k-valideer" variant="secondary" start-icon="seal-check-mark" text="Valideren / testen"></nldd-button>
                   <nldd-button class="k-intrek" variant="destructive" start-icon="trash" text="Intrekken"></nldd-button>
@@ -2338,6 +2440,17 @@
           const el = wrap.firstElementChild;
           el.querySelector('h3').textContent = k.naam;
           el.querySelector('[slot="subtitle"]').textContent = k.rol;
+          const advNote = el.querySelector('.k-adv');
+          if (k.advanced) {
+            const rateLabel = { '60': '60/min', '600': '600/min', '6000': '6.000/min', '0': 'onbeperkt' }[k.advanced.rate] || (k.advanced.rate + '/min');
+            const delen = ['rate limit ' + rateLabel];
+            if (k.advanced.ip) delen.push('IP-allowlist actief');
+            if (k.advanced.ipbind) delen.push('IP-binding verplicht');
+            if (k.advanced.webhook) delen.push('webhook ingesteld');
+            advNote.textContent = 'Geavanceerd: ' + delen.join(' · ');
+          } else {
+            advNote.remove();
+          }
           const g = keyGeldigheidTag(k);
           const tag = el.querySelector('.k-geldig');
           tag.setAttribute('color', g.color);
@@ -2396,23 +2509,50 @@
           const it = e.target.closest('nldd-segmented-control-item');
           if (it) gekozenDuur = it.getAttribute('value');
         });
+
+        // Geavanceerde instellingen (in-/uitklapbaar).
+        const advToggle = beheer.querySelector('[data-nk-adv-toggle]');
+        const advPanel = beheer.querySelector('[data-nk-adv]');
+        const ipVeld = beheer.querySelector('[data-nk-ip]');
+        const rateSelect = beheer.querySelector('[data-nk-rate]');
+        const webhookVeld = beheer.querySelector('[data-nk-webhook]');
+        const ipbindSwitch = beheer.querySelector('[data-nk-ipbind]');
+        if (advToggle) advToggle.addEventListener('click', () => advPanel.toggleAttribute('hidden'));
+        function resetAdvanced() {
+          if (advPanel) advPanel.setAttribute('hidden', '');
+          if (ipVeld) ipVeld.value = '';
+          if (rateSelect) rateSelect.value = '600';
+          if (webhookVeld) webhookVeld.value = '';
+          if (ipbindSwitch) ipbindSwitch.removeAttribute('checked');
+        }
+        function leesAdvanced() {
+          const ip = ipVeld && ipVeld.value ? String(ipVeld.value).trim() : '';
+          const webhook = webhookVeld && webhookVeld.value ? String(webhookVeld.value).trim() : '';
+          const rate = rateSelect ? rateSelect.value : '600';
+          const ipbind = !!(ipbindSwitch && (ipbindSwitch.checked || ipbindSwitch.hasAttribute('checked')));
+          if (!ip && !webhook && !ipbind && rate === '600') return null;
+          return { ip: ip, webhook: webhook, rate: rate, ipbind: ipbind };
+        }
+
         beheer.querySelector('[data-nk-open]').addEventListener('click', () => {
           gekozenDuur = '90';
           duurCtrl.setAttribute('value', '90');
           duurCtrl.querySelectorAll('nldd-segmented-control-item').forEach(it =>
             it.toggleAttribute('selected', it.getAttribute('value') === '90'));
           if (naamVeld) naamVeld.value = '';
+          resetAdvanced();
           panel.toggleAttribute('hidden');
         });
         beheer.querySelector('[data-nk-annuleer]').addEventListener('click', () => panel.setAttribute('hidden', ''));
         beheer.querySelector('[data-nk-aanmaken]').addEventListener('click', () => {
           const naam = (naamVeld && naamVeld.value ? String(naamVeld.value).trim() : '') || 'Nieuwe toepassing';
           const rol = rolSelect.value || (dienst.rollen && dienst.rollen[0]) || '';
-          const nieuw = { naam: naam, rol: rol, key: genKey(dienst.keyPrefix), geldigTot: nieuweGeldigheid(gekozenDuur) };
+          const advanced = leesAdvanced();
+          const nieuw = { naam: naam, rol: rol, key: genKey(dienst.keyPrefix), geldigTot: nieuweGeldigheid(gekozenDuur), advanced: advanced };
           dienst.keys.unshift(nieuw);
           renderLijst();
           panel.setAttribute('hidden', '');
-          melding('warning', 'Nieuwe key \'' + naam + '\' (' + rol + ') aangemaakt, ' + (nieuw.geldigTot ? 'geldig tot ' + fmtDatum(nieuw.geldigTot) : 'zonder vervaldatum') + '. Kopieer hem nu en bewaar hem veilig.');
+          melding('warning', 'Nieuwe key \'' + naam + '\' (' + rol + ') aangemaakt, ' + (nieuw.geldigTot ? 'geldig tot ' + fmtDatum(nieuw.geldigTot) : 'zonder vervaldatum') + (advanced ? ', met geavanceerde instellingen' : '') + '. Kopieer hem nu en bewaar hem veilig.');
         });
 
         renderLijst();
