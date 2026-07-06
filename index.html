@@ -1724,11 +1724,12 @@
         const sel = typeCtrl.querySelector('nldd-segmented-control-item[selected]');
         return (sel && sel.getAttribute('value')) || typeCtrl.value || typeCtrl.getAttribute('value') || 'eenmalig';
       }
-      typeCtrl.addEventListener('click', e => {
-        const it = e.target.closest('nldd-segmented-control-item');
-        if (it) applyType(it.getAttribute('value'));
+      // Eén handler op het change-event; detail.value is de nieuwe selectie (mouse én toetsenbord).
+      // (Eerder zorgde een aparte click-handler + change-handler met stale [selected]-status
+      //  ervoor dat je 2x moest klikken.)
+      typeCtrl.addEventListener('change', e => {
+        applyType((e.detail && e.detail.value) || currentType());
       });
-      typeCtrl.addEventListener('change', () => applyType(currentType()));
 
       // --- Talen: checkbox toont/verbergt de bijbehorende taal-tab ---
       const langTabs = root.querySelector('#lang-tabs');
