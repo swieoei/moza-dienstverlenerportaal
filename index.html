@@ -727,16 +727,33 @@
                           </nldd-segmented-control>
 
                           <div id="opt-doelgroep">
-                            <nldd-form-field label="Doelgroep">
-                              <nldd-dropdown>
-                                <select aria-label="Doelgroep">
-                                  <option value="alle" selected>Alle ondernemers</option>
-                                  <option value="sector">Per sector…</option>
-                                  <option value="nieuw">Nieuwe inschrijvingen</option>
-                                  <option value="specifiek">Specifieke ondernemer…</option>
-                                </select>
-                              </nldd-dropdown>
-                            </nldd-form-field>
+                            <nldd-container gap="12">
+                              <nldd-form-field label="Doelgroep">
+                                <nldd-dropdown>
+                                  <select id="doelgroep" aria-label="Doelgroep">
+                                    <option value="alle" selected>Alle ondernemers</option>
+                                    <option value="sector">Per sector…</option>
+                                    <option value="nieuw">Nieuwe inschrijvingen</option>
+                                    <option value="specifiek">Specifieke ondernemer…</option>
+                                  </select>
+                                </nldd-dropdown>
+                              </nldd-form-field>
+
+                              <!-- Specifieke ondernemers opvoeren op e-mailadres met gekoppeld BSN -->
+                              <div id="opt-specifiek" hidden>
+                                <nldd-container gap="12">
+                                  <nldd-form-field label="E-mailadres van de ondernemer">
+                                    <nldd-text-field id="spec-email" placeholder="naam@bedrijf.nl"></nldd-text-field>
+                                  </nldd-form-field>
+                                  <div class="inline">
+                                    <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Ondernemer toevoegen"></nldd-button>
+                                    <span class="muted-note">Bekend: info@dekorenbloem.nl · administratie@jansen-it.nl · planning@vandijktransport.nl</span>
+                                  </div>
+                                  <nldd-banner id="spec-melding" variant="success" text="" hidden></nldd-banner>
+                                  <div class="stack" id="spec-lijst"></div>
+                                </nldd-container>
+                              </div>
+                            </nldd-container>
                           </div>
 
                           <div id="opt-terugkerend" hidden>
@@ -1730,6 +1747,82 @@
       typeCtrl.addEventListener('change', e => {
         applyType((e.detail && e.detail.value) || currentType());
       });
+
+      // --- Doelgroep: specifieke ondernemers opvoeren op e-mailadres met gekoppeld BSN ---
+      (function () {
+        const doelgroep = root.querySelector('#doelgroep');
+        const optSpec = root.querySelector('#opt-specifiek');
+        const lijst = root.querySelector('#spec-lijst');
+        const melding = root.querySelector('#spec-melding');
+        const emailVeld = root.querySelector('#spec-email');
+        if (!doelgroep) return;
+
+        // E-mailadres → vooraf gekoppeld BSN (fictief).
+        const EMAIL_BSN = {
+          'info@dekorenbloem.nl': { bsn: '123456782', naam: 'Bakkerij De Korenbloem' },
+          'administratie@jansen-it.nl': { bsn: '234567891', naam: 'Jansen Installatietechniek BV' },
+          'planning@vandijktransport.nl': { bsn: '345678916', naam: 'Transport Van Dijk' },
+        };
+
+        function meld(el, variant, text) {
+          el.setAttribute('variant', variant);
+          el.setAttribute('text', text);
+          el.removeAttribute('hidden');
+        }
+
+        doelgroep.addEventListener('change', () =>
+          optSpec.toggleAttribute('hidden', doelgroep.value !== 'specifiek'));
+
+        function voegToe(email, bsn, naam) {
+          const wrap = document.createElement('div');
+          wrap.innerHTML = `
+            <nldd-card>
+              <nldd-container padding="16" gap="12">
+                <div class="between">
+                  <nldd-title size="6"><h4></h4><p slot="subtitle" class="s-naam"></p></nldd-title>
+                  <nldd-button class="s-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
+                </div>
+                <nldd-form-field label="Gekoppeld BSN">
+                  <nldd-text-field class="s-bsn" placeholder="9 cijfers"></nldd-text-field>
+                </nldd-form-field>
+                <div class="row-actions">
+                  <nldd-button class="s-verzoek" variant="secondary" start-icon="paper-plane" text="Verzoek BSN-wijziging indienen"></nldd-button>
+                </div>
+                <nldd-banner class="s-melding" variant="success" text="" hidden></nldd-banner>
+              </nldd-container>
+            </nldd-card>`;
+          const el = wrap.firstElementChild;
+          el.querySelector('h4').textContent = email;
+          el.querySelector('.s-naam').textContent = naam || 'Onbekende ondernemer - controleer het e-mailadres';
+          const bsnVeld = el.querySelector('.s-bsn');
+          bsnVeld.value = bsn || '';
+          const oorspronkelijk = bsn || '';
+          const rijMelding = el.querySelector('.s-melding');
+
+          el.querySelector('.s-verzoek').addEventListener('click', () => {
+            const huidig = (bsnVeld.value || '').trim();
+            if (!huidig) { meld(rijMelding, 'warning', 'Vul eerst een BSN in.'); return; }
+            if (huidig === oorspronkelijk) {
+              meld(rijMelding, 'neutral', 'Het BSN is niet gewijzigd; er is geen wijzigingsverzoek nodig.');
+              return;
+            }
+            meld(rijMelding, 'success', 'Verzoek ingediend om het gekoppelde BSN voor ' + email + ' te wijzigen naar ' + huidig + '. De beheerorganisatie beoordeelt de wijziging.');
+          });
+          el.querySelector('.s-verwijder').addEventListener('click', () => el.remove());
+          lijst.appendChild(el);
+        }
+
+        root.querySelector('#spec-add').addEventListener('click', () => {
+          const email = (emailVeld.value || '').trim().toLowerCase();
+          if (!email || email.indexOf('@') === -1) { meld(melding, 'warning', 'Vul een geldig e-mailadres in.'); return; }
+          const match = EMAIL_BSN[email];
+          voegToe(email, match ? match.bsn : '', match ? match.naam : '');
+          emailVeld.value = '';
+          meld(melding, 'success', match
+            ? 'Ondernemer toegevoegd. Het gekoppelde BSN is vooraf ingevuld en kan worden overschreven.'
+            : 'E-mailadres toegevoegd. Geen gekoppeld BSN gevonden - vul het BSN zelf in.');
+        });
+      })();
 
       // --- Talen: checkbox toont/verbergt de bijbehorende taal-tab ---
       const langTabs = root.querySelector('#lang-tabs');
