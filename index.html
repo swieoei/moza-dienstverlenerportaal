@@ -829,6 +829,12 @@
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5"><h2>4. Inhoud per taal</h2></nldd-title>
+
+                          <nldd-form-field label="Afzender (e-mailadres)">
+                            <nldd-text-field id="afz-email" placeholder="notificaties@kvk.nl"></nldd-text-field>
+                          </nldd-form-field>
+                          <p class="muted-note">Komt uit de template en kan worden overschreven. Ontvangers zien dit als afzender van het bericht.</p>
+
                           <nldd-tab-bar id="lang-tabs" accessible-label="Taal">
                             <nldd-tab-bar-item selected text="NL" data-lang="nl"></nldd-tab-bar-item>
                             <nldd-tab-bar-item hidden text="EN" data-lang="en"></nldd-tab-bar-item>
@@ -1861,6 +1867,7 @@
       const TEMPLATES = {
         regelgeving: {
           type: 'eenmalig',
+          afzender: 'regelgeving@kvk.nl',
           nl: { subject: 'Nieuwe regelgeving vanaf 1 januari 2027',
                 body: 'Geachte ondernemer,\n\nPer 1 januari 2027 wijzigt de regelgeving voor inschrijving in het Handelsregister. Wij informeren u tijdig zodat u uw administratie kunt aanpassen.\n\nMeer informatie vindt u op kvk.nl.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
           en: { subject: 'New regulations as of 1 January 2027',
@@ -1872,6 +1879,7 @@
         },
         reminder: {
           type: 'reminder',
+          afzender: 'zaken@kvk.nl',
           nl: { subject: 'Herinnering: actie vereist voor uw zaak',
                 body: 'Geachte ondernemer,\n\nVoor uw lopende zaak ontbreekt nog een aanvulling. Wij verzoeken u deze vóór de vervaldatum aan te leveren.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
           en: { subject: 'Reminder: action required for your case',
@@ -1881,6 +1889,7 @@
         },
         terugkerend: {
           type: 'terugkerend',
+          afzender: 'handelsregister@kvk.nl',
           nl: { subject: 'Jaarlijkse opgave Handelsregister',
                 body: 'Geachte ondernemer,\n\nHet is weer tijd voor uw jaarlijkse opgave voor het Handelsregister. Controleer en bevestig uw gegevens vóór de gestelde datum.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
           en: { subject: 'Annual Business Register filing',
@@ -1890,15 +1899,18 @@
         },
         vrij: {
           type: 'eenmalig',
+          afzender: 'notificaties@kvk.nl',
           nl: { subject: '', body: '' }, en: { subject: '', body: '' },
           de: { subject: '', body: '' }, fr: { subject: '', body: '' },
         },
       };
 
       const tplSelect = root.querySelector('#tpl');
+      const afzVeld = root.querySelector('#afz-email');
       function fillTemplate(key) {
         const t = TEMPLATES[key];
         if (!t) return;
+        if (afzVeld) afzVeld.value = t.afzender || 'notificaties@kvk.nl';
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const s = root.querySelector('#subj-' + l);
           const b = root.querySelector('#body-' + l);
@@ -1989,7 +2001,7 @@
       Promise.all([
         customElements.whenDefined('nldd-multi-line-text-field'),
         customElements.whenDefined('nldd-segmented-control'),
-      ]).then(() => { applyType('eenmalig'); setLang('nl'); });
+      ]).then(() => { applyType('eenmalig'); setLang('nl'); if (afzVeld && !afzVeld.value) afzVeld.value = 'notificaties@kvk.nl'; });
     })();
   </script>
 
