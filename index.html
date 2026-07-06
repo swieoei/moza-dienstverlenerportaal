@@ -172,8 +172,13 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="API keys"></nldd-text-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="rapportage-profieldienst" data-title="Rapportages">
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Rapportages"></nldd-text-cell>
+                </nldd-list-item>
 
-                <!-- Notificatiedienst: parent met Berichten, Contactherstel en API keys als children -->
+                <!-- Notificatiedienst: parent met Berichten, Contactherstel, API keys en Rapportages als children -->
                 <nldd-list-item button data-view="notificatiedienst" data-title="Notificatiedienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
@@ -196,10 +201,15 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="API keys"></nldd-text-cell>
                 </nldd-list-item>
-
-                <nldd-list-item button data-view="rapportages" data-title="Rapportages">
+                <nldd-list-item button data-view="rapportage-notificatiedienst" data-title="Rapportages">
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Rapportages"></nldd-text-cell>
+                </nldd-list-item>
+
+                <nldd-list-item button data-view="audit" data-title="Audit en logboek">
+                  <nldd-icon-cell slot="start"><nldd-icon name="check-list"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Audit en logboek"></nldd-text-cell>
                 </nldd-list-item>
                 <nldd-list-item button data-view="analytics" data-title="Analytics">
                   <nldd-icon-cell slot="start"><nldd-icon name="chart-x-y-axis-line"></nldd-icon></nldd-icon-cell>
@@ -520,6 +530,34 @@
                       <div class="stack" data-keys-lijst></div>
                     </div>
                   </div>
+                </div>
+              </section>
+
+              <!-- ====================== RAPPORTAGES - PROFIELDIENST ====================== -->
+              <section class="view" data-view="rapportage-profieldienst">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4">
+                      <h2>Profieldienst</h2>
+                      <p slot="subtitle">Rapportages over het gebruik van deze dienst</p>
+                    </nldd-title>
+                    <nldd-tag color="success" text="productie"></nldd-tag>
+                  </div>
+                  <div class="rapportage-beheer" data-dienst="profieldienst"></div>
+                </div>
+              </section>
+
+              <!-- ====================== RAPPORTAGES - NOTIFICATIEDIENST ====================== -->
+              <section class="view" data-view="rapportage-notificatiedienst">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4">
+                      <h2>Notificatiedienst</h2>
+                      <p slot="subtitle">Rapportages over het gebruik van deze dienst</p>
+                    </nldd-title>
+                    <nldd-tag color="accent" text="demo"></nldd-tag>
+                  </div>
+                  <div class="rapportage-beheer" data-dienst="notificatiedienst"></div>
                 </div>
               </section>
 
@@ -1153,33 +1191,107 @@
               </section>
 
               <!-- ====================== RAPPORTAGES ====================== -->
-              <section class="view" data-view="rapportages">
+              <section class="view" data-view="audit">
                 <div class="stack">
-                  <nldd-banner variant="neutral" text="Genereer en download rapportages over verzonden notificaties, leveringen en storingen."></nldd-banner>
-                  <nldd-list variant="box">
-                    <nldd-list-item button>
-                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                      <nldd-text-cell text="**Maandrapportage notificaties** - mei 2026 · PDF"></nldd-text-cell>
-                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
-                    </nldd-list-item>
-                    <nldd-list-item button>
-                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                      <nldd-text-cell text="**Leveringsrapport per organisatie** - Q2 2026 · CSV"></nldd-text-cell>
-                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
-                    </nldd-list-item>
-                    <nldd-list-item button>
-                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                      <nldd-text-cell text="**Storingen en contractherstel** - mei 2026 · PDF"></nldd-text-cell>
-                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
-                    </nldd-list-item>
-                    <nldd-list-item button>
-                      <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                      <nldd-text-cell text="API-gebruik per sleutel - mei 2026 · CSV"></nldd-text-cell>
-                      <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>
-                    </nldd-list-item>
-                  </nldd-list>
-                  <div class="inline">
-                    <nldd-button variant="primary" start-icon="plus" text="Nieuwe rapportage samenstellen"></nldd-button>
+                  <nldd-tab-bar id="audit-tabs" accessible-label="Audit en logboek">
+                    <nldd-tab-bar-item selected text="Audit trail" icon="check-list" data-panel="audit"></nldd-tab-bar-item>
+                    <nldd-tab-bar-item text="Logboek dataverwerking" icon="folder" data-panel="logboek"></nldd-tab-bar-item>
+                  </nldd-tab-bar>
+
+                  <!-- ---------- Panel: Audit trail ---------- -->
+                  <div data-audit-panel="audit">
+                    <div class="stack">
+                      <nldd-banner variant="neutral" text="Onweerlegbaar overzicht van beheeracties in het portaal: wie deed wat en wanneer. Niet te wijzigen of te verwijderen."></nldd-banner>
+                      <div class="inline">
+                        <nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Exporteren (CSV)"></nldd-button>
+                      </div>
+                      <nldd-table columns="150px minmax(220px,1.6fr) minmax(140px,1fr) minmax(140px,1fr)" accessible-label="Audit trail">
+                        <nldd-table-row slot="header">
+                          <nldd-text-cell text="**Tijdstip**"></nldd-text-cell>
+                          <nldd-text-cell text="**Actie**"></nldd-text-cell>
+                          <nldd-text-cell text="**Onderdeel**"></nldd-text-cell>
+                          <nldd-text-cell text="**Uitgevoerd door**"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="06 jul 2026 09:12"></nldd-text-cell>
+                          <nldd-text-cell text="API-key aangemaakt 'Verificatie-app'"></nldd-text-cell>
+                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
+                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="06 jul 2026 08:40"></nldd-text-cell>
+                          <nldd-text-cell text="API-key ingetrokken 'UWV-prod (oud)'"></nldd-text-cell>
+                          <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
+                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="05 jul 2026 16:22"></nldd-text-cell>
+                          <nldd-text-cell text="Notificatie-instellingen gewijzigd (SMS-kanaal aan)"></nldd-text-cell>
+                          <nldd-text-cell text="Instellingen"></nldd-text-cell>
+                          <nldd-text-cell text="Tom Bakker"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="05 jul 2026 11:05"></nldd-text-cell>
+                          <nldd-text-cell text="Contactherstel goedgekeurd (Bakkerij De Korenbloem)"></nldd-text-cell>
+                          <nldd-text-cell text="Contactherstel"></nldd-text-cell>
+                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="02 jul 2026 14:03"></nldd-text-cell>
+                          <nldd-text-cell text="API-key aangemaakt 'Zaaksysteem'"></nldd-text-cell>
+                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
+                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                        </nldd-table-row>
+                      </nldd-table>
+                    </div>
+                  </div>
+
+                  <!-- ---------- Panel: Logboek dataverwerking ---------- -->
+                  <div data-audit-panel="logboek" hidden>
+                    <div class="stack">
+                      <nldd-banner variant="neutral" text="Logboek van verwerkingen van persoonsgegevens (AVG): welke gegevens zijn wanneer en op welke grondslag verwerkt."></nldd-banner>
+                      <div class="inline">
+                        <nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Exporteren (CSV)"></nldd-button>
+                      </div>
+                      <nldd-table columns="150px minmax(220px,1.6fr) minmax(150px,1fr) minmax(140px,1fr)" accessible-label="Logboek dataverwerking">
+                        <nldd-table-row slot="header">
+                          <nldd-text-cell text="**Tijdstip**"></nldd-text-cell>
+                          <nldd-text-cell text="**Verwerking**"></nldd-text-cell>
+                          <nldd-text-cell text="**Grondslag**"></nldd-text-cell>
+                          <nldd-text-cell text="**Dienst**"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="06 jul 2026 09:41"></nldd-text-cell>
+                          <nldd-text-cell text="Profiel bevraagd (KvK 81234567)"></nldd-text-cell>
+                          <nldd-text-cell text="Wettelijke taak"></nldd-text-cell>
+                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="06 jul 2026 09:40"></nldd-text-cell>
+                          <nldd-text-cell text="Contactgegeven geverifieerd (e-mail)"></nldd-text-cell>
+                          <nldd-text-cell text="Gerechtvaardigd belang"></nldd-text-cell>
+                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="06 jul 2026 09:38"></nldd-text-cell>
+                          <nldd-text-cell text="Notificatie verzonden (320 ontvangers)"></nldd-text-cell>
+                          <nldd-text-cell text="Wettelijke taak"></nldd-text-cell>
+                          <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="05 jul 2026 15:10"></nldd-text-cell>
+                          <nldd-text-cell text="Voorkeurskanaal bijgewerkt (SMS naar e-mail)"></nldd-text-cell>
+                          <nldd-text-cell text="Toestemming"></nldd-text-cell>
+                          <nldd-text-cell text="Profieldienst"></nldd-text-cell>
+                        </nldd-table-row>
+                        <nldd-table-row>
+                          <nldd-text-cell text="05 jul 2026 09:15"></nldd-text-cell>
+                          <nldd-text-cell text="Notificatiebatch verzonden (1.248 ontvangers)"></nldd-text-cell>
+                          <nldd-text-cell text="Wettelijke taak"></nldd-text-cell>
+                          <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
+                        </nldd-table-row>
+                      </nldd-table>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -1775,6 +1887,12 @@
             { naam: 'Backoffice KvK', rol: 'Notificaties verzenden', key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs', geldigTot: '2026-09-30' },
             { naam: 'Rapportagedashboard', rol: 'Status & rapportage lezen', key: 'nmp_demo_3xQw8rTf5kLm2nPd9vBc', geldigTot: '2026-08-15' },
           ],
+          rapportageTypes: ['Verzendrapport', 'Afleverpercentages per kanaal', 'Storingen & contactherstel', 'API-gebruik per key'],
+          rapportages: [
+            { naam: 'Maandrapportage notificaties', periode: 'mei 2026', formaat: 'PDF' },
+            { naam: 'Afleverpercentages per kanaal', periode: 'Q2 2026', formaat: 'CSV' },
+            { naam: 'Storingen & contactherstel', periode: 'mei 2026', formaat: 'PDF' },
+          ],
           rvProd: {
             tech: ['PKIoverheid-certificaat voor de productie-koppeling', 'Implementatie getest tegen de acceptatieomgeving', 'Foutafhandeling en retry-beleid ingericht'],
             proces: ['Beheer- en incidentproces ingericht (contactpunt voor storingen)', 'Ketentest met de notificatiedienst afgerond', 'Go-live-moment ingepland met de beheerorganisatie'],
@@ -1789,6 +1907,11 @@
           keys: [
             { naam: 'KCC-applicatie', rol: 'Profiel lezen', key: 'pfd_live_2mV8xKqR5tWc7pLj9dFg', geldigTot: '2026-12-28' },
             { naam: 'Zaaksysteem', rol: 'Voorkeuren bijwerken', key: 'pfd_live_8jNc4wRq6tXz3mVb7kLs', geldigTot: null },
+          ],
+          rapportageTypes: ['Bevragingen profieldienst', 'Verificaties contactgegevens', 'Voorkeurwijzigingen', 'API-gebruik per key'],
+          rapportages: [
+            { naam: 'Bevragingen profieldienst', periode: 'mei 2026', formaat: 'CSV' },
+            { naam: 'Verificaties contactgegevens', periode: 'Q2 2026', formaat: 'PDF' },
           ],
         },
         digid: {
@@ -2056,6 +2179,114 @@
         });
 
         renderLijst();
+      });
+    })();
+
+    // ====================== Rapportage-beheer in de dienstviews ======================
+    // Per dienst een lijst downloadbare rapportages; nieuwe samenstellen via een
+    // paneel (type + periode + formaat). Gedeelde data met de rest van de dienst.
+    (function () {
+      document.querySelectorAll('.rapportage-beheer[data-dienst]').forEach(beheer => {
+        const dienst = MP_DIENSTEN[beheer.dataset.dienst];
+        if (!dienst || !dienst.rapportages) return;
+
+        beheer.innerHTML = `
+          <div class="stack">
+            <nldd-banner variant="neutral" text="Genereer en download rapportages over het gebruik van deze dienst."></nldd-banner>
+            <div class="inline">
+              <nldd-button data-rp-open variant="primary" start-icon="plus" text="Nieuwe rapportage samenstellen"></nldd-button>
+            </div>
+            <div data-rp-panel hidden>
+              <nldd-card>
+                <nldd-container padding="16" gap="12">
+                  <nldd-title size="5"><h3>Nieuwe rapportage samenstellen</h3></nldd-title>
+                  <nldd-form-field label="Type rapportage">
+                    <nldd-dropdown><select data-rp-type aria-label="Type rapportage"></select></nldd-dropdown>
+                  </nldd-form-field>
+                  <nldd-form-field label="Periode">
+                    <nldd-dropdown>
+                      <select data-rp-periode aria-label="Periode">
+                        <option value="deze maand">Deze maand</option>
+                        <option value="juni 2026" selected>Vorige maand (juni 2026)</option>
+                        <option value="Q2 2026">Dit kwartaal (Q2 2026)</option>
+                        <option value="2026">Dit jaar (2026)</option>
+                      </select>
+                    </nldd-dropdown>
+                  </nldd-form-field>
+                  <nldd-form-field label="Formaat">
+                    <nldd-segmented-control data-rp-formaat value="PDF" type="radio" width="full" accessible-label="Formaat">
+                      <nldd-segmented-control-item value="PDF" text="PDF"></nldd-segmented-control-item>
+                      <nldd-segmented-control-item value="CSV" text="CSV"></nldd-segmented-control-item>
+                    </nldd-segmented-control>
+                  </nldd-form-field>
+                  <div class="row-actions">
+                    <nldd-button data-rp-maak variant="primary" start-icon="file-text" text="Samenstellen"></nldd-button>
+                    <nldd-button data-rp-annuleer variant="secondary" text="Annuleren"></nldd-button>
+                  </div>
+                </nldd-container>
+              </nldd-card>
+            </div>
+            <nldd-banner data-rp-melding variant="success" text="" hidden></nldd-banner>
+            <nldd-list variant="box" data-rp-lijst></nldd-list>
+          </div>`;
+
+        const lijst = beheer.querySelector('[data-rp-lijst]');
+        const meldingEl = beheer.querySelector('[data-rp-melding]');
+        const panel = beheer.querySelector('[data-rp-panel]');
+        const typeSelect = beheer.querySelector('[data-rp-type]');
+        const periodeSelect = beheer.querySelector('[data-rp-periode]');
+        const formaatCtrl = beheer.querySelector('[data-rp-formaat]');
+        let gekozenFormaat = 'PDF';
+
+        (dienst.rapportageTypes || []).forEach(t => {
+          const o = document.createElement('option'); o.value = t; o.textContent = t; typeSelect.appendChild(o);
+        });
+
+        function renderLijst() {
+          lijst.textContent = '';
+          dienst.rapportages.forEach(r => {
+            const item = document.createElement('nldd-list-item');
+            item.setAttribute('button', '');
+            item.innerHTML = `
+              <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
+              <nldd-text-cell></nldd-text-cell>
+              <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>`;
+            item.querySelector('nldd-text-cell').setAttribute('text', '**' + r.naam + '** - ' + r.periode + ' · ' + r.formaat);
+            lijst.appendChild(item);
+          });
+        }
+
+        formaatCtrl.addEventListener('click', e => {
+          const it = e.target.closest('nldd-segmented-control-item');
+          if (it) gekozenFormaat = it.getAttribute('value');
+        });
+        beheer.querySelector('[data-rp-open]').addEventListener('click', () => panel.toggleAttribute('hidden'));
+        beheer.querySelector('[data-rp-annuleer]').addEventListener('click', () => panel.setAttribute('hidden', ''));
+        beheer.querySelector('[data-rp-maak]').addEventListener('click', () => {
+          const naam = typeSelect.value || (dienst.rapportageTypes && dienst.rapportageTypes[0]) || 'Rapportage';
+          const periode = periodeSelect.value || 'deze maand';
+          dienst.rapportages.unshift({ naam: naam, periode: periode, formaat: gekozenFormaat });
+          renderLijst();
+          panel.setAttribute('hidden', '');
+          meldingEl.setAttribute('text', 'Rapportage \'' + naam + '\' (' + periode + ', ' + gekozenFormaat + ') samengesteld en klaar om te downloaden.');
+          meldingEl.removeAttribute('hidden');
+        });
+
+        renderLijst();
+      });
+    })();
+
+    // ====================== Audit en logboek: tabs ======================
+    (function () {
+      const root = document.querySelector('section[data-view="audit"]');
+      if (!root) return;
+      const tabs = root.querySelector('#audit-tabs');
+      const panels = root.querySelectorAll('[data-audit-panel]');
+      tabs.addEventListener('click', e => {
+        const t = e.target.closest('nldd-tab-bar-item');
+        if (!t || !t.dataset.panel) return;
+        panels.forEach(p => p.toggleAttribute('hidden', p.dataset.auditPanel !== t.dataset.panel));
+        tabs.querySelectorAll('nldd-tab-bar-item').forEach(x => x.toggleAttribute('selected', x === t));
       });
     })();
   </script>
