@@ -47,6 +47,13 @@
     .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted-note { color: #5a5a5a; font-size: 0.85rem; margin: 0; }
+    /* Uitklapbare zijnav: caret naast de status-tag van een parent */
+    .nav-parent-end { display: inline-flex; align-items: center; gap: 8px; }
+    .nav-caret { color: #5a5a5a; flex: 0 0 auto; }
+    .nav-caret, .nav-parent-end nldd-icon { width: 18px; height: 18px; }
+    /* Klikbare overzichtstegels (naar subpagina's) */
+    .nav-tile { cursor: pointer; }
+    .nav-tile:hover, .nav-tile:focus-visible { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
     .rv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     /* Contactherstel: afleverbalk in één oogopslag (layout-lijm) */
     .deliver-bar { display: flex; height: 16px; border-radius: 8px; overflow: hidden; background: var(--context-border-color, #e3e3e3); }
@@ -161,47 +168,47 @@
                   <nldd-text-cell text="Dashboard"></nldd-text-cell>
                 </nldd-list-item>
 
-                <!-- Profieldienst: parent met API keys als child -->
-                <nldd-list-item button data-view="profieldienst" data-title="Profieldienst">
+                <!-- Profieldienst: uitklapbare parent met API keys en Rapportages als children -->
+                <nldd-list-item button data-view="profieldienst" data-title="Profieldienst" data-group="profieldienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Profieldienst"></nldd-text-cell>
-                  <nldd-cell slot="end"><nldd-tag color="success" text="productie"></nldd-tag></nldd-cell>
+                  <nldd-cell slot="end"><span class="nav-parent-end"><nldd-tag color="success" text="productie"></nldd-tag><nldd-icon class="nav-caret" name="caret-right" size="18"></nldd-icon></span></nldd-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="apikeys-profieldienst" data-title="API keys">
+                <nldd-list-item button data-view="apikeys-profieldienst" data-title="API keys" data-parent="profieldienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="API keys"></nldd-text-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="rapportage-profieldienst" data-title="Rapportages">
+                <nldd-list-item button data-view="rapportage-profieldienst" data-title="Rapportages" data-parent="profieldienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Rapportages"></nldd-text-cell>
                 </nldd-list-item>
 
-                <!-- Notificatiedienst: parent met Berichten, Contactherstel, API keys en Rapportages als children -->
-                <nldd-list-item button data-view="notificatiedienst" data-title="Notificatiedienst">
+                <!-- Notificatiedienst: uitklapbare parent met Berichten, Contactherstel, API keys en Rapportages als children -->
+                <nldd-list-item button data-view="notificatiedienst" data-title="Notificatiedienst" data-group="notificatiedienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
-                  <nldd-cell slot="end"><nldd-tag color="accent" text="demo"></nldd-tag></nldd-cell>
+                  <nldd-cell slot="end"><span class="nav-parent-end"><nldd-tag color="accent" text="demo"></nldd-tag><nldd-icon class="nav-caret" name="caret-right" size="18"></nldd-icon></span></nldd-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="berichten" data-title="Berichten">
+                <nldd-list-item button data-view="berichten" data-title="Berichten" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Berichten"></nldd-text-cell>
                   <nldd-cell slot="end"><nldd-badge color="critical" number="3"></nldd-badge></nldd-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="contactherstel" data-title="Contactherstel">
+                <nldd-list-item button data-view="contactherstel" data-title="Contactherstel" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="handshake"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Contactherstel"></nldd-text-cell>
                   <nldd-cell slot="end"><nldd-badge color="accent" number="4"></nldd-badge></nldd-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="apikeys-notificatiedienst" data-title="API keys">
+                <nldd-list-item button data-view="apikeys-notificatiedienst" data-title="API keys" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="API keys"></nldd-text-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="rapportage-notificatiedienst" data-title="Rapportages">
+                <nldd-list-item button data-view="rapportage-notificatiedienst" data-title="Rapportages" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Rapportages"></nldd-text-cell>
@@ -311,6 +318,26 @@
                     text="Profieldienst."
                     supporting-text="Een overheidsbrede dienst die antwoord geeft op de vraag: hoe wil de burger of ondernemer benaderd worden en welke gegevens horen daarbij?">
                   </nldd-banner>
+
+                  <div class="svc-grid">
+                    <!-- API keys -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="apikeys-profieldienst" data-nav-title="API keys" aria-label="Naar API keys">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>API keys</h3></nldd-title>
+                        <nldd-rich-text><p>Beheer de keys waarmee applicaties de profieldienst aanroepen, elk met een eigen rol en geldigheid.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar API keys" data-nav-view="apikeys-profieldienst" data-nav-title="API keys"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <!-- Rapportages -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="rapportage-profieldienst" data-nav-title="Rapportages" aria-label="Naar Rapportages">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>Rapportages</h3></nldd-title>
+                        <nldd-rich-text><p>Genereer en download rapportages over bevragingen, verificaties en voorkeurwijzigingen.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar rapportages" data-nav-view="rapportage-profieldienst" data-nav-title="Rapportages"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
 
                   <nldd-title size="4"><h2>Wat de profieldienst doet</h2></nldd-title>
                   <nldd-list variant="box">
@@ -427,11 +454,69 @@
                   <nldd-rich-text>
                     <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
                   </nldd-rich-text>
-                  <div class="inline">
-                    <nldd-button variant="secondary" start-icon="envelope" text="Naar Berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button>
-                    <nldd-button variant="secondary" start-icon="handshake" text="Naar Contactherstel" data-nav-view="contactherstel" data-nav-title="Contactherstel"></nldd-button>
-                    <nldd-button variant="secondary" start-icon="key" text="Naar API keys" data-nav-view="apikeys-notificatiedienst" data-nav-title="API keys"></nldd-button>
+
+                  <div class="svc-grid">
+                    <!-- Berichten -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="berichten" data-nav-title="Berichten" aria-label="Naar Berichten">
+                      <nldd-container padding="16" gap="12">
+                        <div class="between">
+                          <nldd-title size="5"><h3>Berichten</h3></nldd-title>
+                          <nldd-badge color="critical" number="3"></nldd-badge>
+                        </div>
+                        <nldd-rich-text><p>Stel berichten samen en verstuur ze meertalig aan ondernemers - eenmalig, terugkerend of als reminder bij een zaak.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <!-- Contactherstel: afleverstatus vandaag als content + CTA -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="contactherstel" data-nav-title="Contactherstel" aria-label="Naar Contactherstel">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>Contactherstel</h3><p slot="subtitle">Afleverstatus vandaag - 1.248 verzonden</p></nldd-title>
+                        <div class="deliver-bar" role="img" aria-label="98,4% afgeleverd, 16 niet afgeleverd, 4 contactherstel nodig">
+                          <span class="seg-ok" style="width:98.4%"></span>
+                          <span class="seg-warn" style="width:1.3%"></span>
+                          <span class="seg-attn" style="width:0.3%"></span>
+                        </div>
+                        <div class="deliver-legend">
+                          <span><i style="background:#39870c"></i> Afgeleverd (98,4%)</span>
+                          <span><i style="background:#e17000"></i> Niet afgeleverd (1,3%)</span>
+                          <span><i style="background:#d52b1e"></i> Contactherstel nodig - <strong>4</strong></span>
+                        </div>
+                        <div class="row-actions"><nldd-button variant="primary" end-icon="arrow-right" text="Bekijk contactherstel-acties" data-nav-view="contactherstel" data-nav-title="Contactherstel"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <!-- API keys -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="apikeys-notificatiedienst" data-nav-title="API keys" aria-label="Naar API keys">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>API keys</h3></nldd-title>
+                        <nldd-rich-text><p>Beheer de keys waarmee applicaties de notificatiedienst aanroepen, elk met een eigen rol en geldigheid.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar API keys" data-nav-view="apikeys-notificatiedienst" data-nav-title="API keys"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <!-- Rapportages -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="rapportage-notificatiedienst" data-nav-title="Rapportages" aria-label="Naar Rapportages">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>Rapportages</h3></nldd-title>
+                        <nldd-rich-text><p>Genereer en download rapportages over verzendingen, afleverpercentages en storingen.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar rapportages" data-nav-view="rapportage-notificatiedienst" data-nav-title="Rapportages"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
                   </div>
+
+                  <!-- Wervende CTA: van demo naar productie -->
+                  <nldd-card>
+                    <nldd-container padding="24" gap="12">
+                      <nldd-title size="4"><h3>Klaar om echt live te gaan?</h3></nldd-title>
+                      <nldd-rich-text>
+                        <p>Je gebruikt de notificatiedienst nu in de <strong>demo-omgeving</strong> met fictieve gegevens. Zet de stap naar productie en bereik ondernemers écht op het juiste moment, op het juiste kanaal - betrouwbaar, gemonitord en conform de aansluitvoorwaarden. Onze beheerorganisatie helpt je bij elke stap.</p>
+                      </nldd-rich-text>
+                      <div class="row-actions">
+                        <nldd-button variant="primary" end-icon="arrow-right" text="Productieversie aanvragen" data-goto-marktplaats="notificatiedienst"></nldd-button>
+                      </div>
+                    </nldd-container>
+                  </nldd-card>
                 </div>
               </section>
 
@@ -1503,6 +1588,16 @@
     const views = Array.from(document.querySelectorAll('.view'));
     const navItems = Array.from(navwrap.querySelectorAll('nldd-list-item[data-view]'));
 
+    // Uitklapbare groepen: parents (data-group) tonen/verbergen hun children (data-parent).
+    const expandedGroups = new Set();
+    function setGroepUit(groep, uit) {
+      if (uit) expandedGroups.add(groep); else expandedGroups.delete(groep);
+      navItems.forEach(item => { if (item.dataset.parent === groep) item.toggleAttribute('hidden', !uit); });
+      const parent = navwrap.querySelector('nldd-list-item[data-group="' + groep + '"]');
+      const caret = parent && parent.querySelector('.nav-caret');
+      if (caret) caret.setAttribute('name', uit ? 'caret-down' : 'caret-right');
+    }
+
     function showView(name, title) {
       views.forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
       navItems.forEach(item => {
@@ -1510,6 +1605,9 @@
         else item.removeAttribute('selected');
       });
       if (title && titlebar) titlebar.textContent = title;
+      // Houd de groep van de actieve subpagina uitgeklapt zodat het item zichtbaar is.
+      const actief = navItems.find(i => i.dataset.view === name);
+      if (actief && actief.dataset.parent) setGroepUit(actief.dataset.parent, true);
     }
 
     const sbsec = document.getElementById('sbsec');
@@ -1518,9 +1616,14 @@
       const item = e.target.closest('nldd-list-item');
       if (!item || !item.dataset.view) return;
       showView(item.dataset.view, item.dataset.title);
+      // Parent: naast navigeren naar het overzicht ook in-/uitklappen.
+      if (item.dataset.group) setGroepUit(item.dataset.group, !expandedGroups.has(item.dataset.group));
       // In een smal venster staat de nav in een sheet: sluit die na een keuze.
       if (sbsec && sbsec.collapsed && sbsec.hide) sbsec.hide();
     });
+
+    // Start ingeklapt.
+    ['profieldienst', 'notificatiedienst'].forEach(g => setGroepUit(g, false));
 
     // Menu-trigger (zichtbaar wanneer de sidebar is ingeklapt) opent de nav-sheet.
     const openNav = document.querySelector('[data-open-nav]');
@@ -1533,6 +1636,20 @@
     // Knoppen die naar een andere view springen (bv. vanuit de notificatiedienst-pagina).
     document.querySelectorAll('nldd-button[data-nav-view]').forEach(b =>
       b.addEventListener('click', () => showView(b.dataset.navView, b.dataset.navTitle)));
+
+    // Klikbare overzichtstegels naar een subpagina (knop erin handelt zichzelf af).
+    document.querySelectorAll('.nav-tile[data-nav-view]').forEach(tile => {
+      const go = () => showView(tile.dataset.navView, tile.dataset.navTitle);
+      tile.addEventListener('click', e => { if (!e.target.closest('nldd-button')) go(); });
+      tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
+
+    // Verwijzing naar een marktplaats-dienstpagina (bv. wervende productie-CTA).
+    document.querySelectorAll('[data-goto-marktplaats]').forEach(b =>
+      b.addEventListener('click', () => {
+        showView('marktplaats', 'Marktplaats');
+        if (window.__mpOpenDienst) window.__mpOpenDienst(b.dataset.gotoMarktplaats);
+      }));
 
     // Uitloggen → terug naar de inlogpagina.
     const logout = document.getElementById('logout');
@@ -2046,6 +2163,8 @@
         }
         showPage('dienst');
       }
+      // Beschikbaar maken zodat een wervende CTA elders direct de dienstpagina kan openen.
+      window.__mpOpenDienst = openDienst;
       root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => {
         const b = root.querySelector('#dp-prod-bevestig');
         b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met Sanne de Boer (Kamer van Koophandel).');
