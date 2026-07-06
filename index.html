@@ -742,11 +742,11 @@
                               <!-- Specifieke ondernemers opvoeren op e-mailadres met gekoppeld BSN -->
                               <div id="opt-specifiek" hidden>
                                 <nldd-container gap="12">
-                                  <nldd-form-field label="E-mailadres van de ondernemer">
-                                    <nldd-text-field id="spec-email" placeholder="naam@bedrijf.nl"></nldd-text-field>
+                                  <nldd-form-field label="E-mailadres(sen) van de ondernemer(s)">
+                                    <nldd-multi-line-text-field id="spec-email" rows="2" placeholder="naam@bedrijf.nl - meerdere mag, gescheiden door komma, puntkomma of nieuwe regel"></nldd-multi-line-text-field>
                                   </nldd-form-field>
                                   <div class="inline">
-                                    <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Ondernemer toevoegen"></nldd-button>
+                                    <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Ondernemer(s) toevoegen"></nldd-button>
                                     <span class="muted-note">Bekend: info@dekorenbloem.nl · administratie@jansen-it.nl · planning@vandijktransport.nl</span>
                                   </div>
                                   <nldd-banner id="spec-melding" variant="success" text="" hidden></nldd-banner>
@@ -1813,14 +1813,26 @@
         }
 
         root.querySelector('#spec-add').addEventListener('click', () => {
-          const email = (emailVeld.value || '').trim().toLowerCase();
-          if (!email || email.indexOf('@') === -1) { meld(melding, 'warning', 'Vul een geldig e-mailadres in.'); return; }
-          const match = EMAIL_BSN[email];
-          voegToe(email, match ? match.bsn : '', match ? match.naam : '');
+          // Eén of meer adressen, gescheiden door komma, puntkomma of witruimte/nieuwe regel.
+          const adressen = [...new Set((emailVeld.value || '').split(/[\s,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean))];
+          if (!adressen.length) { meld(melding, 'warning', 'Vul een of meer e-mailadressen in.'); return; }
+          const bestaand = new Set([...lijst.querySelectorAll('h4')].map(h => h.textContent));
+          let toegevoegd = 0, metBsn = 0, dubbel = 0, ongeldig = 0;
+          adressen.forEach(email => {
+            if (email.indexOf('@') === -1) { ongeldig++; return; }
+            if (bestaand.has(email)) { dubbel++; return; }
+            const match = EMAIL_BSN[email];
+            voegToe(email, match ? match.bsn : '', match ? match.naam : '');
+            bestaand.add(email);
+            toegevoegd++;
+            if (match) metBsn++;
+          });
           emailVeld.value = '';
-          meld(melding, 'success', match
-            ? 'Ondernemer toegevoegd. Het gekoppelde BSN is vooraf ingevuld en kan worden overschreven.'
-            : 'E-mailadres toegevoegd. Geen gekoppeld BSN gevonden - vul het BSN zelf in.');
+          const delen = [];
+          if (toegevoegd) delen.push(toegevoegd + (toegevoegd === 1 ? ' ondernemer toegevoegd' : ' ondernemers toegevoegd') + (metBsn ? ' (' + metBsn + ' met vooraf ingevuld BSN)' : ''));
+          if (dubbel) delen.push(dubbel + ' stond al in de lijst');
+          if (ongeldig) delen.push(ongeldig + ' ongeldig e-mailadres');
+          meld(melding, toegevoegd ? 'success' : 'warning', delen.join(' · ') + '.');
         });
       })();
 
