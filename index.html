@@ -57,6 +57,16 @@
     .k-rollen .k-rollen-label { font-size: 0.85rem; color: #5a5a5a; margin-inline-end: 2px; }
     /* Contactherstel via fysieke post: uitklapbaar herstelblok binnen een kaart */
     .ch-herstel { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-top: 4px; }
+    /* Flags (feature-toggles) */
+    .flags-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+    .flags-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+    .flags-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .flags-lijst { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+    .flag-optie { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .flag-optie nldd-checkbox { flex: none; margin-top: 2px; }
+    .flag-tekst { line-height: 1.35; }
+    .flag-tekst strong { display: block; }
+    .flag-off { display: none !important; }
     /* Voorkeurskanaal: prioriteit per kanaal */
     .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
     .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -1597,6 +1607,7 @@
           </nldd-container>
           <nldd-page-footer-legal-bar slot="legal-bar">
             <nldd-page-footer-legal-bar-item slot="start" text="© 2026 Rijksoverheid"></nldd-page-footer-legal-bar-item>
+            <nldd-page-footer-legal-bar-item slot="end" id="open-flags" text="Flags"></nldd-page-footer-legal-bar-item>
             <nldd-page-footer-legal-bar-item slot="end" id="open-present" text="Presentatie (Shift+P)"></nldd-page-footer-legal-bar-item>
             <nldd-page-footer-legal-bar-item slot="end" text="Toegankelijkheid" href="#"></nldd-page-footer-legal-bar-item>
             <nldd-page-footer-legal-bar-item slot="end" text="Privacy" href="#"></nldd-page-footer-legal-bar-item>
@@ -1605,6 +1616,18 @@
         </nldd-page-footer>
       </nldd-page>
     </nldd-app-view>
+
+    <!-- ===== Flags (feature-toggles, bewaard in deze browser) ===== -->
+    <div id="flags-overlay" class="flags-overlay" hidden>
+      <div class="flags-dialog" role="dialog" aria-modal="true" aria-labelledby="flags-titel">
+        <div class="flags-head">
+          <nldd-title size="4"><h2 id="flags-titel">Flags</h2></nldd-title>
+          <nldd-button id="flags-close" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
+        </div>
+        <p class="muted-note">Experimentele functionaliteit aan- of uitzetten. De keuze blijft bewaard in deze browser.</p>
+        <div id="flags-lijst" class="flags-lijst"></div>
+      </div>
+    </div>
 
     <!-- ===== Presentatiemodus (full-screen slides, stijl Begane Grond) ===== -->
     <div class="present" id="present" aria-hidden="true">
@@ -3467,6 +3490,80 @@
       if (p.get('present') === '1') {
         open(parseInt(p.get('slide') || '1', 10) || 1);
       }
+    })();
+  </script>
+
+  <script>
+    // ====================== Flags (feature-toggles) ======================
+    // Zet experimentele functionaliteit aan/uit via de footer. Standaard uit.
+    // De keuze wordt bewaard in localStorage (per browser).
+    (function () {
+      const OPSLAG = 'moza-flags';
+      const FLAGS = [
+        {
+          key: 'berichten',
+          label: 'Berichten',
+          desc: 'Berichten samenstellen en versturen binnen de notificatiedienst.',
+          standaard: false,
+          view: 'berichten',
+          elementen: () => document.querySelectorAll('nldd-list-item[data-view="berichten"], .nav-tile[data-nav-view="berichten"]'),
+        },
+      ];
+
+      function lees() {
+        let opgeslagen = {};
+        try { opgeslagen = JSON.parse(localStorage.getItem(OPSLAG) || '{}') || {}; } catch (e) {}
+        const staat = {};
+        FLAGS.forEach(f => { staat[f.key] = typeof opgeslagen[f.key] === 'boolean' ? opgeslagen[f.key] : f.standaard; });
+        return staat;
+      }
+      function bewaar() { try { localStorage.setItem(OPSLAG, JSON.stringify(staat)); } catch (e) {} }
+
+      const staat = lees();
+
+      function pasToe() {
+        FLAGS.forEach(f => {
+          const aan = !!staat[f.key];
+          f.elementen().forEach(el => el.classList.toggle('flag-off', !aan));
+          if (!aan && f.view && typeof showView === 'function') {
+            const actief = document.querySelector('.view.is-active');
+            if (actief && actief.dataset.view === f.view) showView('notificatiedienst', 'Notificatiedienst');
+          }
+        });
+      }
+
+      const overlay = document.getElementById('flags-overlay');
+      const lijst = document.getElementById('flags-lijst');
+      function renderLijst() {
+        lijst.textContent = '';
+        FLAGS.forEach(f => {
+          const rij = document.createElement('div');
+          rij.className = 'flag-optie';
+          rij.innerHTML =
+            '<nldd-checkbox accessible-label="' + f.label + '"></nldd-checkbox>' +
+            '<span class="flag-tekst"><strong>' + f.label + '</strong><span class="muted-note">' + f.desc + '</span></span>';
+          const cb = rij.querySelector('nldd-checkbox');
+          cb.toggleAttribute('checked', !!staat[f.key]);
+          rij.addEventListener('click', e => {
+            if (e.target.closest('nldd-checkbox')) return;
+            const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+            if (input) input.click(); else cb.toggleAttribute('checked');
+          });
+          cb.addEventListener('change', () => { staat[f.key] = cb.checked; bewaar(); pasToe(); });
+          lijst.appendChild(rij);
+        });
+      }
+      function openFlags() { renderLijst(); overlay.removeAttribute('hidden'); }
+      function sluitFlags() { overlay.setAttribute('hidden', ''); }
+
+      const openBtn = document.getElementById('open-flags');
+      if (openBtn) openBtn.addEventListener('click', e => { e.preventDefault(); openFlags(); });
+      const closeBtn = document.getElementById('flags-close');
+      if (closeBtn) closeBtn.addEventListener('click', sluitFlags);
+      if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) sluitFlags(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay && !overlay.hasAttribute('hidden')) sluitFlags(); });
+
+      pasToe(); // standaard uit → Berichten verborgen bij het laden
     })();
   </script>
 </body>
