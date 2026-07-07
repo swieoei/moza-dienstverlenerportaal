@@ -895,7 +895,7 @@
                       <!-- 3. Inhoud per taal en kanaal -->
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">Vul de talen in die je ondersteunt - elk contact krijgt automatisch zijn voorkeurstaal (profieldienst), met Nederlands als terugval. Per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
+                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">Je schrijft in het Nederlands; de inhoud wordt automatisch vertaald naar de andere talen. Elk contact ontvangt zijn voorkeurstaal (profieldienst). De veldlabels blijven Nederlands - dit portaal is Nederlandstalig. Per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
 
                           <nldd-form-field label="Afzender (e-mailadres)">
                             <nldd-text-field id="afz-email" placeholder="notificaties@kvk.nl"></nldd-text-field>
@@ -915,29 +915,36 @@
                               <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
                               <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                               <p class="muted-note">Kort en bondig - push en SMS tonen doorgaans maximaal ~160 tekens.</p>
+                              <div class="inline">
+                                <nldd-button id="auto-vertaal" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Automatisch vertalen naar EN, DE en FR"></nldd-button>
+                              </div>
                             </nldd-container>
                           </div>
                           <div data-langpane="en" hidden>
                             <nldd-container gap="12">
-                              <nldd-form-field label="Subject"><nldd-text-field id="subj-en"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Long text (email, post)"><nldd-multi-line-text-field id="body-en" rows="8"></nldd-multi-line-text-field></nldd-form-field>
-                              <nldd-form-field label="Short text (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-en" rows="2"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
+                              <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-en" readonly></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-en" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-en" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <div data-langpane="de" hidden>
                             <nldd-container gap="12">
-                              <nldd-form-field label="Betreff"><nldd-text-field id="subj-de"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Langer Text (E-Mail, Post)"><nldd-multi-line-text-field id="body-de" rows="8"></nldd-multi-line-text-field></nldd-form-field>
-                              <nldd-form-field label="Kurztext (Push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-de" rows="2"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
+                              <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-de" readonly></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-de" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-de" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <div data-langpane="fr" hidden>
                             <nldd-container gap="12">
-                              <nldd-form-field label="Objet"><nldd-text-field id="subj-fr"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Texte long (e-mail, courrier)"><nldd-multi-line-text-field id="body-fr" rows="8"></nldd-multi-line-text-field></nldd-form-field>
-                              <nldd-form-field label="Texte court (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-fr" rows="2"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
+                              <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-fr" readonly></nldd-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-fr" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-fr" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
+                          <nldd-banner id="vertaal-melding" variant="success" text="" hidden></nldd-banner>
                         </nldd-container>
                       </nldd-card>
 
@@ -2089,6 +2096,27 @@
         }
       }
       tplSelect.addEventListener('change', () => fillTemplate(tplSelect.value));
+
+      // Automatisch vertalen: NL is de bron; EN/DE/FR worden gevuld met de vertaling.
+      // Bij een template gebruiken we de meegeleverde vertaling; bij vrije tekst een
+      // machinevertaling (in deze proeftuin ter illustratie gelijk aan de brontekst).
+      const vertaalMelding = root.querySelector('#vertaal-melding');
+      function autoVertaal() {
+        const t = TEMPLATES[tplSelect.value];
+        ['en', 'de', 'fr'].forEach(l => {
+          const heeft = t && t[l] && (t[l].subject || t[l].body || t[l].kort);
+          const s = root.querySelector('#subj-' + l), b = root.querySelector('#body-' + l), k = root.querySelector('#short-' + l);
+          if (s) s.value = heeft ? (t[l].subject || '') : root.querySelector('#subj-nl').value;
+          if (b) b.value = heeft ? (t[l].body || '') : root.querySelector('#body-nl').value;
+          if (k) k.value = heeft ? (t[l].kort || '') : root.querySelector('#short-nl').value;
+        });
+        if (vertaalMelding) {
+          vertaalMelding.setAttribute('text', 'Inhoud automatisch vertaald naar Engels, Duits en Frans. Elk contact ontvangt de versie in zijn voorkeurstaal.');
+          vertaalMelding.removeAttribute('hidden');
+        }
+      }
+      const autoBtn = root.querySelector('#auto-vertaal');
+      if (autoBtn) autoBtn.addEventListener('click', autoVertaal);
 
       // --- Kanaalvoorkeur: zoek op BSN/KvK, toon & pas aan, informeer ondernemer ---
       const ONDERNEMERS = {
