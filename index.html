@@ -1837,6 +1837,18 @@
     const logout = document.getElementById('mi-logout');
     if (logout) logout.addEventListener('click', () => { window.location.href = 'login.html'; });
 
+    // Enter in een enkelregelig tekstveld bevestigt het formulier: klikt de primaire
+    // knop in dezelfde kaart (bijv. Zoeken, Opslaan, Aanmaken). Meerregelige velden
+    // (nldd-multi-line-text-field) blijven ongemoeid - daar is Enter een nieuwe regel.
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || e.shiftKey) return;
+      const veld = e.target && e.target.closest ? e.target.closest('nldd-text-field') : null;
+      if (!veld) return;
+      const kaart = veld.closest('nldd-card');
+      const knop = kaart && kaart.querySelector('nldd-button[variant="primary"]:not([disabled])');
+      if (knop) { e.preventDefault(); knop.click(); }
+    });
+
     // Demo: kaart-acties (herstellen / negeren) werken de status visueel bij.
     const ACTION_RESULT = {
       restore: { color: 'success', text: 'hersteld' },
