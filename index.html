@@ -55,6 +55,8 @@
     .rol-tekst strong { display: block; }
     .k-rollen { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
     .k-rollen .k-rollen-label { font-size: 0.85rem; color: #5a5a5a; margin-inline-end: 2px; }
+    /* Contactherstel via fysieke post: uitklapbaar herstelblok binnen een kaart */
+    .ch-herstel { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-top: 4px; }
     /* Voorkeurskanaal: prioriteit per kanaal */
     .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
     .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -1181,6 +1183,8 @@
                     <nldd-tag color="critical" text="4 openstaand"></nldd-tag>
                   </div>
 
+                  <nldd-banner variant="neutral" text="De digitale kanalen zijn onbereikbaar. Centraal herstel verloopt daarom via fysieke post naar het bij de KvK geregistreerde adres. Controleer per ondernemer eerst of het adres klopt en verstuur dan de brief."></nldd-banner>
+
                   <nldd-card>
                     <nldd-container padding="16" gap="12">
                       <div class="between">
@@ -1197,7 +1201,7 @@
                         <p>Het e-mailadres was onbereikbaar, waardoor notificaties niet aankwamen. De ondernemer geeft via de KvK een <strong>nieuw contactadres</strong> door. Na bevestiging wordt dit centraal gedeeld met alle aangesloten overheidsorganisaties.</p>
                       </nldd-rich-text>
                       <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
                         <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
                         <nldd-button variant="secondary" text="Details"></nldd-button>
                       </div>
@@ -1220,7 +1224,7 @@
                         <p>Na een bedrijfsoverdracht is er een <strong>nieuwe contactpersoon</strong>. De ondernemer herstelt via de KvK het contact zodat berichten van de overheid weer op de juiste plek aankomen.</p>
                       </nldd-rich-text>
                       <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
                         <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
                         <nldd-button variant="secondary" text="Details"></nldd-button>
                       </div>
@@ -1243,7 +1247,7 @@
                         <p>De onderneming is verhuisd en de contactgegevens waren verouderd. De ondernemer geeft via de KvK de actuele gegevens door voor centraal herstel.</p>
                       </nldd-rich-text>
                       <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
                         <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
                         <nldd-button variant="secondary" text="Details"></nldd-button>
                       </div>
@@ -1266,7 +1270,7 @@
                         <p>Het account was eerder ontkoppeld. De ondernemer wil via de KvK het contact met de overheid herstellen om weer notificaties te ontvangen.</p>
                       </nldd-rich-text>
                       <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="handshake" text="Centraal herstellen" data-action="restore"></nldd-button>
+                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
                         <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
                         <nldd-button variant="secondary" text="Details"></nldd-button>
                       </div>
@@ -1906,6 +1910,86 @@
       }
       if (actions) actions.setAttribute('hidden', '');
     });
+
+    // Contactherstel via fysieke post: 'Centraal herstellen via post' opent per kaart een
+    // tweestapsflow - eerst het bij de KvK geregistreerde adres controleren, dan de brief
+    // versturen. Digitale kanalen zijn immers onbereikbaar; post is het herstelkanaal.
+    (function () {
+      const CH_ADRES = {
+        'Bakkerij De Korenbloem': 'Dorpsstraat 12, 3811 AB Amersfoort',
+        'Jansen Installatietechniek BV': 'Industrieweg 5, 7424 PT Deventer',
+        'Groene Vingers Hoveniers': 'Tuinderslaan 34, 6712 CD Ede',
+        'Transport Van Dijk': 'Havenkade 88, 3071 AA Rotterdam',
+      };
+      document.querySelectorAll('.ch-start').forEach(startBtn => {
+        const card = startBtn.closest('nldd-card');
+        if (!card) return;
+        const naam = ((card.querySelector('h2') || {}).textContent || '').trim();
+        const adres = CH_ADRES[naam] || 'Adres onbekend - controleer het Handelsregister';
+        const mainActions = startBtn.closest('.row-actions');
+        if (!mainActions) return;
+
+        const panel = document.createElement('div');
+        panel.className = 'ch-herstel';
+        panel.setAttribute('hidden', '');
+        panel.innerHTML =
+          '<nldd-container gap="12">' +
+            '<nldd-title size="6"><h3>Contactherstel via fysieke post</h3><p slot="subtitle">Digitale kanalen onbereikbaar - herstel via een brief naar het geregistreerde adres</p></nldd-title>' +
+            '<nldd-form-field label="Postadres (Handelsregister)"><nldd-text-field class="ch-adres"></nldd-text-field></nldd-form-field>' +
+            '<div class="inline"><nldd-button class="ch-check" variant="secondary" start-icon="seal-check-mark" text="Adres controleren"></nldd-button></div>' +
+            '<nldd-banner class="ch-melding" variant="warning" text="Adres nog niet gecontroleerd - controleer eerst voordat je verstuurt."></nldd-banner>' +
+            '<div class="row-actions">' +
+              '<nldd-button class="ch-post" variant="primary" start-icon="paper-plane" text="Fysieke post versturen" disabled></nldd-button>' +
+              '<nldd-button class="ch-annuleer" variant="secondary" text="Annuleren"></nldd-button>' +
+            '</div>' +
+          '</nldd-container>';
+        mainActions.insertAdjacentElement('afterend', panel);
+
+        const adresVeld = panel.querySelector('.ch-adres');
+        const melding = panel.querySelector('.ch-melding');
+        const postBtn = panel.querySelector('.ch-post');
+        let gecontroleerd = false;
+        adresVeld.value = adres;
+        customElements.whenDefined('nldd-text-field').then(() => { adresVeld.value = adres; });
+
+        function resetCheck() {
+          gecontroleerd = false;
+          postBtn.setAttribute('disabled', '');
+          melding.setAttribute('variant', 'warning');
+          melding.setAttribute('text', 'Adres nog niet gecontroleerd - controleer eerst voordat je verstuurt.');
+        }
+        startBtn.addEventListener('click', () => {
+          mainActions.setAttribute('hidden', '');
+          panel.removeAttribute('hidden');
+          resetCheck();
+        });
+        panel.querySelector('.ch-annuleer').addEventListener('click', () => {
+          panel.setAttribute('hidden', '');
+          mainActions.removeAttribute('hidden');
+        });
+        adresVeld.addEventListener('input', resetCheck);
+        panel.querySelector('.ch-check').addEventListener('click', () => {
+          const waarde = (adresVeld.value || '').trim();
+          if (!waarde) {
+            melding.setAttribute('variant', 'critical');
+            melding.setAttribute('text', 'Vul eerst een postadres in.');
+            return;
+          }
+          gecontroleerd = true;
+          postBtn.removeAttribute('disabled');
+          melding.setAttribute('variant', 'success');
+          melding.setAttribute('text', 'Adres gecontroleerd: komt overeen met het Handelsregister. Klaar om te versturen.');
+        });
+        postBtn.addEventListener('click', () => {
+          if (postBtn.hasAttribute('disabled') || !gecontroleerd) return;
+          const waarde = (adresVeld.value || '').trim();
+          const kopTags = card.querySelectorAll('.between nldd-tag');
+          const statusTag = kopTags[kopTags.length - 1];
+          if (statusTag) { statusTag.setAttribute('color', 'success'); statusTag.setAttribute('text', 'post verstuurd'); }
+          panel.innerHTML = '<nldd-banner variant="success" text="Fysieke post verstuurd naar ' + waarde + '. Zodra de ondernemer reageert, worden de contactgegevens centraal bijgewerkt en gedeeld met alle aangesloten organisaties."></nldd-banner>';
+        });
+      });
+    })();
 
     // Beginwaarden voor de tekstvelden zetten via de .value-property (na component-upgrade).
     customElements.whenDefined('nldd-text-field').then(() => {
