@@ -785,26 +785,27 @@
 
                           <div id="opt-doelgroep">
                             <nldd-container gap="12">
+                              <nldd-form-field label="Type ontvanger">
+                                <nldd-segmented-control id="ontvangertype" value="ondernemer" type="radio" variant="icon-and-text" width="full" accessible-label="Type ontvanger">
+                                  <nldd-segmented-control-item value="ondernemer" text="Ondernemers" icon="person-badge-gear"></nldd-segmented-control-item>
+                                  <nldd-segmented-control-item value="ambtenaar" text="Ambtenaren" icon="person"></nldd-segmented-control-item>
+                                </nldd-segmented-control>
+                              </nldd-form-field>
                               <nldd-form-field label="Doelgroep">
                                 <nldd-dropdown>
-                                  <select id="doelgroep" aria-label="Doelgroep">
-                                    <option value="alle" selected>Alle ondernemers</option>
-                                    <option value="sector">Per sector…</option>
-                                    <option value="nieuw">Nieuwe inschrijvingen</option>
-                                    <option value="specifiek">Specifieke ondernemer…</option>
-                                  </select>
+                                  <select id="doelgroep" aria-label="Doelgroep"></select>
                                 </nldd-dropdown>
                               </nldd-form-field>
 
-                              <!-- Specifieke ondernemers opvoeren op e-mailadres met gekoppeld BSN -->
+                              <!-- Specifieke ontvangers opvoeren op e-mailadres met een gekoppelde identiteit -->
                               <div id="opt-specifiek" hidden>
                                 <nldd-container gap="12">
-                                  <nldd-form-field label="E-mailadres(sen) van de ondernemer(s)">
+                                  <nldd-form-field id="spec-email-field" label="E-mailadres(sen)">
                                     <nldd-multi-line-text-field id="spec-email" rows="2" placeholder="naam@bedrijf.nl - meerdere mag, gescheiden door komma, puntkomma of nieuwe regel"></nldd-multi-line-text-field>
                                   </nldd-form-field>
                                   <div class="inline">
-                                    <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Ondernemer(s) toevoegen"></nldd-button>
-                                    <span class="muted-note">Bekend: info@dekorenbloem.nl · administratie@jansen-it.nl · planning@vandijktransport.nl</span>
+                                    <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Toevoegen"></nldd-button>
+                                    <span class="muted-note" id="spec-hint"></span>
                                   </div>
                                   <nldd-banner id="spec-melding" variant="success" text="" hidden></nldd-banner>
                                   <div class="stack" id="spec-lijst"></div>
@@ -885,7 +886,7 @@
                       <!-- 4. Inhoud per taal -->
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>4. Inhoud per taal</h2></nldd-title>
+                          <nldd-title size="5"><h2>4. Inhoud per taal en kanaal</h2><p slot="subtitle">Een template verschilt per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
 
                           <nldd-form-field label="Afzender (e-mailadres)">
                             <nldd-text-field id="afz-email" placeholder="notificaties@kvk.nl"></nldd-text-field>
@@ -902,25 +903,30 @@
                           <div data-langpane="nl">
                             <nldd-container gap="12">
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-nl"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Bericht"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
+                              <p class="muted-note">Kort en bondig - push en SMS tonen doorgaans maximaal ~160 tekens.</p>
                             </nldd-container>
                           </div>
                           <div data-langpane="en" hidden>
                             <nldd-container gap="12">
                               <nldd-form-field label="Subject"><nldd-text-field id="subj-en"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Message"><nldd-multi-line-text-field id="body-en" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Long text (email, post)"><nldd-multi-line-text-field id="body-en" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Short text (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-en" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <div data-langpane="de" hidden>
                             <nldd-container gap="12">
                               <nldd-form-field label="Betreff"><nldd-text-field id="subj-de"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Nachricht"><nldd-multi-line-text-field id="body-de" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Langer Text (E-Mail, Post)"><nldd-multi-line-text-field id="body-de" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Kurztext (Push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-de" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <div data-langpane="fr" hidden>
                             <nldd-container gap="12">
                               <nldd-form-field label="Objet"><nldd-text-field id="subj-fr"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Message"><nldd-multi-line-text-field id="body-fr" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Texte long (e-mail, courrier)"><nldd-multi-line-text-field id="body-fr" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Texte court (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-fr" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                         </nldd-container>
@@ -1854,21 +1860,47 @@
         applyType((e.detail && e.detail.value) || currentType());
       });
 
-      // --- Doelgroep: specifieke ondernemers opvoeren op e-mailadres met gekoppeld BSN ---
+      // --- Doelgroep: type ontvanger (ondernemer/ambtenaar) + specifieke ontvangers op e-mail ---
       (function () {
         const doelgroep = root.querySelector('#doelgroep');
         const optSpec = root.querySelector('#opt-specifiek');
         const lijst = root.querySelector('#spec-lijst');
         const melding = root.querySelector('#spec-melding');
         const emailVeld = root.querySelector('#spec-email');
+        const emailField = root.querySelector('#spec-email-field');
+        const hint = root.querySelector('#spec-hint');
+        const addBtn = root.querySelector('#spec-add');
+        const ontvangerCtrl = root.querySelector('#ontvangertype');
         if (!doelgroep) return;
 
-        // E-mailadres → vooraf gekoppeld BSN (fictief).
-        const EMAIL_BSN = {
-          'info@dekorenbloem.nl': { bsn: '123456782', naam: 'Bakkerij De Korenbloem' },
-          'administratie@jansen-it.nl': { bsn: '234567891', naam: 'Jansen Installatietechniek BV' },
-          'planning@vandijktransport.nl': { bsn: '345678916', naam: 'Transport Van Dijk' },
+        // Per ontvangertype: doelgroep-opties, labels en e-mail → vooraf gekoppelde identiteit (fictief).
+        const ONTVANGER = {
+          ondernemer: {
+            doelgroep: [['alle', 'Alle ondernemers'], ['sector', 'Per sector…'], ['nieuw', 'Nieuwe inschrijvingen'], ['specifiek', 'Specifieke ondernemer…']],
+            emailLabel: 'E-mailadres(sen) van de ondernemer(s)', addText: 'Ondernemer(s) toevoegen',
+            hint: 'Bekend: info@dekorenbloem.nl · administratie@jansen-it.nl · planning@vandijktransport.nl',
+            idLabel: 'Gekoppeld BSN', idPlaceholder: '9 cijfers', idTerm: 'BSN',
+            onbekend: 'Onbekende ondernemer - controleer het e-mailadres', woord: ['ondernemer', 'ondernemers'],
+            map: {
+              'info@dekorenbloem.nl': { id: '123456782', naam: 'Bakkerij De Korenbloem' },
+              'administratie@jansen-it.nl': { id: '234567891', naam: 'Jansen Installatietechniek BV' },
+              'planning@vandijktransport.nl': { id: '345678916', naam: 'Transport Van Dijk' },
+            },
+          },
+          ambtenaar: {
+            doelgroep: [['alle', 'Alle ambtenaren'], ['organisatie', 'Per organisatie…'], ['specifiek', 'Specifieke ambtenaar…']],
+            emailLabel: 'E-mailadres(sen) van de ambtena(a)r(en)', addText: 'Ambtena(a)r(en) toevoegen',
+            hint: 'Bekend: j.devries@utrecht.nl · m.jansen@rvo.nl · a.bakker@kvk.nl',
+            idLabel: 'Organisatie / afdeling', idPlaceholder: 'Organisatie - afdeling', idTerm: 'organisatie',
+            onbekend: 'Onbekende ambtenaar - controleer het e-mailadres', woord: ['ambtenaar', 'ambtenaren'],
+            map: {
+              'j.devries@utrecht.nl': { id: 'Gemeente Utrecht - Vergunningen', naam: 'J. de Vries' },
+              'm.jansen@rvo.nl': { id: 'RVO - Subsidies', naam: 'M. Jansen' },
+              'a.bakker@kvk.nl': { id: 'Kamer van Koophandel - Handelsregister', naam: 'A. Bakker' },
+            },
+          },
         };
+        let cfg = ONTVANGER.ondernemer;
 
         function meld(el, variant, text) {
           el.setAttribute('variant', variant);
@@ -1876,10 +1908,25 @@
           el.removeAttribute('hidden');
         }
 
+        function pasTypeToe(type) {
+          cfg = ONTVANGER[type] || ONTVANGER.ondernemer;
+          doelgroep.innerHTML = cfg.doelgroep.map(([v, t]) => '<option value="' + v + '">' + t + '</option>').join('');
+          doelgroep.value = 'alle';
+          doelgroep.dispatchEvent(new Event('change', { bubbles: true }));
+          if (emailField) emailField.setAttribute('label', cfg.emailLabel);
+          if (addBtn) addBtn.setAttribute('text', cfg.addText);
+          if (hint) hint.textContent = cfg.hint;
+          lijst.textContent = '';
+          melding.setAttribute('hidden', '');
+        }
+
+        if (ontvangerCtrl) ontvangerCtrl.addEventListener('change', e =>
+          pasTypeToe((e.detail && e.detail.value) || 'ondernemer'));
+
         doelgroep.addEventListener('change', () =>
           optSpec.toggleAttribute('hidden', doelgroep.value !== 'specifiek'));
 
-        function voegToe(email, bsn, naam) {
+        function voegToe(email, idWaarde, naam) {
           const wrap = document.createElement('div');
           wrap.innerHTML = `
             <nldd-card>
@@ -1888,58 +1935,64 @@
                   <nldd-title size="6"><h4></h4><p slot="subtitle" class="s-naam"></p></nldd-title>
                   <nldd-button class="s-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
                 </div>
-                <nldd-form-field label="Gekoppeld BSN">
-                  <nldd-text-field class="s-bsn" placeholder="9 cijfers"></nldd-text-field>
+                <nldd-form-field class="s-id-field">
+                  <nldd-text-field class="s-id"></nldd-text-field>
                 </nldd-form-field>
                 <div class="row-actions">
-                  <nldd-button class="s-verzoek" variant="secondary" start-icon="paper-plane" text="Verzoek BSN-wijziging indienen"></nldd-button>
+                  <nldd-button class="s-verzoek" variant="secondary" start-icon="paper-plane"></nldd-button>
                 </div>
                 <nldd-banner class="s-melding" variant="success" text="" hidden></nldd-banner>
               </nldd-container>
             </nldd-card>`;
           const el = wrap.firstElementChild;
+          const term = cfg.idTerm;
           el.querySelector('h4').textContent = email;
-          el.querySelector('.s-naam').textContent = naam || 'Onbekende ondernemer - controleer het e-mailadres';
-          const bsnVeld = el.querySelector('.s-bsn');
-          bsnVeld.value = bsn || '';
-          const oorspronkelijk = bsn || '';
+          el.querySelector('.s-naam').textContent = naam || cfg.onbekend;
+          el.querySelector('.s-id-field').setAttribute('label', cfg.idLabel);
+          el.querySelector('.s-verzoek').setAttribute('text', 'Verzoek ' + term + '-wijziging indienen');
+          const idVeld = el.querySelector('.s-id');
+          idVeld.setAttribute('placeholder', cfg.idPlaceholder);
+          idVeld.value = idWaarde || '';
+          const oorspronkelijk = idWaarde || '';
           const rijMelding = el.querySelector('.s-melding');
 
           el.querySelector('.s-verzoek').addEventListener('click', () => {
-            const huidig = (bsnVeld.value || '').trim();
-            if (!huidig) { meld(rijMelding, 'warning', 'Vul eerst een BSN in.'); return; }
+            const huidig = (idVeld.value || '').trim();
+            if (!huidig) { meld(rijMelding, 'warning', 'Vul eerst een ' + term + ' in.'); return; }
             if (huidig === oorspronkelijk) {
-              meld(rijMelding, 'neutral', 'Het BSN is niet gewijzigd; er is geen wijzigingsverzoek nodig.');
+              meld(rijMelding, 'neutral', 'De ' + term + ' is niet gewijzigd; er is geen wijzigingsverzoek nodig.');
               return;
             }
-            meld(rijMelding, 'success', 'Verzoek ingediend om het gekoppelde BSN voor ' + email + ' te wijzigen naar ' + huidig + '. De beheerorganisatie beoordeelt de wijziging.');
+            meld(rijMelding, 'success', 'Verzoek ingediend om de gekoppelde ' + term + ' voor ' + email + ' te wijzigen naar ' + huidig + '. De beheerorganisatie beoordeelt de wijziging.');
           });
           el.querySelector('.s-verwijder').addEventListener('click', () => el.remove());
           lijst.appendChild(el);
         }
 
-        root.querySelector('#spec-add').addEventListener('click', () => {
+        addBtn.addEventListener('click', () => {
           // Eén of meer adressen, gescheiden door komma, puntkomma of witruimte/nieuwe regel.
           const adressen = [...new Set((emailVeld.value || '').split(/[\s,;]+/).map(s => s.trim().toLowerCase()).filter(Boolean))];
           if (!adressen.length) { meld(melding, 'warning', 'Vul een of meer e-mailadressen in.'); return; }
           const bestaand = new Set([...lijst.querySelectorAll('h4')].map(h => h.textContent));
-          let toegevoegd = 0, metBsn = 0, dubbel = 0, ongeldig = 0;
+          let toegevoegd = 0, metId = 0, dubbel = 0, ongeldig = 0;
           adressen.forEach(email => {
             if (email.indexOf('@') === -1) { ongeldig++; return; }
             if (bestaand.has(email)) { dubbel++; return; }
-            const match = EMAIL_BSN[email];
-            voegToe(email, match ? match.bsn : '', match ? match.naam : '');
+            const match = cfg.map[email];
+            voegToe(email, match ? match.id : '', match ? match.naam : '');
             bestaand.add(email);
             toegevoegd++;
-            if (match) metBsn++;
+            if (match) metId++;
           });
           emailVeld.value = '';
           const delen = [];
-          if (toegevoegd) delen.push(toegevoegd + (toegevoegd === 1 ? ' ondernemer toegevoegd' : ' ondernemers toegevoegd') + (metBsn ? ' (' + metBsn + ' met vooraf ingevuld BSN)' : ''));
+          if (toegevoegd) delen.push(toegevoegd + ' ' + (toegevoegd === 1 ? cfg.woord[0] : cfg.woord[1]) + ' toegevoegd' + (metId ? ' (' + metId + ' met vooraf ingevulde ' + cfg.idTerm + ')' : ''));
           if (dubbel) delen.push(dubbel + ' stond al in de lijst');
           if (ongeldig) delen.push(ongeldig + ' ongeldig e-mailadres');
           meld(melding, toegevoegd ? 'success' : 'warning', delen.join(' · ') + '.');
         });
+
+        pasTypeToe('ondernemer');
       })();
 
       // --- Talen: checkbox toont/verbergt de bijbehorende taal-tab ---
@@ -1969,39 +2022,47 @@
           type: 'eenmalig',
           afzender: 'regelgeving@kvk.nl',
           nl: { subject: 'Nieuwe regelgeving vanaf 1 januari 2027',
-                body: 'Geachte ondernemer,\n\nPer 1 januari 2027 wijzigt de regelgeving voor inschrijving in het Handelsregister. Wij informeren u tijdig zodat u uw administratie kunt aanpassen.\n\nMeer informatie vindt u op kvk.nl.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
+                body: 'Geachte ondernemer,\n\nPer 1 januari 2027 wijzigt de regelgeving voor inschrijving in het Handelsregister. Wij informeren u tijdig zodat u uw administratie kunt aanpassen.\n\nMeer informatie vindt u op kvk.nl.\n\nMet vriendelijke groet,\nKamer van Koophandel',
+                kort: 'KvK: per 1 jan 2027 wijzigt de inschrijving in het Handelsregister. Bekijk wat dit voor u betekent op kvk.nl.' },
           en: { subject: 'New regulations as of 1 January 2027',
-                body: 'Dear entrepreneur,\n\nAs of 1 January 2027, the rules for registration in the Business Register will change. We are informing you in good time so you can update your records.\n\nMore information at kvk.nl.\n\nKind regards,\nNetherlands Chamber of Commerce' },
+                body: 'Dear entrepreneur,\n\nAs of 1 January 2027, the rules for registration in the Business Register will change. We are informing you in good time so you can update your records.\n\nMore information at kvk.nl.\n\nKind regards,\nNetherlands Chamber of Commerce',
+                kort: 'KvK: from 1 Jan 2027 the Business Register registration rules change. See kvk.nl.' },
           de: { subject: 'Neue Vorschriften ab dem 1. Januar 2027',
-                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nzum 1. Januar 2027 ändern sich die Vorschriften für die Eintragung im Handelsregister. Wir informieren Sie rechtzeitig, damit Sie Ihre Unterlagen anpassen können.\n\nWeitere Informationen unter kvk.nl.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer' },
+                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nzum 1. Januar 2027 ändern sich die Vorschriften für die Eintragung im Handelsregister. Wir informieren Sie rechtzeitig, damit Sie Ihre Unterlagen anpassen können.\n\nWeitere Informationen unter kvk.nl.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer',
+                kort: 'KvK: ab 1.1.2027 ändern sich die Handelsregister-Vorschriften. Mehr auf kvk.nl.' },
           fr: { subject: 'Nouvelle réglementation à partir du 1er janvier 2027',
-                body: 'Madame, Monsieur,\n\nÀ partir du 1er janvier 2027, la réglementation relative à l\'inscription au registre du commerce change. Nous vous informons à temps afin que vous puissiez adapter vos documents.\n\nPlus d\'informations sur kvk.nl.\n\nCordialement,\nChambre de commerce des Pays-Bas' },
+                body: 'Madame, Monsieur,\n\nÀ partir du 1er janvier 2027, la réglementation relative à l\'inscription au registre du commerce change. Nous vous informons à temps afin que vous puissiez adapter vos documents.\n\nPlus d\'informations sur kvk.nl.\n\nCordialement,\nChambre de commerce des Pays-Bas',
+                kort: 'KvK : dès le 01/01/2027, les règles du registre du commerce changent. Voir kvk.nl.' },
         },
         reminder: {
           type: 'reminder',
           afzender: 'zaken@kvk.nl',
           nl: { subject: 'Herinnering: actie vereist voor uw zaak',
-                body: 'Geachte ondernemer,\n\nVoor uw lopende zaak ontbreekt nog een aanvulling. Wij verzoeken u deze vóór de vervaldatum aan te leveren.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
+                body: 'Geachte ondernemer,\n\nVoor uw lopende zaak ontbreekt nog een aanvulling. Wij verzoeken u deze vóór de vervaldatum aan te leveren.\n\nMet vriendelijke groet,\nKamer van Koophandel',
+                kort: 'KvK-herinnering: uw zaak mist nog een aanvulling. Lever deze aan vóór de vervaldatum via kvk.nl.' },
           en: { subject: 'Reminder: action required for your case',
-                body: 'Dear entrepreneur,\n\nYour ongoing case is still missing additional information. Please provide this before the due date.\n\nKind regards,\nNetherlands Chamber of Commerce' },
-          de: { subject: '', body: '' },
-          fr: { subject: '', body: '' },
+                body: 'Dear entrepreneur,\n\nYour ongoing case is still missing additional information. Please provide this before the due date.\n\nKind regards,\nNetherlands Chamber of Commerce',
+                kort: 'KvK reminder: your case needs additional info before the due date. See kvk.nl.' },
+          de: { subject: '', body: '', kort: '' },
+          fr: { subject: '', body: '', kort: '' },
         },
         terugkerend: {
           type: 'terugkerend',
           afzender: 'handelsregister@kvk.nl',
           nl: { subject: 'Jaarlijkse opgave Handelsregister',
-                body: 'Geachte ondernemer,\n\nHet is weer tijd voor uw jaarlijkse opgave voor het Handelsregister. Controleer en bevestig uw gegevens vóór de gestelde datum.\n\nMet vriendelijke groet,\nKamer van Koophandel' },
+                body: 'Geachte ondernemer,\n\nHet is weer tijd voor uw jaarlijkse opgave voor het Handelsregister. Controleer en bevestig uw gegevens vóór de gestelde datum.\n\nMet vriendelijke groet,\nKamer van Koophandel',
+                kort: 'KvK: tijd voor uw jaarlijkse opgave Handelsregister. Bevestig uw gegevens op kvk.nl.' },
           en: { subject: 'Annual Business Register filing',
-                body: 'Dear entrepreneur,\n\nIt is time for your annual Business Register filing. Please review and confirm your details before the deadline.\n\nKind regards,\nNetherlands Chamber of Commerce' },
-          de: { subject: '', body: '' },
-          fr: { subject: '', body: '' },
+                body: 'Dear entrepreneur,\n\nIt is time for your annual Business Register filing. Please review and confirm your details before the deadline.\n\nKind regards,\nNetherlands Chamber of Commerce',
+                kort: 'KvK: time for your annual Business Register filing. Confirm at kvk.nl.' },
+          de: { subject: '', body: '', kort: '' },
+          fr: { subject: '', body: '', kort: '' },
         },
         vrij: {
           type: 'eenmalig',
           afzender: 'notificaties@kvk.nl',
-          nl: { subject: '', body: '' }, en: { subject: '', body: '' },
-          de: { subject: '', body: '' }, fr: { subject: '', body: '' },
+          nl: { subject: '', body: '', kort: '' }, en: { subject: '', body: '', kort: '' },
+          de: { subject: '', body: '', kort: '' }, fr: { subject: '', body: '', kort: '' },
         },
       };
 
@@ -2014,8 +2075,10 @@
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const s = root.querySelector('#subj-' + l);
           const b = root.querySelector('#body-' + l);
+          const k = root.querySelector('#short-' + l);
           if (s) s.value = (t[l] && t[l].subject) || '';
           if (b) b.value = (t[l] && t[l].body) || '';
+          if (k) k.value = (t[l] && t[l].kort) || '';
         });
         if (t.type) {
           typeCtrl.setAttribute('value', t.type);
