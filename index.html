@@ -439,6 +439,40 @@
                         </nldd-container>
                       </nldd-card>
 
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="6"><h3>Wie ontvangt de notificaties?</h3><p slot="subtitle">De ondernemer zelf en/of een gemachtigde of intermediair</p></nldd-title>
+                          <div class="stack" id="pf-ontvangers"></div>
+                          <div class="inline">
+                            <nldd-button id="pf-ontv-toggle" variant="secondary" start-icon="plus" text="Ontvanger toevoegen"></nldd-button>
+                          </div>
+                          <div id="pf-ontv-form" hidden>
+                            <nldd-card>
+                              <nldd-container padding="16" gap="12">
+                                <nldd-form-field label="Type ontvanger">
+                                  <nldd-dropdown>
+                                    <select id="pf-ontv-type" aria-label="Type ontvanger">
+                                      <option value="gemachtigde">Gemachtigde</option>
+                                      <option value="intermediair">Intermediair</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </nldd-form-field>
+                                <nldd-form-field label="Naam of organisatie">
+                                  <nldd-text-field id="pf-ontv-naam" placeholder="Bijv. Accountantskantoor Groen & Co"></nldd-text-field>
+                                </nldd-form-field>
+                                <nldd-form-field label="E-mailadres">
+                                  <nldd-text-field id="pf-ontv-email" placeholder="naam@bedrijf.nl"></nldd-text-field>
+                                </nldd-form-field>
+                                <div class="row-actions">
+                                  <nldd-button id="pf-ontv-add" variant="primary" start-icon="plus" text="Toevoegen"></nldd-button>
+                                  <nldd-button id="pf-ontv-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+                                </div>
+                              </nldd-container>
+                            </nldd-card>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
                       <nldd-banner id="pf-bevestig" variant="success" text="" hidden></nldd-banner>
                     </div>
                   </div>
@@ -2162,13 +2196,24 @@
       const PROFIELEN = {
         '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782',
           email: 'info@dekorenbloem.nl', telefoon: '06-21345678', post: 'Dorpsstraat 12, 3811 AB Amersfoort',
-          kanaal: 'email', taal: 'nl', bron: 'Profielservice' },
+          kanaal: 'email', taal: 'nl', bron: 'Profielservice',
+          ontvangers: [
+            { type: 'ondernemer', naam: 'Bakkerij De Korenbloem', contact: 'info@dekorenbloem.nl', actief: true },
+          ] },
         '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891',
           email: 'administratie@jansen-it.nl', telefoon: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer',
-          kanaal: 'sms', taal: 'nl', bron: 'KvK Handelsregister' },
+          kanaal: 'sms', taal: 'nl', bron: 'KvK Handelsregister',
+          ontvangers: [
+            { type: 'ondernemer', naam: 'Jansen Installatietechniek BV', contact: 'administratie@jansen-it.nl', actief: true },
+            { type: 'gemachtigde', naam: 'P. de Wit (bedrijfsleider)', contact: 'p.dewit@jansen-it.nl', actief: true },
+          ] },
         '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916',
           email: 'planning@vandijktransport.nl', telefoon: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam',
-          kanaal: 'post', taal: 'en', bron: 'Profielservice' },
+          kanaal: 'post', taal: 'en', bron: 'Profielservice',
+          ontvangers: [
+            { type: 'ondernemer', naam: 'Transport Van Dijk', contact: 'planning@vandijktransport.nl', actief: false },
+            { type: 'intermediair', naam: 'Accountantskantoor Groen & Co', contact: 'post@groenaccountants.nl', actief: true },
+          ] },
       };
 
       const zoekBtn = root.querySelector('#pf-zoek');
@@ -2196,10 +2241,76 @@
         if (taal) taal.value = o.taal;
         vEmail.setAttribute('color', 'warning'); vEmail.setAttribute('text', 'e-mail: onbevestigd');
         vTel.setAttribute('color', 'warning'); vTel.setAttribute('text', 'telefoon: onbevestigd');
+        renderOntvangers();
+        ontvForm.setAttribute('hidden', '');
         elBevestig.setAttribute('hidden', '');
         elLeeg.setAttribute('hidden', '');
         elResult.removeAttribute('hidden');
       }
+
+      // Notificatieontvangers: ondernemer zelf en/of gemachtigde/intermediair.
+      const ontvLijst = root.querySelector('#pf-ontvangers');
+      const ontvForm = root.querySelector('#pf-ontv-form');
+      const ONTV_TAG = {
+        ondernemer: { color: 'neutral', label: 'ondernemer' },
+        gemachtigde: { color: 'accent', label: 'gemachtigde' },
+        intermediair: { color: 'accent', label: 'intermediair' },
+      };
+      function renderOntvangers() {
+        ontvLijst.textContent = '';
+        (huidig.ontvangers || []).forEach((ontv, i) => {
+          const wrap = document.createElement('div');
+          wrap.innerHTML = `
+            <nldd-card>
+              <nldd-container padding="12" gap="8">
+                <div class="between">
+                  <nldd-title size="6"><h4></h4><p slot="subtitle" class="o-contact"></p></nldd-title>
+                  <nldd-tag class="o-type" text=""></nldd-tag>
+                </div>
+                <div class="between">
+                  <nldd-form-field label="Ontvangt notificaties"><nldd-switch class="o-actief"></nldd-switch></nldd-form-field>
+                  <nldd-button class="o-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
+                </div>
+              </nldd-container>
+            </nldd-card>`;
+          const el = wrap.firstElementChild;
+          el.querySelector('h4').textContent = ontv.naam;
+          el.querySelector('.o-contact').textContent = ontv.contact;
+          const t = ONTV_TAG[ontv.type] || ONTV_TAG.gemachtigde;
+          const tag = el.querySelector('.o-type');
+          tag.setAttribute('color', t.color); tag.setAttribute('text', t.label);
+          const sw = el.querySelector('.o-actief');
+          if (ontv.actief) sw.setAttribute('checked', '');
+          sw.addEventListener('change', () => { ontv.actief = (sw.checked != null) ? !!sw.checked : sw.hasAttribute('checked'); });
+          const verw = el.querySelector('.o-verwijder');
+          if (ontv.type === 'ondernemer') verw.remove();
+          else verw.addEventListener('click', () => { huidig.ontvangers.splice(i, 1); renderOntvangers(); });
+          ontvLijst.appendChild(el);
+        });
+      }
+      root.querySelector('#pf-ontv-toggle').addEventListener('click', () => ontvForm.toggleAttribute('hidden'));
+      root.querySelector('#pf-ontv-annuleer').addEventListener('click', () => ontvForm.setAttribute('hidden', ''));
+      root.querySelector('#pf-ontv-add').addEventListener('click', () => {
+        if (!huidig) return;
+        const type = root.querySelector('#pf-ontv-type').value || 'gemachtigde';
+        const naam = (root.querySelector('#pf-ontv-naam').value || '').trim();
+        const email = (root.querySelector('#pf-ontv-email').value || '').trim();
+        if (!naam || email.indexOf('@') === -1) {
+          elBevestig.setAttribute('variant', 'warning');
+          elBevestig.setAttribute('text', 'Vul een naam en een geldig e-mailadres in voor de ontvanger.');
+          elBevestig.removeAttribute('hidden');
+          return;
+        }
+        huidig.ontvangers = huidig.ontvangers || [];
+        huidig.ontvangers.push({ type: type, naam: naam, contact: email, actief: true });
+        renderOntvangers();
+        ontvForm.setAttribute('hidden', '');
+        root.querySelector('#pf-ontv-naam').value = '';
+        root.querySelector('#pf-ontv-email').value = '';
+        elBevestig.setAttribute('variant', 'success');
+        elBevestig.setAttribute('text', (ONTV_TAG[type] || {}).label + ' ' + naam + ' toegevoegd als notificatieontvanger.');
+        elBevestig.removeAttribute('hidden');
+      });
 
       zoekBtn.addEventListener('click', () => {
         const kvk = (root.querySelector('#pf-kvk').value || '').trim();
@@ -2223,7 +2334,12 @@
         const sel = kanaal.querySelector('nldd-segmented-control-item[selected]');
         const gekozen = (sel && sel.getAttribute('value')) || kanaal.getAttribute('value') || huidig.kanaal;
         const labels = { email: 'e-mail', sms: 'SMS', post: 'post' };
-        elBevestig.setAttribute('text', 'Profiel van ' + huidig.naam + ' opgeslagen. Voorkeurskanaal: ' + (labels[gekozen] || gekozen) + '. Deze voorkeur wordt centraal toegepast in de notificatiedienst en is decentraal te bevragen.');
+        const actief = (huidig.ontvangers || []).filter(o => o.actief);
+        const ontvTekst = actief.length
+          ? ' Notificaties gaan naar: ' + actief.map(o => o.naam + ' (' + (ONTV_TAG[o.type] || {}).label + ')').join(', ') + '.'
+          : ' Let op: er is geen actieve notificatieontvanger ingesteld.';
+        elBevestig.setAttribute('variant', actief.length ? 'success' : 'warning');
+        elBevestig.setAttribute('text', 'Profiel van ' + huidig.naam + ' opgeslagen. Voorkeurskanaal: ' + (labels[gekozen] || gekozen) + '.' + ontvTekst);
         elBevestig.removeAttribute('hidden');
       });
     })();
