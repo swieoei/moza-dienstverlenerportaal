@@ -1006,10 +1006,15 @@
                                   <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span>
                                   <nldd-dropdown>
                                     <select class="prio-select" data-kanaal="email" aria-label="Prioriteit e-mail">
-                                      <option value="1">1e keuze</option>
-                                      <option value="2">2e keuze</option>
-                                      <option value="3">3e keuze</option>
-                                      <option value="0">Niet gebruiken</option>
+                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </div>
+                                <div class="prio-rij">
+                                  <span class="prio-kanaal"><nldd-icon name="bell" size="20"></nldd-icon> Push (MijnOverheid-app)</span>
+                                  <nldd-dropdown>
+                                    <select class="prio-select" data-kanaal="push" aria-label="Prioriteit push">
+                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                     </select>
                                   </nldd-dropdown>
                                 </div>
@@ -1017,10 +1022,15 @@
                                   <span class="prio-kanaal"><nldd-icon name="message-rectangle-text" size="20"></nldd-icon> SMS</span>
                                   <nldd-dropdown>
                                     <select class="prio-select" data-kanaal="sms" aria-label="Prioriteit SMS">
-                                      <option value="1">1e keuze</option>
-                                      <option value="2">2e keuze</option>
-                                      <option value="3">3e keuze</option>
-                                      <option value="0">Niet gebruiken</option>
+                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                    </select>
+                                  </nldd-dropdown>
+                                </div>
+                                <div class="prio-rij">
+                                  <span class="prio-kanaal"><nldd-icon name="app" size="20"></nldd-icon> WhatsApp / Signal</span>
+                                  <nldd-dropdown>
+                                    <select class="prio-select" data-kanaal="whatsapp" aria-label="Prioriteit WhatsApp of Signal">
+                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                     </select>
                                   </nldd-dropdown>
                                 </div>
@@ -1028,10 +1038,7 @@
                                   <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Post</span>
                                   <nldd-dropdown>
                                     <select class="prio-select" data-kanaal="post" aria-label="Prioriteit post">
-                                      <option value="1">1e keuze</option>
-                                      <option value="2">2e keuze</option>
-                                      <option value="3">3e keuze</option>
-                                      <option value="0">Niet gebruiken</option>
+                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                     </select>
                                   </nldd-dropdown>
                                 </div>
@@ -1040,8 +1047,14 @@
                               <nldd-form-field label="E-mailadres">
                                 <nldd-text-field id="ct-email"></nldd-text-field>
                               </nldd-form-field>
+                              <nldd-form-field label="Push (MijnOverheid-app)">
+                                <nldd-text-field id="ct-push"></nldd-text-field>
+                              </nldd-form-field>
                               <nldd-form-field label="Mobiel nummer (SMS)">
                                 <nldd-text-field id="ct-sms"></nldd-text-field>
+                              </nldd-form-field>
+                              <nldd-form-field label="WhatsApp / Signal (nummer)">
+                                <nldd-text-field id="ct-whatsapp"></nldd-text-field>
                               </nldd-form-field>
                               <nldd-form-field label="Postadres">
                                 <nldd-text-field id="ct-post"></nldd-text-field>
@@ -2015,19 +2028,21 @@
 
       // --- Kanaalvoorkeur: zoek op BSN/KvK, toon & pas aan, informeer ondernemer ---
       const ONDERNEMERS = {
-        '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782', prioriteit: { email: 1, sms: 2, post: 3 },
-          email: 'info@dekorenbloem.nl', sms: '06-21345678', post: 'Dorpsstraat 12, 3811 AB Amersfoort' },
-        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891', prioriteit: { sms: 1, email: 2, post: 0 },
-          email: 'administratie@jansen-it.nl', sms: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer' },
-        '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916', prioriteit: { post: 1, email: 2, sms: 3 },
-          email: 'planning@vandijktransport.nl', sms: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam' },
+        '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782', prioriteit: { email: 1, push: 2, sms: 3, whatsapp: 4, post: 5 },
+          email: 'info@dekorenbloem.nl', push: 'MijnOverheid-app (gekoppeld)', sms: '06-21345678', whatsapp: '06-21345678', post: 'Dorpsstraat 12, 3811 AB Amersfoort' },
+        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891', prioriteit: { push: 1, whatsapp: 2, sms: 3, email: 4, post: 0 },
+          email: 'administratie@jansen-it.nl', push: 'MijnOverheid-app (gekoppeld)', sms: '06-34567812', whatsapp: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer' },
+        '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916', prioriteit: { post: 1, email: 2, sms: 3, whatsapp: 0, push: 0 },
+          email: 'planning@vandijktransport.nl', push: 'Niet gekoppeld', sms: '06-45678123', whatsapp: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam' },
       };
       const KANAAL = {
         email: { label: 'e-mail', veld: 'ct-email' },
+        push: { label: 'push', veld: 'ct-push' },
         sms: { label: 'SMS', veld: 'ct-sms' },
+        whatsapp: { label: 'WhatsApp/Signal', veld: 'ct-whatsapp' },
         post: { label: 'post', veld: 'ct-post' },
       };
-      const KANAAL_VOLGORDE = ['email', 'sms', 'post'];
+      const KANAAL_VOLGORDE = ['email', 'push', 'sms', 'whatsapp', 'post'];
       const zoekBtn = root.querySelector('#zoek-btn');
       if (zoekBtn) {
         const elLeeg = root.querySelector('#kanaal-leeg');
@@ -2049,7 +2064,9 @@
           root.querySelector('#res-naam').textContent = o.naam;
           root.querySelector('#res-sub').textContent = 'KvK ' + o.kvk + ' · BSN ' + o.bsn;
           root.querySelector('#ct-email').value = o.email;
+          root.querySelector('#ct-push').value = o.push;
           root.querySelector('#ct-sms').value = o.sms;
+          root.querySelector('#ct-whatsapp').value = o.whatsapp;
           root.querySelector('#ct-post').value = o.post;
           prioSelects.forEach(s => {
             s.value = String((o.prioriteit && o.prioriteit[s.dataset.kanaal]) || 0);
