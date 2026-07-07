@@ -841,6 +841,18 @@
                                     <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Toevoegen"></nldd-button>
                                     <span class="muted-note" id="spec-hint"></span>
                                   </div>
+
+                                  <!-- Alleen voor ondernemers: toevoegen op BSN of KvK-nummer -->
+                                  <div id="spec-bsnkvk" hidden>
+                                    <nldd-form-field label="Of voeg toe op BSN of KvK-nummer">
+                                      <nldd-multi-line-text-field id="spec-nummer" rows="2" placeholder="9-cijferig BSN of 8-cijferig KvK-nummer - meerdere mag"></nldd-multi-line-text-field>
+                                    </nldd-form-field>
+                                    <div class="inline">
+                                      <nldd-button id="spec-add-nummer" variant="secondary" start-icon="plus" text="Toevoegen op BSN/KvK"></nldd-button>
+                                      <span class="muted-note">Probeer KvK 81234567, 84567123 of 87651234</span>
+                                    </div>
+                                  </div>
+
                                   <nldd-banner id="spec-melding" variant="success" text="" hidden></nldd-banner>
                                   <div class="stack" id="spec-lijst"></div>
                                 </nldd-container>
@@ -1887,7 +1899,20 @@
         const hint = root.querySelector('#spec-hint');
         const addBtn = root.querySelector('#spec-add');
         const ontvangerCtrl = root.querySelector('#ontvangertype');
+        const bsnkvkBlok = root.querySelector('#spec-bsnkvk');
+        const nummerVeld = root.querySelector('#spec-nummer');
+        const addNummerBtn = root.querySelector('#spec-add-nummer');
         if (!doelgroep) return;
+
+        // Controle op een ondernemer: is deze te vinden en kan het bericht worden verzonden?
+        // (Voorkomt foutieve of niet-verzending.) rec komt uit ONDERNEMERS (verderop in deze module).
+        function checkOndernemer(rec) {
+          if (!rec) return { color: 'critical', text: 'niet gevonden - wordt niet verzonden' };
+          const heeftKanaal = rec.prioriteit && Object.values(rec.prioriteit).some(p => p > 0);
+          const heeftContact = !!(rec.email || rec.sms || rec.post);
+          if (!heeftKanaal || !heeftContact) return { color: 'warning', text: 'controle: geen actief kanaal - komt mogelijk niet aan' };
+          return { color: 'success', text: 'gecontroleerd - kan verzonden worden' };
+        }
 
         // Per ontvangertype: doelgroep-opties, labels en e-mail → vooraf gekoppelde identiteit (fictief).
         const ONTVANGER = {
@@ -1932,6 +1957,8 @@
           if (emailField) emailField.setAttribute('label', cfg.emailLabel);
           if (addBtn) addBtn.setAttribute('text', cfg.addText);
           if (hint) hint.textContent = cfg.hint;
+          if (bsnkvkBlok) bsnkvkBlok.toggleAttribute('hidden', type !== 'ondernemer');
+          if (nummerVeld) nummerVeld.value = '';
           lijst.textContent = '';
           melding.setAttribute('hidden', '');
         }
@@ -1942,14 +1969,17 @@
         doelgroep.addEventListener('change', () =>
           optSpec.toggleAttribute('hidden', doelgroep.value !== 'specifiek'));
 
-        function voegToe(email, idWaarde, naam) {
+        function voegToe(email, idWaarde, naam, check) {
           const wrap = document.createElement('div');
           wrap.innerHTML = `
             <nldd-card>
               <nldd-container padding="16" gap="12">
                 <div class="between">
                   <nldd-title size="6"><h4></h4><p slot="subtitle" class="s-naam"></p></nldd-title>
-                  <nldd-button class="s-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
+                  <div class="inline">
+                    <nldd-tag class="s-check" text="" hidden></nldd-tag>
+                    <nldd-button class="s-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
+                  </div>
                 </div>
                 <nldd-form-field class="s-id-field">
                   <nldd-text-field class="s-id"></nldd-text-field>
@@ -1964,6 +1994,12 @@
           const term = cfg.idTerm;
           el.querySelector('h4').textContent = email;
           el.querySelector('.s-naam').textContent = naam || cfg.onbekend;
+          if (check) {
+            const ct = el.querySelector('.s-check');
+            ct.setAttribute('color', check.color);
+            ct.setAttribute('text', check.text);
+            ct.removeAttribute('hidden');
+          }
           el.querySelector('.s-id-field').setAttribute('label', cfg.idLabel);
           el.querySelector('.s-verzoek').setAttribute('text', 'Verzoek ' + term + '-wijziging indienen');
           const idVeld = el.querySelector('.s-id');
@@ -1995,7 +2031,13 @@
             if (email.indexOf('@') === -1) { ongeldig++; return; }
             if (bestaand.has(email)) { dubbel++; return; }
             const match = cfg.map[email];
-            voegToe(email, match ? match.id : '', match ? match.naam : '');
+            // Voor ondernemers: controle op basis van de bijbehorende registratie.
+            let check = null;
+            if (cfg === ONTVANGER.ondernemer) {
+              const rec = match ? Object.values(ONDERNEMERS).find(o => o.bsn === match.id) : null;
+              check = checkOndernemer(rec);
+            }
+            voegToe(email, match ? match.id : '', match ? match.naam : '', check);
             bestaand.add(email);
             toegevoegd++;
             if (match) metId++;
@@ -2006,6 +2048,29 @@
           if (dubbel) delen.push(dubbel + ' stond al in de lijst');
           if (ongeldig) delen.push(ongeldig + ' ongeldig e-mailadres');
           meld(melding, toegevoegd ? 'success' : 'warning', delen.join(' · ') + '.');
+        });
+
+        // Ondernemers toevoegen op BSN of KvK-nummer, met controle tegen de registratie.
+        if (addNummerBtn) addNummerBtn.addEventListener('click', () => {
+          const nummers = [...new Set((nummerVeld.value || '').split(/[\s,;]+/).map(s => s.trim()).filter(Boolean))];
+          if (!nummers.length) { meld(melding, 'warning', 'Vul een of meer BSN- of KvK-nummers in.'); return; }
+          const bestaand = new Set([...lijst.querySelectorAll('h4')].map(h => h.textContent));
+          let toegevoegd = 0, gevonden = 0, nietGevonden = 0, dubbel = 0;
+          nummers.forEach(nr => {
+            const rec = ONDERNEMERS[nr] || Object.values(ONDERNEMERS).find(o => o.bsn === nr);
+            const identiteit = rec ? rec.email : ('BSN/KvK ' + nr);
+            if (bestaand.has(identiteit)) { dubbel++; return; }
+            voegToe(identiteit, rec ? rec.bsn : nr, rec ? rec.naam : '', checkOndernemer(rec));
+            bestaand.add(identiteit);
+            toegevoegd++;
+            if (rec) gevonden++; else nietGevonden++;
+          });
+          nummerVeld.value = '';
+          const delen = [];
+          if (gevonden) delen.push(gevonden + ' gevonden en toegevoegd');
+          if (nietGevonden) delen.push(nietGevonden + ' niet gevonden - deze worden niet verzonden');
+          if (dubbel) delen.push(dubbel + ' stond al in de lijst');
+          meld(melding, nietGevonden ? 'warning' : 'success', 'Controle op BSN/KvK uitgevoerd: ' + delen.join(' · ') + '.');
         });
 
         pasTypeToe('ondernemer');
