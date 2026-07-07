@@ -225,6 +225,11 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Berichten"></nldd-text-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="templates" data-title="Templatebibliotheek" data-parent="notificatiedienst" hidden>
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="books-vertical"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Templatebibliotheek"></nldd-text-cell>
+                </nldd-list-item>
                 <nldd-list-item button data-view="contactherstel" data-title="Contactherstel" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="handshake"></nldd-icon></nldd-icon-cell>
@@ -765,7 +770,6 @@
                   <nldd-tab-bar id="ber-tabs" accessible-label="Berichten">
                     <nldd-tab-bar-item selected text="Overzicht" icon="bullet-list" data-panel="overzicht"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Nieuw bericht" icon="pencil" data-panel="nieuw"></nldd-tab-bar-item>
-                    <nldd-tab-bar-item text="Templatebibliotheek" icon="books-vertical" data-panel="templates"></nldd-tab-bar-item>
                   </nldd-tab-bar>
 
                   <!-- ---------- Panel: Overzicht ---------- -->
@@ -990,68 +994,68 @@
                     </div>
                   </div>
 
-                  <!-- ---------- Panel: Templatebibliotheek ---------- -->
-                  <div data-ber-panel="templates" hidden>
-                    <div class="stack">
-                      <nldd-banner variant="neutral" text="Standaardtemplates, eigen (KvK) templates en concepten. Een template is gekoppeld aan ondernemers of ambtenaren - kies de doelgroep om de bijbehorende set te zien. Bekijk, bewerk of verwijder een template - meertalig (NL, EN, DE, FR)."></nldd-banner>
-                      <nldd-form-field label="Doelgroep">
-                        <nldd-segmented-control id="tb-filter" value="ondernemer" type="radio" variant="icon-and-text" width="full" accessible-label="Doelgroep templates">
-                          <nldd-segmented-control-item value="ondernemer" text="Ondernemers" icon="person-badge-gear"></nldd-segmented-control-item>
-                          <nldd-segmented-control-item value="ambtenaar" text="Ambtenaren" icon="person"></nldd-segmented-control-item>
-                        </nldd-segmented-control>
-                      </nldd-form-field>
-                      <div class="inline">
-                        <nldd-button id="tb-nieuw" variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
-                      </div>
-                      <nldd-banner id="tb-lijstmelding" variant="success" text="" hidden></nldd-banner>
-                      <nldd-list id="tb-lijst" variant="box"></nldd-list>
+                </div>
+              </section>
 
-                      <!-- Detail: bekijken / bewerken -->
-                      <div id="tb-detail" hidden>
-                        <nldd-card>
-                          <nldd-container padding="16" gap="12">
-                            <div class="between">
-                              <nldd-title size="5"><h2 id="tb-d-titel">-</h2><p slot="subtitle" id="tb-d-sub">-</p></nldd-title>
-                              <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
-                            </div>
-
-                            <nldd-form-field label="Titel">
-                              <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
-                            </nldd-form-field>
-                            <nldd-form-field label="Afzender (e-mailadres)">
-                              <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
-                            </nldd-form-field>
-
-                            <nldd-tab-bar id="tb-langtabs" accessible-label="Taal">
-                              <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
-                              <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
-                              <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
-                              <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
-                            </nldd-tab-bar>
-                            <nldd-banner id="tb-d-leegtaal" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken of gebruik automatisch vertalen." hidden></nldd-banner>
-                            <nldd-form-field label="Onderwerp">
-                              <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
-                            </nldd-form-field>
-                            <nldd-form-field label="Lange tekst (e-mail, post)">
-                              <nldd-multi-line-text-field id="tb-d-body" rows="8" readonly></nldd-multi-line-text-field>
-                            </nldd-form-field>
-                            <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)">
-                              <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
-                            </nldd-form-field>
-
-                            <div class="row-actions">
-                              <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
-                              <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
-                              <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash-can" text="Verwijderen" destructive></nldd-button>
-                              <nldd-button id="tb-sluit" variant="secondary" text="Sluiten"></nldd-button>
-                            </div>
-                            <nldd-banner id="tb-d-melding" variant="success" text="" hidden></nldd-banner>
-                          </nldd-container>
-                        </nldd-card>
-                      </div>
-                    </div>
+              <!-- ====================== TEMPLATEBIBLIOTHEEK (onder Notificatiedienst) ====================== -->
+              <section class="view" data-view="templates">
+                <div class="stack">
+                  <nldd-banner variant="neutral" text="Standaardtemplates, eigen (KvK) templates en concepten. Een template is gekoppeld aan ondernemers of ambtenaren - kies de doelgroep om de bijbehorende set te zien. Bekijk, bewerk of verwijder een template - meertalig (NL, EN, DE, FR)."></nldd-banner>
+                  <nldd-form-field label="Doelgroep">
+                    <nldd-segmented-control id="tb-filter" value="ondernemer" type="radio" variant="icon-and-text" width="full" accessible-label="Doelgroep templates">
+                      <nldd-segmented-control-item value="ondernemer" text="Ondernemers" icon="person-badge-gear"></nldd-segmented-control-item>
+                      <nldd-segmented-control-item value="ambtenaar" text="Ambtenaren" icon="person"></nldd-segmented-control-item>
+                    </nldd-segmented-control>
+                  </nldd-form-field>
+                  <div class="inline">
+                    <nldd-button id="tb-nieuw" variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
                   </div>
+                  <nldd-banner id="tb-lijstmelding" variant="success" text="" hidden></nldd-banner>
+                  <nldd-list id="tb-lijst" variant="box"></nldd-list>
 
+                  <!-- Detail: bekijken / bewerken -->
+                  <div id="tb-detail" hidden>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <div class="between">
+                          <nldd-title size="5"><h2 id="tb-d-titel">-</h2><p slot="subtitle" id="tb-d-sub">-</p></nldd-title>
+                          <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
+                        </div>
+
+                        <nldd-form-field label="Titel">
+                          <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Afzender (e-mailadres)">
+                          <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
+                        </nldd-form-field>
+
+                        <nldd-tab-bar id="tb-langtabs" accessible-label="Taal">
+                          <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
+                          <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
+                          <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
+                          <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
+                        </nldd-tab-bar>
+                        <nldd-banner id="tb-d-leegtaal" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken of gebruik automatisch vertalen." hidden></nldd-banner>
+                        <nldd-form-field label="Onderwerp">
+                          <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Lange tekst (e-mail, post)">
+                          <nldd-multi-line-text-field id="tb-d-body" rows="8" readonly></nldd-multi-line-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)">
+                          <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
+                        </nldd-form-field>
+
+                        <div class="row-actions">
+                          <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
+                          <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
+                          <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash-can" text="Verwijderen" destructive></nldd-button>
+                          <nldd-button id="tb-sluit" variant="secondary" text="Sluiten"></nldd-button>
+                        </div>
+                        <nldd-banner id="tb-d-melding" variant="success" text="" hidden></nldd-banner>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
                 </div>
               </section>
 
@@ -2451,7 +2455,7 @@
     // Bekijken, bewerken en verwijderen van templates, inclusief concepten (drafts).
     // Meertalig: NL/EN/DE/FR. Concepten hebben vaak alleen nog een Nederlandse versie.
     (function () {
-      const root = document.querySelector('section[data-view="berichten"]');
+      const root = document.querySelector('section[data-view="templates"]');
       if (!root) return;
       const lijst = root.querySelector('#tb-lijst');
       const detail = root.querySelector('#tb-detail');
