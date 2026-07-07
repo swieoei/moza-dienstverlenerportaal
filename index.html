@@ -235,9 +235,9 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="chart-x-y-axis-line"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Analytics"></nldd-text-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="marktplaats" data-title="Marktplaats">
+                <nldd-list-item button data-view="marktplaats" data-title="Dienstenaanbod">
                   <nldd-icon-cell slot="start"><nldd-icon name="shopping-cart"></nldd-icon></nldd-icon-cell>
-                  <nldd-text-cell text="Marktplaats"></nldd-text-cell>
+                  <nldd-text-cell text="Dienstenaanbod"></nldd-text-cell>
                 </nldd-list-item>
               </nldd-list>
             </div>
@@ -1338,7 +1338,7 @@
                 <div data-mp-page="koppelen" hidden>
                   <div class="stack">
                     <div class="inline">
-                      <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar marktplaats" data-mp-back></nldd-button>
+                      <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar dienstenaanbod" data-mp-back></nldd-button>
                     </div>
                     <nldd-title size="3"><h2 id="kp-titel">-</h2><p slot="subtitle">Dienst afnemen</p></nldd-title>
                     <nldd-rich-text><p id="kp-desc">-</p></nldd-rich-text>
@@ -1387,7 +1387,7 @@
                 <div data-mp-page="dienst" hidden>
                   <div class="stack">
                     <div class="inline">
-                      <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar marktplaats" data-mp-back></nldd-button>
+                      <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar dienstenaanbod" data-mp-back></nldd-button>
                     </div>
                     <div class="between">
                       <nldd-title size="3"><h2 id="dp-titel">-</h2><p slot="subtitle" id="dp-sub">-</p></nldd-title>
@@ -1830,7 +1830,7 @@
     // Verwijzing naar een marktplaats-dienstpagina (bv. wervende productie-CTA).
     document.querySelectorAll('[data-goto-marktplaats]').forEach(b =>
       b.addEventListener('click', () => {
-        showView('marktplaats', 'Marktplaats');
+        showView('marktplaats', 'Dienstenaanbod');
         if (window.__mpOpenDienst) window.__mpOpenDienst(b.dataset.gotoMarktplaats);
       }));
 
@@ -2632,7 +2632,7 @@
         const vorm = gekozenVorm;
         const b = root.querySelector('#kp-bevestig');
         b.setAttribute('text', vorm === 'demo'
-          ? 'Aanvraag verstuurd. De demo-omgeving van ' + koppelDienst.naam + ' wordt klaargezet; de API-key verschijnt bij de dienst in de marktplaats.'
+          ? 'Aanvraag verstuurd. De demo-omgeving van ' + koppelDienst.naam + ' wordt klaargezet; de API-key verschijnt bij de dienst in het dienstenaanbod.'
           : 'Aanvraag verstuurd. De beheerorganisatie neemt contact op om de aansluitvoorwaarden voor productie van ' + koppelDienst.naam + ' door te nemen.');
         b.removeAttribute('hidden');
       });
