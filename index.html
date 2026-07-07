@@ -207,7 +207,6 @@
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Berichten"></nldd-text-cell>
-                  <nldd-cell slot="end"><nldd-badge color="critical" number="3"></nldd-badge></nldd-cell>
                 </nldd-list-item>
                 <nldd-list-item button data-view="contactherstel" data-title="Contactherstel" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
@@ -505,10 +504,7 @@
                     <!-- Berichten -->
                     <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="berichten" data-nav-title="Berichten" aria-label="Naar Berichten">
                       <nldd-container padding="16" gap="12">
-                        <div class="between">
-                          <nldd-title size="5"><h3>Berichten</h3></nldd-title>
-                          <nldd-badge color="critical" number="3"></nldd-badge>
-                        </div>
+                        <nldd-title size="5"><h3>Berichten</h3></nldd-title>
                         <nldd-rich-text><p>Stel berichten samen en verstuur ze meertalig aan ondernemers - eenmalig, terugkerend of als reminder bij een zaak.</p></nldd-rich-text>
                         <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button></div>
                       </nldd-container>
@@ -764,7 +760,7 @@
                       <nldd-list variant="box">
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
-                          <nldd-text-cell text="**Nieuwe regelgeving vanaf 1 januari 2027** - Alle ondernemers · NL · EN · DE · FR"></nldd-text-cell>
+                          <nldd-text-cell text="**Nieuwe regelgeving vanaf 1 januari 2027** - Alle ondernemers"></nldd-text-cell>
                           <nldd-cell slot="end"><nldd-tag color="accent" text="ingepland"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
@@ -987,22 +983,22 @@
                       <nldd-list variant="box">
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                          <nldd-text-cell text="**Wetswijziging / nieuwe regelgeving** - NL · EN · DE · FR"></nldd-text-cell>
+                          <nldd-text-cell text="**Wetswijziging / nieuwe regelgeving**"></nldd-text-cell>
                           <nldd-cell slot="end"><nldd-tag color="accent" text="eigen (KvK)"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                          <nldd-text-cell text="**Herinnering openstaande zaak** - NL · EN"></nldd-text-cell>
+                          <nldd-text-cell text="**Herinnering openstaande zaak**"></nldd-text-cell>
                           <nldd-cell slot="end"><nldd-tag color="neutral" text="standaard"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                          <nldd-text-cell text="**Terugkerend: jaarlijkse opgave Handelsregister** - NL · EN"></nldd-text-cell>
+                          <nldd-text-cell text="**Terugkerend: jaarlijkse opgave Handelsregister**"></nldd-text-cell>
                           <nldd-cell slot="end"><nldd-tag color="accent" text="eigen (KvK)"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
-                          <nldd-text-cell text="Welkomstbericht nieuwe inschrijving - NL"></nldd-text-cell>
+                          <nldd-text-cell text="Welkomstbericht nieuwe inschrijving"></nldd-text-cell>
                           <nldd-cell slot="end"><nldd-tag color="neutral" text="standaard"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                       </nldd-list>
@@ -1663,7 +1659,7 @@
           </nldd-container>
           <nldd-page-footer-legal-bar slot="legal-bar">
             <nldd-page-footer-legal-bar-item slot="start" text="© 2026 Rijksoverheid"></nldd-page-footer-legal-bar-item>
-            <nldd-page-footer-legal-bar-item slot="end" id="open-present" text="Presentatie"></nldd-page-footer-legal-bar-item>
+            <nldd-page-footer-legal-bar-item slot="end" id="open-present" text="Presentatie (Shift+P)"></nldd-page-footer-legal-bar-item>
             <nldd-page-footer-legal-bar-item slot="end" text="Toegankelijkheid" href="#"></nldd-page-footer-legal-bar-item>
             <nldd-page-footer-legal-bar-item slot="end" text="Privacy" href="#"></nldd-page-footer-legal-bar-item>
             <nldd-page-footer-legal-bar-item slot="end" text="Contact" href="#"></nldd-page-footer-legal-bar-item>
@@ -1687,7 +1683,7 @@
         <div class="present-slide" data-slide="2">
           <div class="eyebrow">02 · Voor wie</div>
           <h2 class="slide-title">Doelgroep</h2>
-          <p class="slide-lead">Publieke dienstverleners die notificaties versturen - beheerders, content-eigenaren en techniek binnen de organisatie.</p>
+          <p class="slide-lead">Publieke dienstverleners die notificaties versturen - beheerders, content-eigenaren en developers binnen de organisatie.</p>
           <p class="slide-body">En indirect de ondernemer, die daardoor op het juiste moment het juiste bericht ontvangt.</p>
         </div>
 
@@ -3002,6 +2998,19 @@
       prevBtn.addEventListener('click', () => go(cur - 1));
       nextBtn.addEventListener('click', () => go(cur + 1));
       document.getElementById('pv-close').addEventListener('click', close);
+
+      // Sneltoets Shift+P start de presentatie (behalve tijdens typen in een veld).
+      document.addEventListener('keydown', e => {
+        if (present.classList.contains('open')) return;
+        if (e.shiftKey && (e.key === 'P' || e.key === 'p')) {
+          const t = e.target;
+          const tag = t && t.tagName ? t.tagName.toLowerCase() : '';
+          if (tag === 'input' || tag === 'textarea' || (t && t.isContentEditable) || (tag && tag.indexOf('nldd-') === 0 && /field|control|dropdown/.test(tag))) return;
+          e.preventDefault();
+          open(1);
+        }
+      });
+
       document.addEventListener('keydown', e => {
         if (!present.classList.contains('open')) return;
         if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
