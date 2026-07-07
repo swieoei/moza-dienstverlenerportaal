@@ -47,6 +47,14 @@
     .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted-note { color: #5a5a5a; font-size: 0.85rem; margin: 0; }
+    /* API-key rollen: meervoudige keuze via checkboxes */
+    .rol-groep { display: flex; flex-direction: column; gap: 10px; }
+    .rol-optie { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .rol-optie nldd-checkbox { flex: none; margin-top: 2px; }
+    .rol-tekst { line-height: 1.35; }
+    .rol-tekst strong { display: block; }
+    .k-rollen { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .k-rollen .k-rollen-label { font-size: 0.85rem; color: #5a5a5a; margin-inline-end: 2px; }
     /* Voorkeurskanaal: prioriteit per kanaal */
     .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
     .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -587,10 +595,8 @@
                             <nldd-form-field label="Naam / toepassing">
                               <nldd-text-field data-nk-naam placeholder="Bijv. Zaaksysteem KvK"></nldd-text-field>
                             </nldd-form-field>
-                            <nldd-form-field label="Rol / functionaliteit">
-                              <nldd-dropdown>
-                                <select data-nk-rol aria-label="Rol of functionaliteit"></select>
-                              </nldd-dropdown>
+                            <nldd-form-field label="Rol / functionaliteit (één of meer)">
+                              <div class="rol-groep" data-nk-rollen></div>
                             </nldd-form-field>
                             <nldd-form-field label="Geldigheidsduur">
                               <nldd-segmented-control data-nk-duur value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
@@ -662,10 +668,8 @@
                             <nldd-form-field label="Naam / toepassing">
                               <nldd-text-field data-nk-naam placeholder="Bijv. Backoffice KvK"></nldd-text-field>
                             </nldd-form-field>
-                            <nldd-form-field label="Rol / functionaliteit">
-                              <nldd-dropdown>
-                                <select data-nk-rol aria-label="Rol of functionaliteit"></select>
-                              </nldd-dropdown>
+                            <nldd-form-field label="Rol / functionaliteit (één of meer)">
+                              <div class="rol-groep" data-nk-rollen></div>
                             </nldd-form-field>
                             <nldd-form-field label="Geldigheidsduur">
                               <nldd-segmented-control data-nk-duur value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
@@ -978,7 +982,13 @@
                   <!-- ---------- Panel: Templatebibliotheek ---------- -->
                   <div data-ber-panel="templates" hidden>
                     <div class="stack">
-                      <nldd-banner variant="neutral" text="Standaardtemplates, eigen (KvK) templates en concepten. Bekijk een template, bewerk of verwijder hem - meertalig (NL, EN, DE, FR)."></nldd-banner>
+                      <nldd-banner variant="neutral" text="Standaardtemplates, eigen (KvK) templates en concepten. Een template is gekoppeld aan ondernemers of ambtenaren - kies de doelgroep om de bijbehorende set te zien. Bekijk, bewerk of verwijder een template - meertalig (NL, EN, DE, FR)."></nldd-banner>
+                      <nldd-form-field label="Doelgroep">
+                        <nldd-segmented-control id="tb-filter" value="ondernemer" type="radio" variant="icon-and-text" width="full" accessible-label="Doelgroep templates">
+                          <nldd-segmented-control-item value="ondernemer" text="Ondernemers" icon="person-badge-gear"></nldd-segmented-control-item>
+                          <nldd-segmented-control-item value="ambtenaar" text="Ambtenaren" icon="person"></nldd-segmented-control-item>
+                        </nldd-segmented-control>
+                      </nldd-form-field>
                       <div class="inline">
                         <nldd-button id="tb-nieuw" variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
                       </div>
@@ -2155,6 +2165,7 @@
       // --- Templatebibliotheek: vult onderwerp + bericht per taal ---
       const TEMPLATES = {
         regelgeving: {
+          label: 'Wetswijziging / nieuwe regelgeving',
           type: 'eenmalig',
           afzender: 'regelgeving@kvk.nl',
           nl: { subject: 'Nieuwe regelgeving vanaf 1 januari 2027',
@@ -2171,6 +2182,7 @@
                 kort: 'KvK : dès le 01/01/2027, les règles du registre du commerce changent. Voir kvk.nl.' },
         },
         reminder: {
+          label: 'Herinnering openstaande zaak',
           type: 'reminder',
           afzender: 'zaken@kvk.nl',
           nl: { subject: 'Herinnering: actie vereist voor uw zaak',
@@ -2187,6 +2199,7 @@
                 kort: 'Rappel KvK : votre dossier nécessite un complément avant la date d\'échéance. Voir kvk.nl.' },
         },
         terugkerend: {
+          label: 'Terugkerend: jaarlijkse opgave Handelsregister',
           type: 'terugkerend',
           afzender: 'handelsregister@kvk.nl',
           nl: { subject: 'Jaarlijkse opgave Handelsregister',
@@ -2203,12 +2216,72 @@
                 kort: 'KvK : il est temps de faire votre déclaration annuelle au registre du commerce. Confirmez sur kvk.nl.' },
         },
         vrij: {
+          label: 'Vrije tekst (zelf opstellen)',
           type: 'eenmalig',
           afzender: 'notificaties@kvk.nl',
           nl: { subject: '', body: '', kort: '' }, en: { subject: '', body: '', kort: '' },
           de: { subject: '', body: '', kort: '' }, fr: { subject: '', body: '', kort: '' },
         },
+        // --- Templates voor ambtenaren ---
+        agenda: {
+          label: 'Agenda-uitnodiging',
+          type: 'eenmalig',
+          afzender: 'secretariaat@kvk.nl',
+          nl: { subject: 'Uitnodiging en agenda: [overleg] op [datum]',
+                body: 'Beste collega,\n\nHierbij nodig ik je uit voor [overleg] op [datum] van [begintijd] tot [eindtijd], locatie [locatie].\n\nAgenda:\n1. Opening en mededelingen\n2. Vaststellen verslag vorige vergadering\n3. [Onderwerp]\n4. Rondvraag en sluiting\n\nDe stukken vind je in de bijlage. Graag tot dan.\n\nMet vriendelijke groet,\n[Naam]',
+                kort: 'Uitnodiging [overleg] op [datum], [begintijd]. Agenda en stukken in de bijlage.' },
+          en: { subject: 'Invitation and agenda: [meeting] on [date]',
+                body: 'Dear colleague,\n\nI would like to invite you to [meeting] on [date] from [start time] to [end time], location [location].\n\nAgenda:\n1. Opening and announcements\n2. Approval of the previous minutes\n3. [Topic]\n4. Any other business and closing\n\nYou will find the documents attached. See you then.\n\nKind regards,\n[Name]',
+                kort: 'Invitation [meeting] on [date], [start time]. Agenda and documents attached.' },
+          de: { subject: 'Einladung und Tagesordnung: [Besprechung] am [Datum]',
+                body: 'Liebe Kollegin, lieber Kollege,\n\nhiermit lade ich Sie zu [Besprechung] am [Datum] von [Beginn] bis [Ende] ein, Ort [Ort].\n\nTagesordnung:\n1. Eröffnung und Mitteilungen\n2. Genehmigung des letzten Protokolls\n3. [Thema]\n4. Verschiedenes und Schluss\n\nDie Unterlagen finden Sie im Anhang. Bis dahin.\n\nMit freundlichen Grüßen,\n[Name]',
+                kort: 'Einladung [Besprechung] am [Datum], [Beginn]. Tagesordnung und Unterlagen im Anhang.' },
+          fr: { subject: 'Invitation et ordre du jour : [réunion] le [date]',
+                body: 'Cher collègue,\n\nje vous invite à [réunion] le [date] de [heure de début] à [heure de fin], lieu [lieu].\n\nOrdre du jour :\n1. Ouverture et communications\n2. Approbation du compte rendu précédent\n3. [Sujet]\n4. Questions diverses et clôture\n\nVous trouverez les documents en pièce jointe. À bientôt.\n\nCordialement,\n[Nom]',
+                kort: 'Invitation [réunion] le [date], [heure]. Ordre du jour et documents en pièce jointe.' },
+        },
+        memo: {
+          label: 'Interne memo / mededeling',
+          type: 'eenmalig',
+          afzender: 'communicatie@kvk.nl',
+          nl: { subject: 'Mededeling: [onderwerp]',
+                body: 'Beste collega\'s,\n\nMet deze memo informeren wij jullie over [onderwerp]. [Toelichting].\n\nHeb je vragen, neem dan contact op met [naam of afdeling].\n\nMet vriendelijke groet,\n[Afdeling]',
+                kort: 'Interne mededeling over [onderwerp]. Zie de memo voor de details.' },
+          en: { subject: 'Announcement: [topic]',
+                body: 'Dear colleagues,\n\nWith this memo we would like to inform you about [topic]. [Explanation].\n\nIf you have any questions, please contact [name or department].\n\nKind regards,\n[Department]',
+                kort: 'Internal announcement about [topic]. See the memo for details.' },
+          de: { subject: 'Mitteilung: [Thema]',
+                body: 'Liebe Kolleginnen und Kollegen,\n\nmit diesem Memo möchten wir Sie über [Thema] informieren. [Erläuterung].\n\nBei Fragen wenden Sie sich bitte an [Name oder Abteilung].\n\nMit freundlichen Grüßen,\n[Abteilung]',
+                kort: 'Interne Mitteilung über [Thema]. Details siehe Memo.' },
+          fr: { subject: 'Communication : [sujet]',
+                body: 'Chers collègues,\n\npar cette note, nous souhaitons vous informer au sujet de [sujet]. [Explication].\n\nPour toute question, veuillez contacter [nom ou service].\n\nCordialement,\n[Service]',
+                kort: 'Communication interne au sujet de [sujet]. Voir la note pour les détails.' },
+        },
+        vergaderstukken: {
+          label: 'Vergaderstukken delen',
+          type: 'eenmalig',
+          afzender: 'secretariaat@kvk.nl',
+          nl: { subject: 'Vergaderstukken [overleg] - [datum]',
+                body: 'Beste collega,\n\nBijgaand ontvang je de vergaderstukken voor [overleg] op [datum]. Wil je deze vooraf doornemen?\n\nOverzicht:\n- Agenda\n- Verslag vorige vergadering\n- [Overige stukken]\n\nMet vriendelijke groet,\n[Naam]',
+                kort: 'Vergaderstukken voor [overleg] op [datum] staan klaar. Graag vooraf doornemen.' },
+          en: { subject: 'Meeting documents [meeting] - [date]',
+                body: 'Dear colleague,\n\nPlease find attached the meeting documents for [meeting] on [date]. Could you review them beforehand?\n\nOverview:\n- Agenda\n- Previous minutes\n- [Other documents]\n\nKind regards,\n[Name]',
+                kort: 'Meeting documents for [meeting] on [date] are ready. Please review them beforehand.' },
+          de: { subject: 'Sitzungsunterlagen [Besprechung] - [Datum]',
+                body: 'Liebe Kollegin, lieber Kollege,\n\nanbei erhalten Sie die Sitzungsunterlagen für [Besprechung] am [Datum]. Könnten Sie diese vorab durchsehen?\n\nÜbersicht:\n- Tagesordnung\n- Letztes Protokoll\n- [Weitere Unterlagen]\n\nMit freundlichen Grüßen,\n[Name]',
+                kort: 'Sitzungsunterlagen für [Besprechung] am [Datum] liegen bereit. Bitte vorab durchsehen.' },
+          fr: { subject: 'Documents de réunion [réunion] - [date]',
+                body: 'Cher collègue,\n\nveuillez trouver ci-joint les documents pour [réunion] le [date]. Pourriez-vous les consulter au préalable ?\n\nAperçu :\n- Ordre du jour\n- Compte rendu précédent\n- [Autres documents]\n\nCordialement,\n[Nom]',
+                kort: 'Les documents pour [réunion] le [date] sont prêts. Merci de les consulter au préalable.' },
+        },
       };
+      // Templateset per ontvangertype: ondernemers en ambtenaren krijgen een andere set.
+      const TPL_SET = {
+        ondernemer: ['regelgeving', 'reminder', 'terugkerend', 'vrij'],
+        ambtenaar: ['agenda', 'memo', 'vergaderstukken', 'vrij'],
+      };
+      // Gedeeld met de templatebibliotheek zodat de ambtenaar-templates niet dubbel staan.
+      window.__COMPOSER_TEMPLATES = TEMPLATES;
 
       const tplSelect = root.querySelector('#tpl');
       const afzVeld = root.querySelector('#afz-email');
@@ -2232,6 +2305,20 @@
         }
       }
       tplSelect.addEventListener('change', () => fillTemplate(tplSelect.value));
+
+      // Templateset volgt het ontvangertype (ondernemer/ambtenaar): een andere keuze
+      // toont een andere set templates.
+      function vulTemplateOpties(type) {
+        const keys = TPL_SET[type] || TPL_SET.ondernemer;
+        tplSelect.innerHTML = '<option value="" selected>- Kies een template -</option>' +
+          keys.map(k => '<option value="' + k + '">' + ((TEMPLATES[k] && TEMPLATES[k].label) || k) + '</option>').join('');
+        tplSelect.value = '';
+        tplSelect.dispatchEvent(new Event('change', { bubbles: true })); // nldd-dropdown-weergave bijwerken
+      }
+      const ontvTypeCtrl = root.querySelector('#ontvangertype');
+      if (ontvTypeCtrl) ontvTypeCtrl.addEventListener('change', e =>
+        vulTemplateOpties((e.detail && e.detail.value) || 'ondernemer'));
+      vulTemplateOpties('ondernemer');
 
       // Automatisch vertalen: NL is de bron; EN/DE/FR worden gevuld met de vertaling.
       // Bij een template gebruiken we de meegeleverde vertaling; bij vrije tekst een
@@ -2449,6 +2536,18 @@
                 kort: '[CONCEPT] Doe mee aan ons webinar voor nieuwe ondernemers. Meld u aan via kvk.nl.' },
           en: leeg(), de: leeg(), fr: leeg() } },
       ];
+      // Bestaande templates zijn gericht op ondernemers.
+      BIB.forEach(t => { if (!t.publiek) t.publiek = 'ondernemer'; });
+      // Ambtenaar-templates: overgenomen uit de composer zodat de inhoud niet dubbel staat.
+      const CT = window.__COMPOSER_TEMPLATES || {};
+      function uitComposer(id, titel, status) {
+        const t = CT[id] || {};
+        return { id: 'ambt-' + id, titel: titel, status: status, publiek: 'ambtenaar', afzender: t.afzender || 'notificaties@kvk.nl',
+          content: { nl: t.nl || leeg(), en: t.en || leeg(), de: t.de || leeg(), fr: t.fr || leeg() } };
+      }
+      BIB.push(uitComposer('agenda', 'Agenda-uitnodiging', 'standaard'));
+      BIB.push(uitComposer('memo', 'Interne memo / mededeling', 'eigen'));
+      BIB.push(uitComposer('vergaderstukken', 'Vergaderstukken delen', 'standaard'));
 
       const velden = {
         titel: root.querySelector('#tb-d-titelveld'),
@@ -2469,12 +2568,20 @@
       const btnVerwijder = root.querySelector('#tb-verwijder');
       const btnSluit = root.querySelector('#tb-sluit');
 
-      let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0;
+      let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0, publiekNu = 'ondernemer';
       const kloon = t => JSON.parse(JSON.stringify(t));
 
       function renderLijst() {
         lijst.textContent = '';
-        BIB.forEach(t => {
+        const zichtbaar = BIB.filter(t => t.publiek === publiekNu);
+        if (!zichtbaar.length) {
+          const leegP = document.createElement('p');
+          leegP.className = 'muted-note';
+          leegP.textContent = 'Nog geen templates voor deze doelgroep. Maak een nieuwe template aan.';
+          lijst.appendChild(leegP);
+          return;
+        }
+        zichtbaar.forEach(t => {
           const st = STATUS[t.status] || STATUS.standaard;
           const item = document.createElement('nldd-list-item');
           item.setAttribute('button', '');
@@ -2568,10 +2675,19 @@
       });
       root.querySelector('#tb-nieuw').addEventListener('click', () => {
         const id = 'nieuw-' + (++teller);
-        BIB.push({ id, titel: 'Nieuwe template', status: 'concept', afzender: 'notificaties@kvk.nl',
+        BIB.push({ id, titel: 'Nieuwe template', status: 'concept', publiek: publiekNu, afzender: 'notificaties@kvk.nl',
           content: { nl: leeg(), en: leeg(), de: leeg(), fr: leeg() } });
         renderLijst();
         openDetail(id, true);
+      });
+
+      // Doelgroepfilter: toont de templateset voor ondernemers of ambtenaren.
+      const filterCtrl = root.querySelector('#tb-filter');
+      if (filterCtrl) filterCtrl.addEventListener('change', e => {
+        publiekNu = (e.detail && e.detail.value) || 'ondernemer';
+        detail.setAttribute('hidden', '');
+        lijstMelding.setAttribute('hidden', '');
+        renderLijst();
       });
 
       renderLijst();
@@ -2791,8 +2907,8 @@
           keyPrefix: 'nmp_demo',
           rollen: ['Notificaties verzenden', 'Status & rapportage lezen', 'Contactherstel beheren'],
           keys: [
-            { naam: 'Backoffice KvK', rol: 'Notificaties verzenden', key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs', geldigTot: '2026-09-30' },
-            { naam: 'Rapportagedashboard', rol: 'Status & rapportage lezen', key: 'nmp_demo_3xQw8rTf5kLm2nPd9vBc', geldigTot: '2026-08-15' },
+            { naam: 'Backoffice KvK', rollen: ['Notificaties verzenden', 'Contactherstel beheren'], key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs', geldigTot: '2026-09-30' },
+            { naam: 'Rapportagedashboard', rollen: ['Status & rapportage lezen'], key: 'nmp_demo_3xQw8rTf5kLm2nPd9vBc', geldigTot: '2026-08-15' },
           ],
           rapportageTypes: ['Verzendrapport', 'Afleverpercentages per kanaal', 'Storingen & contactherstel', 'API-gebruik per key'],
           rapportages: [
@@ -2812,8 +2928,8 @@
           keyPrefix: 'pfd_live',
           rollen: ['Profiel lezen', 'Voorkeuren bijwerken', 'Verificatie initiëren'],
           keys: [
-            { naam: 'KCC-applicatie', rol: 'Profiel lezen', key: 'pfd_live_2mV8xKqR5tWc7pLj9dFg', geldigTot: '2026-12-28' },
-            { naam: 'Zaaksysteem', rol: 'Voorkeuren bijwerken', key: 'pfd_live_8jNc4wRq6tXz3mVb7kLs', geldigTot: null },
+            { naam: 'KCC-applicatie', rollen: ['Profiel lezen'], key: 'pfd_live_2mV8xKqR5tWc7pLj9dFg', geldigTot: '2026-12-28' },
+            { naam: 'Zaaksysteem', rollen: ['Voorkeuren bijwerken', 'Verificatie initiëren'], key: 'pfd_live_8jNc4wRq6tXz3mVb7kLs', geldigTot: null },
           ],
           rapportageTypes: ['Bevragingen profieldienst', 'Verificaties contactgegevens', 'Voorkeurwijzigingen', 'API-gebruik per key'],
           rapportages: [
@@ -2975,6 +3091,19 @@
         return prefix + '_' + suffix;
       }
 
+      // Rol/functionaliteit-info: soort toegang (lezen/schrijven/beheer) + korte uitleg.
+      // Gebruikt voor de checkboxes bij het aanmaken én de tags op bestaande keys.
+      const ROL_INFO = {
+        'Notificaties verzenden': { scope: 'schrijven', desc: 'Berichten versturen via de dienst.' },
+        'Status & rapportage lezen': { scope: 'lezen', desc: 'Afleverstatus en rapportages opvragen.' },
+        'Contactherstel beheren': { scope: 'beheer', desc: 'Contactherstel-acties starten en afhandelen.' },
+        'Profiel lezen': { scope: 'lezen', desc: 'Profiel- en contactgegevens opvragen.' },
+        'Voorkeuren bijwerken': { scope: 'schrijven', desc: 'Kanaal- en taalvoorkeuren wijzigen.' },
+        'Verificatie initiëren': { scope: 'beheer', desc: 'Verificatie van contactgegevens starten.' },
+      };
+      const scopeColor = { lezen: 'neutral', schrijven: 'accent', beheer: 'warning' };
+      const rollenVan = k => k.rollen || (k.rol ? [k.rol] : []);
+
       document.querySelectorAll('.api-keys-beheer[data-dienst]').forEach(beheer => {
         const dienst = MP_DIENSTEN[beheer.dataset.dienst];
         if (!dienst || !dienst.keys) return;
@@ -2993,9 +3122,10 @@
             <nldd-card>
               <nldd-container padding="16" gap="12">
                 <div class="between">
-                  <nldd-title size="5"><h3></h3><p slot="subtitle"></p></nldd-title>
+                  <nldd-title size="5"><h3></h3></nldd-title>
                   <nldd-tag class="k-geldig" color="neutral" text="-"></nldd-tag>
                 </div>
+                <div class="k-rollen"><span class="k-rollen-label">Rol(len):</span></div>
                 <div class="mp-keyrow">
                   <span class="mp-key k-key"></span>
                   <nldd-button class="k-toon" variant="secondary" start-icon="eye" text="Tonen"></nldd-button>
@@ -3010,7 +3140,14 @@
             </nldd-card>`;
           const el = wrap.firstElementChild;
           el.querySelector('h3').textContent = k.naam;
-          el.querySelector('[slot="subtitle"]').textContent = k.rol;
+          const rollenBox = el.querySelector('.k-rollen');
+          rollenVan(k).forEach(r => {
+            const info = ROL_INFO[r] || {};
+            const t = document.createElement('nldd-tag');
+            t.setAttribute('color', scopeColor[info.scope] || 'accent');
+            t.setAttribute('text', r);
+            rollenBox.appendChild(t);
+          });
           const advNote = el.querySelector('.k-adv');
           if (k.advanced) {
             const rateLabel = { '60': '60/min', '600': '600/min', '6000': '6.000/min', '0': 'onbeperkt' }[k.advanced.rate] || (k.advanced.rate + '/min');
@@ -3042,7 +3179,7 @@
             else done();
           });
           el.querySelector('.k-valideer').addEventListener('click', () =>
-            melding('success', 'Key \'' + k.naam + '\' (' + k.rol + ') gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' geslaagd (HTTP 200, rol geaccepteerd).'));
+            melding('success', 'Key \'' + k.naam + '\' (' + rollenVan(k).join(', ') + ') gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' geslaagd (HTTP 200, rollen geaccepteerd).'));
           el.querySelector('.k-intrek').addEventListener('click', () => {
             dienst.keys = dienst.keys.filter(x => x !== k);
             renderLijst();
@@ -3064,16 +3201,35 @@
           dienst.keys.forEach(k => lijst.appendChild(kaart(k)));
         }
 
-        // Paneel: nieuwe key aanmaken (naam + rol + geldigheidsduur).
+        // Paneel: nieuwe key aanmaken (naam + rollen + geldigheidsduur).
         const panel = beheer.querySelector('[data-nk-panel]');
         const naamVeld = beheer.querySelector('[data-nk-naam]');
-        const rolSelect = beheer.querySelector('[data-nk-rol]');
-        (dienst.rollen || []).forEach(r => {
-          const o = document.createElement('option');
-          o.value = r;
-          o.textContent = r;
-          rolSelect.appendChild(o);
-        });
+
+        // Rollen als checkboxes: één of meer rollen kiezen. Eerste staat standaard aan.
+        const rollenWrap = beheer.querySelector('[data-nk-rollen]');
+        function bouwRollen() {
+          rollenWrap.textContent = '';
+          (dienst.rollen || []).forEach((r, i) => {
+            const info = ROL_INFO[r] || {};
+            const rij = document.createElement('div');
+            rij.className = 'rol-optie';
+            rij.innerHTML =
+              '<nldd-checkbox value="' + r + '" accessible-label="' + r + '"></nldd-checkbox>' +
+              '<span class="rol-tekst"><strong>' + r + '</strong>' + (info.desc ? '<span class="muted-note">' + info.desc + '</span>' : '') + '</span>';
+            const cb = rij.querySelector('nldd-checkbox');
+            if (i === 0) cb.setAttribute('checked', '');
+            rij.addEventListener('click', e => {
+              if (e.target.closest('nldd-checkbox')) return; // checkbox handelt eigen klik af
+              const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+              if (input) input.click(); else cb.toggleAttribute('checked');
+            });
+            rollenWrap.appendChild(rij);
+          });
+        }
+        bouwRollen();
+        const gekozenRollen = () => Array.from(rollenWrap.querySelectorAll('nldd-checkbox'))
+          .filter(cb => cb.checked).map(cb => cb.getAttribute('value'));
+
         const duurCtrl = beheer.querySelector('[data-nk-duur]');
         let gekozenDuur = '90';
         duurCtrl.addEventListener('click', e => {
@@ -3112,18 +3268,23 @@
             it.toggleAttribute('selected', it.getAttribute('value') === '90'));
           if (naamVeld) naamVeld.value = '';
           resetAdvanced();
+          bouwRollen();
           panel.toggleAttribute('hidden');
         });
         beheer.querySelector('[data-nk-annuleer]').addEventListener('click', () => panel.setAttribute('hidden', ''));
         beheer.querySelector('[data-nk-aanmaken]').addEventListener('click', () => {
           const naam = (naamVeld && naamVeld.value ? String(naamVeld.value).trim() : '') || 'Nieuwe toepassing';
-          const rol = rolSelect.value || (dienst.rollen && dienst.rollen[0]) || '';
+          const rollen = gekozenRollen();
+          if (!rollen.length) {
+            melding('warning', 'Kies minstens één rol/functionaliteit voor deze key.');
+            return;
+          }
           const advanced = leesAdvanced();
-          const nieuw = { naam: naam, rol: rol, key: genKey(dienst.keyPrefix), geldigTot: nieuweGeldigheid(gekozenDuur), advanced: advanced };
+          const nieuw = { naam: naam, rollen: rollen, key: genKey(dienst.keyPrefix), geldigTot: nieuweGeldigheid(gekozenDuur), advanced: advanced };
           dienst.keys.unshift(nieuw);
           renderLijst();
           panel.setAttribute('hidden', '');
-          melding('warning', 'Nieuwe key \'' + naam + '\' (' + rol + ') aangemaakt, ' + (nieuw.geldigTot ? 'geldig tot ' + fmtDatum(nieuw.geldigTot) : 'zonder vervaldatum') + (advanced ? ', met geavanceerde instellingen' : '') + '. Kopieer hem nu en bewaar hem veilig.');
+          melding('warning', 'Nieuwe key \'' + naam + '\' (' + rollen.join(', ') + ') aangemaakt, ' + (nieuw.geldigTot ? 'geldig tot ' + fmtDatum(nieuw.geldigTot) : 'zonder vervaldatum') + (advanced ? ', met geavanceerde instellingen' : '') + '. Kopieer hem nu en bewaar hem veilig.');
         });
 
         renderLijst();
