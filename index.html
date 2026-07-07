@@ -198,6 +198,11 @@
                   <nldd-text-cell text="Profieldienst"></nldd-text-cell>
                   <nldd-cell slot="end"><span class="nav-parent-end"><nldd-tag color="success" text="productie"></nldd-tag><nldd-icon class="nav-caret" name="caret-right" size="18"></nldd-icon></span></nldd-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="kanaalvoorkeur" data-title="Kanaalvoorkeur" data-parent="profieldienst" hidden>
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="message-rectangle-text"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Kanaalvoorkeur"></nldd-text-cell>
+                </nldd-list-item>
                 <nldd-list-item button data-view="apikeys-profieldienst" data-title="API keys" data-parent="profieldienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
@@ -360,6 +365,15 @@
                         <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar rapportages" data-nav-view="rapportage-profieldienst" data-nav-title="Rapportages"></nldd-button></div>
                       </nldd-container>
                     </nldd-card>
+
+                    <!-- Kanaalvoorkeur -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="kanaalvoorkeur" data-nav-title="Kanaalvoorkeur" aria-label="Naar Kanaalvoorkeur">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>Kanaalvoorkeur</h3></nldd-title>
+                        <nldd-rich-text><p>Zoek een ondernemer en stel per kanaal de prioriteit in waarmee notificaties worden bezorgd.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar kanaalvoorkeur" data-nav-view="kanaalvoorkeur" data-nav-title="Kanaalvoorkeur"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
                   </div>
 
                   <nldd-title size="4"><h2>Wat de profieldienst doet</h2></nldd-title>
@@ -386,116 +400,112 @@
                     </nldd-list-item>
                   </nldd-list>
 
-                  <nldd-title size="4"><h2>Profiel opzoeken</h2></nldd-title>
+                </div>
+              </section>
+
+              <!-- ====================== KANAALVOORKEUR (onder Profieldienst) ====================== -->
+              <section class="view" data-view="kanaalvoorkeur">
+                <div class="stack">
+                  <nldd-banner variant="neutral" text="Zoek een ondernemer op BSN en/of KvK-nummer, bekijk de kanaalvoorkeur (e-mail, SMS of post) en pas die aan. De ondernemer wordt automatisch via het gekozen kanaal geïnformeerd. Let op: fictieve gegevens."></nldd-banner>
+
                   <nldd-card>
                     <nldd-container padding="16" gap="12">
-                      <nldd-title size="6"><h3>Zoek een ondernemer</h3><p slot="subtitle">Op BSN en/of KvK-nummer</p></nldd-title>
+                      <nldd-title size="5"><h2>Ondernemer zoeken</h2><p slot="subtitle">Op BSN en/of KvK-nummer</p></nldd-title>
                       <nldd-form-field label="BSN">
-                        <nldd-text-field id="pf-bsn" placeholder="9 cijfers"></nldd-text-field>
+                        <nldd-text-field id="zoek-bsn" placeholder="9 cijfers"></nldd-text-field>
                       </nldd-form-field>
                       <nldd-form-field label="KvK-nummer">
-                        <nldd-text-field id="pf-kvk" placeholder="8 cijfers"></nldd-text-field>
+                        <nldd-text-field id="zoek-kvk" placeholder="8 cijfers"></nldd-text-field>
                       </nldd-form-field>
                       <div class="inline">
-                        <nldd-button id="pf-zoek" variant="primary" start-icon="magnifier" text="Zoeken"></nldd-button>
+                        <nldd-button id="zoek-btn" variant="primary" start-icon="magnifier" text="Zoeken"></nldd-button>
                         <span class="muted" style="color:#5a5a5a;font-size:.85rem;">Probeer KvK 81234567, 84567123 of 87651234</span>
                       </div>
                     </nldd-container>
                   </nldd-card>
 
-                  <nldd-banner id="pf-leeg" variant="warning" text="Geen profiel gevonden voor deze gegevens. Controleer het BSN of KvK-nummer." hidden></nldd-banner>
+                  <nldd-banner id="kanaal-leeg" variant="warning" text="Geen ondernemer gevonden voor deze gegevens. Controleer het BSN of KvK-nummer." hidden></nldd-banner>
 
-                  <div id="pf-result" hidden>
+                  <div id="kanaal-result" hidden>
                     <div class="stack">
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
                           <div class="between">
-                            <nldd-title size="5"><h2 id="pf-naam">-</h2><p slot="subtitle" id="pf-sub">-</p></nldd-title>
-                            <nldd-tag id="pf-bron" color="neutral" text="bron: -"></nldd-tag>
+                            <nldd-title size="5"><h2 id="res-naam">-</h2><p slot="subtitle" id="res-sub">-</p></nldd-title>
+                            <nldd-tag id="res-huidig" color="accent" text="-"></nldd-tag>
                           </div>
 
-                          <nldd-title size="6"><h3>Contactgegevens</h3></nldd-title>
+                          <nldd-title size="6"><h3>Voorkeurskanalen</h3><p slot="subtitle">Geef per kanaal de prioriteit; er wordt via het hoogst geprioriteerde beschikbare kanaal genotificeerd</p></nldd-title>
+                          <div class="prio-lijst" id="kanaal-prio">
+                            <div class="prio-rij">
+                              <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span>
+                              <nldd-dropdown>
+                                <select class="prio-select" data-kanaal="email" aria-label="Prioriteit e-mail">
+                                  <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                </select>
+                              </nldd-dropdown>
+                            </div>
+                            <div class="prio-rij">
+                              <span class="prio-kanaal"><nldd-icon name="bell" size="20"></nldd-icon> Push (MijnOverheid-app)</span>
+                              <nldd-dropdown>
+                                <select class="prio-select" data-kanaal="push" aria-label="Prioriteit push">
+                                  <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                </select>
+                              </nldd-dropdown>
+                            </div>
+                            <div class="prio-rij">
+                              <span class="prio-kanaal"><nldd-icon name="message-rectangle-text" size="20"></nldd-icon> SMS</span>
+                              <nldd-dropdown>
+                                <select class="prio-select" data-kanaal="sms" aria-label="Prioriteit SMS">
+                                  <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                </select>
+                              </nldd-dropdown>
+                            </div>
+                            <div class="prio-rij">
+                              <span class="prio-kanaal"><nldd-icon name="app" size="20"></nldd-icon> WhatsApp / Signal</span>
+                              <nldd-dropdown>
+                                <select class="prio-select" data-kanaal="whatsapp" aria-label="Prioriteit WhatsApp of Signal">
+                                  <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                </select>
+                              </nldd-dropdown>
+                            </div>
+                            <div class="prio-rij">
+                              <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Post</span>
+                              <nldd-dropdown>
+                                <select class="prio-select" data-kanaal="post" aria-label="Prioriteit post">
+                                  <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                </select>
+                              </nldd-dropdown>
+                            </div>
+                          </div>
+
                           <nldd-form-field label="E-mailadres">
-                            <nldd-text-field id="pf-email"></nldd-text-field>
+                            <nldd-text-field id="ct-email"></nldd-text-field>
                           </nldd-form-field>
-                          <nldd-form-field label="Telefoonnummer">
-                            <nldd-text-field id="pf-telefoon"></nldd-text-field>
+                          <nldd-form-field label="Push (MijnOverheid-app)">
+                            <nldd-text-field id="ct-push"></nldd-text-field>
+                          </nldd-form-field>
+                          <nldd-form-field label="Mobiel nummer (SMS)">
+                            <nldd-text-field id="ct-sms"></nldd-text-field>
+                          </nldd-form-field>
+                          <nldd-form-field label="WhatsApp / Signal (nummer)">
+                            <nldd-text-field id="ct-whatsapp"></nldd-text-field>
                           </nldd-form-field>
                           <nldd-form-field label="Postadres">
-                            <nldd-text-field id="pf-post"></nldd-text-field>
+                            <nldd-text-field id="ct-post"></nldd-text-field>
                           </nldd-form-field>
-
-                          <nldd-title size="6"><h3>Voorkeuren</h3></nldd-title>
-                          <nldd-form-field label="Voorkeurskanaal">
-                            <nldd-segmented-control id="pf-kanaal" value="email" type="radio" variant="icon-and-text" width="full" accessible-label="Voorkeurskanaal">
-                              <nldd-segmented-control-item value="email" text="E-mail" icon="envelope"></nldd-segmented-control-item>
-                              <nldd-segmented-control-item value="sms" text="SMS" icon="message-rectangle-text"></nldd-segmented-control-item>
-                              <nldd-segmented-control-item value="post" text="Post" icon="inbox"></nldd-segmented-control-item>
-                            </nldd-segmented-control>
-                          </nldd-form-field>
-                          <nldd-form-field label="Voorkeurstaal">
-                            <nldd-dropdown>
-                              <select id="pf-taal" aria-label="Voorkeurstaal">
-                                <option value="nl" selected>Nederlands</option>
-                                <option value="en">Engels</option>
-                                <option value="de">Duits</option>
-                                <option value="fr">Frans</option>
-                              </select>
-                            </nldd-dropdown>
-                          </nldd-form-field>
-
-                          <nldd-title size="6"><h3>Verificatiestatus</h3></nldd-title>
-                          <div class="inline">
-                            <nldd-tag id="pf-verif-email" color="warning" text="e-mail: onbevestigd"></nldd-tag>
-                            <nldd-tag id="pf-verif-tel" color="warning" text="telefoon: onbevestigd"></nldd-tag>
-                          </div>
 
                           <div class="row-actions">
-                            <nldd-button id="pf-verifieer" variant="secondary" start-icon="seal-check-mark" text="Contactgegevens verifiëren"></nldd-button>
-                            <nldd-button id="pf-opslaan" variant="primary" start-icon="check-mark" text="Profiel opslaan"></nldd-button>
-                            <nldd-tag id="pf-dirty" color="warning" text="Niet-opgeslagen wijzigingen" hidden></nldd-tag>
+                            <nldd-button id="kanaal-opslaan" variant="primary" start-icon="check-mark" text="Opslaan en ondernemer informeren"></nldd-button>
+                            <nldd-button id="kanaal-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+                            <nldd-tag id="kanaal-dirty" color="warning" text="Niet-opgeslagen wijzigingen" hidden></nldd-tag>
                           </div>
                         </nldd-container>
                       </nldd-card>
 
-                      <nldd-card>
-                        <nldd-container padding="16" gap="12">
-                          <nldd-title size="6"><h3>Wie ontvangt de notificaties?</h3><p slot="subtitle">De ondernemer zelf en/of een gemachtigde of intermediair</p></nldd-title>
-                          <div class="stack" id="pf-ontvangers"></div>
-                          <div class="inline">
-                            <nldd-button id="pf-ontv-toggle" variant="secondary" start-icon="plus" text="Ontvanger toevoegen"></nldd-button>
-                          </div>
-                          <div id="pf-ontv-form" hidden>
-                            <nldd-card>
-                              <nldd-container padding="16" gap="12">
-                                <nldd-form-field label="Type ontvanger">
-                                  <nldd-dropdown>
-                                    <select id="pf-ontv-type" aria-label="Type ontvanger">
-                                      <option value="gemachtigde">Gemachtigde</option>
-                                      <option value="intermediair">Intermediair</option>
-                                    </select>
-                                  </nldd-dropdown>
-                                </nldd-form-field>
-                                <nldd-form-field label="Naam of organisatie">
-                                  <nldd-text-field id="pf-ontv-naam" placeholder="Bijv. Accountantskantoor Groen & Co"></nldd-text-field>
-                                </nldd-form-field>
-                                <nldd-form-field label="E-mailadres">
-                                  <nldd-text-field id="pf-ontv-email" placeholder="naam@bedrijf.nl"></nldd-text-field>
-                                </nldd-form-field>
-                                <div class="row-actions">
-                                  <nldd-button id="pf-ontv-add" variant="primary" start-icon="plus" text="Toevoegen"></nldd-button>
-                                  <nldd-button id="pf-ontv-annuleer" variant="secondary" text="Annuleren"></nldd-button>
-                                </div>
-                              </nldd-container>
-                            </nldd-card>
-                          </div>
-                        </nldd-container>
-                      </nldd-card>
-
-                      <nldd-banner id="pf-bevestig" variant="success" text="" hidden></nldd-banner>
+                      <nldd-banner id="kanaal-bevestig" variant="success" text="" hidden></nldd-banner>
                     </div>
                   </div>
-
                 </div>
               </section>
 
@@ -755,7 +765,6 @@
                   <nldd-tab-bar id="ber-tabs" accessible-label="Berichten">
                     <nldd-tab-bar-item selected text="Overzicht" icon="bullet-list" data-panel="overzicht"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Nieuw bericht" icon="pencil" data-panel="nieuw"></nldd-tab-bar-item>
-                    <nldd-tab-bar-item text="Kanaalvoorkeur" icon="person-badge-gear" data-panel="kanaal"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Templatebibliotheek" icon="books-vertical" data-panel="templates"></nldd-tab-bar-item>
                   </nldd-tab-bar>
 
@@ -1043,111 +1052,6 @@
                     </div>
                   </div>
 
-                  <!-- ---------- Panel: Kanaalvoorkeur ---------- -->
-                  <div data-ber-panel="kanaal" hidden>
-                    <div class="stack">
-                      <nldd-banner variant="neutral" text="Zoek een ondernemer op BSN en/of KvK-nummer, bekijk de kanaalvoorkeur (e-mail, SMS of post) en pas die aan. De ondernemer wordt automatisch via het gekozen kanaal geïnformeerd. Let op: fictieve gegevens."></nldd-banner>
-
-                      <nldd-card>
-                        <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>Ondernemer zoeken</h2><p slot="subtitle">Op BSN en/of KvK-nummer</p></nldd-title>
-                          <nldd-form-field label="BSN">
-                            <nldd-text-field id="zoek-bsn" placeholder="9 cijfers"></nldd-text-field>
-                          </nldd-form-field>
-                          <nldd-form-field label="KvK-nummer">
-                            <nldd-text-field id="zoek-kvk" placeholder="8 cijfers"></nldd-text-field>
-                          </nldd-form-field>
-                          <div class="inline">
-                            <nldd-button id="zoek-btn" variant="primary" start-icon="magnifier" text="Zoeken"></nldd-button>
-                            <span class="muted" style="color:#5a5a5a;font-size:.85rem;">Probeer KvK 81234567, 84567123 of 87651234</span>
-                          </div>
-                        </nldd-container>
-                      </nldd-card>
-
-                      <nldd-banner id="kanaal-leeg" variant="warning" text="Geen ondernemer gevonden voor deze gegevens. Controleer het BSN of KvK-nummer." hidden></nldd-banner>
-
-                      <div id="kanaal-result" hidden>
-                        <div class="stack">
-                          <nldd-card>
-                            <nldd-container padding="16" gap="12">
-                              <div class="between">
-                                <nldd-title size="5"><h2 id="res-naam">-</h2><p slot="subtitle" id="res-sub">-</p></nldd-title>
-                                <nldd-tag id="res-huidig" color="accent" text="-"></nldd-tag>
-                              </div>
-
-                              <nldd-title size="6"><h3>Voorkeurskanalen</h3><p slot="subtitle">Geef per kanaal de prioriteit; er wordt via het hoogst geprioriteerde beschikbare kanaal genotificeerd</p></nldd-title>
-                              <div class="prio-lijst" id="kanaal-prio">
-                                <div class="prio-rij">
-                                  <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span>
-                                  <nldd-dropdown>
-                                    <select class="prio-select" data-kanaal="email" aria-label="Prioriteit e-mail">
-                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
-                                    </select>
-                                  </nldd-dropdown>
-                                </div>
-                                <div class="prio-rij">
-                                  <span class="prio-kanaal"><nldd-icon name="bell" size="20"></nldd-icon> Push (MijnOverheid-app)</span>
-                                  <nldd-dropdown>
-                                    <select class="prio-select" data-kanaal="push" aria-label="Prioriteit push">
-                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
-                                    </select>
-                                  </nldd-dropdown>
-                                </div>
-                                <div class="prio-rij">
-                                  <span class="prio-kanaal"><nldd-icon name="message-rectangle-text" size="20"></nldd-icon> SMS</span>
-                                  <nldd-dropdown>
-                                    <select class="prio-select" data-kanaal="sms" aria-label="Prioriteit SMS">
-                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
-                                    </select>
-                                  </nldd-dropdown>
-                                </div>
-                                <div class="prio-rij">
-                                  <span class="prio-kanaal"><nldd-icon name="app" size="20"></nldd-icon> WhatsApp / Signal</span>
-                                  <nldd-dropdown>
-                                    <select class="prio-select" data-kanaal="whatsapp" aria-label="Prioriteit WhatsApp of Signal">
-                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
-                                    </select>
-                                  </nldd-dropdown>
-                                </div>
-                                <div class="prio-rij">
-                                  <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Post</span>
-                                  <nldd-dropdown>
-                                    <select class="prio-select" data-kanaal="post" aria-label="Prioriteit post">
-                                      <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
-                                    </select>
-                                  </nldd-dropdown>
-                                </div>
-                              </div>
-
-                              <nldd-form-field label="E-mailadres">
-                                <nldd-text-field id="ct-email"></nldd-text-field>
-                              </nldd-form-field>
-                              <nldd-form-field label="Push (MijnOverheid-app)">
-                                <nldd-text-field id="ct-push"></nldd-text-field>
-                              </nldd-form-field>
-                              <nldd-form-field label="Mobiel nummer (SMS)">
-                                <nldd-text-field id="ct-sms"></nldd-text-field>
-                              </nldd-form-field>
-                              <nldd-form-field label="WhatsApp / Signal (nummer)">
-                                <nldd-text-field id="ct-whatsapp"></nldd-text-field>
-                              </nldd-form-field>
-                              <nldd-form-field label="Postadres">
-                                <nldd-text-field id="ct-post"></nldd-text-field>
-                              </nldd-form-field>
-
-                              <div class="row-actions">
-                                <nldd-button id="kanaal-opslaan" variant="primary" start-icon="check-mark" text="Opslaan en ondernemer informeren"></nldd-button>
-                                <nldd-button id="kanaal-annuleer" variant="secondary" text="Annuleren"></nldd-button>
-                                <nldd-tag id="kanaal-dirty" color="warning" text="Niet-opgeslagen wijzigingen" hidden></nldd-tag>
-                              </div>
-                            </nldd-container>
-                          </nldd-card>
-
-                          <nldd-banner id="kanaal-bevestig" variant="success" text="" hidden></nldd-banner>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </section>
 
@@ -1841,12 +1745,12 @@
       if (!q) return;
       const cijfers = q.replace(/\s/g, '');
       if (/^\d{8,9}$/.test(cijfers)) {
-        showView('profieldienst', 'Profieldienst');
+        showView('kanaalvoorkeur', 'Kanaalvoorkeur');
         setGroepUit('profieldienst', true);
-        const bsnV = document.getElementById('pf-bsn'), kvkV = document.getElementById('pf-kvk');
+        const bsnV = document.getElementById('zoek-bsn'), kvkV = document.getElementById('zoek-kvk');
         if (cijfers.length === 9) { if (bsnV) bsnV.value = cijfers; if (kvkV) kvkV.value = ''; }
         else { if (kvkV) kvkV.value = cijfers; if (bsnV) bsnV.value = ''; }
-        const zoek = document.getElementById('pf-zoek');
+        const zoek = document.getElementById('zoek-btn');
         if (zoek) zoek.click();
         return;
       }
@@ -2442,8 +2346,13 @@
         post: { label: 'post', veld: 'ct-post' },
       };
       const KANAAL_VOLGORDE = ['email', 'push', 'sms', 'whatsapp', 'post'];
-      const zoekBtn = root.querySelector('#zoek-btn');
+      // De kanaalvoorkeur-DOM staat sinds de verhuizing in een eigen sectie onder de
+      // Profieldienst; de ondernemersdata blijft hier gedeeld met de composer. Binnen dit
+      // blok verwijst 'root' naar die nieuwe sectie (lokale shadow).
+      const kvRoot = document.querySelector('section[data-view="kanaalvoorkeur"]') || root;
+      const zoekBtn = kvRoot.querySelector('#zoek-btn');
       if (zoekBtn) {
+        const root = kvRoot;
         const elLeeg = root.querySelector('#kanaal-leeg');
         const elResult = root.querySelector('#kanaal-result');
         const elBevestig = root.querySelector('#kanaal-bevestig');
@@ -2782,7 +2691,9 @@
     // ====================== Profieldienst ======================
     (function () {
       const root = document.querySelector('section[data-view="profieldienst"]');
-      if (!root) return;
+      // 'Profiel opzoeken' is uit de profieldienst verwijderd; zonder dat zoek-/detail-DOM
+      // heeft deze module niets meer te bedienen en stopt ze meteen.
+      if (!root || !root.querySelector('#pf-zoek')) return;
 
       const PROFIELEN = {
         '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782',
