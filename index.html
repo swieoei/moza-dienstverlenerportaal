@@ -753,7 +753,7 @@
                   <!-- ---------- Panel: Nieuw bericht (composer) ---------- -->
                   <div data-ber-panel="nieuw" hidden>
                     <div class="stack">
-                      <nldd-banner variant="neutral" text="Stel een bericht aan ondernemers samen op basis van een template, kies het type en bied het meertalig aan."></nldd-banner>
+                      <nldd-banner variant="neutral" text="Stel een bericht samen op basis van een template en kies het type. Vul de vertalingen in die je ondersteunt; elk contact ontvangt automatisch de versie in zijn of haar voorkeurstaal uit de profieldienst."></nldd-banner>
 
                       <!-- 1. Template -->
                       <nldd-card>
@@ -858,35 +858,10 @@
                         </nldd-container>
                       </nldd-card>
 
-                      <!-- 3. Talen -->
+                      <!-- 3. Inhoud per taal en kanaal -->
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>3. Talen</h2><p slot="subtitle">Bied het bericht meertalig aan</p></nldd-title>
-                          <div class="lang-grid">
-                            <label class="lang-opt">
-                              <nldd-checkbox checked disabled accessible-label="Nederlands"></nldd-checkbox>
-                              <nldd-rich-text><span>Nederlands (NL)</span></nldd-rich-text>
-                            </label>
-                            <label class="lang-opt">
-                              <nldd-checkbox id="chk-en" data-langtoggle="en" accessible-label="Engels"></nldd-checkbox>
-                              <nldd-rich-text><span>Engels (EN)</span></nldd-rich-text>
-                            </label>
-                            <label class="lang-opt">
-                              <nldd-checkbox id="chk-de" data-langtoggle="de" accessible-label="Duits"></nldd-checkbox>
-                              <nldd-rich-text><span>Duits (DE)</span></nldd-rich-text>
-                            </label>
-                            <label class="lang-opt">
-                              <nldd-checkbox id="chk-fr" data-langtoggle="fr" accessible-label="Frans"></nldd-checkbox>
-                              <nldd-rich-text><span>Frans (FR)</span></nldd-rich-text>
-                            </label>
-                          </div>
-                        </nldd-container>
-                      </nldd-card>
-
-                      <!-- 4. Inhoud per taal -->
-                      <nldd-card>
-                        <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>4. Inhoud per taal en kanaal</h2><p slot="subtitle">Een template verschilt per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
+                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">Vul de talen in die je ondersteunt - elk contact krijgt automatisch zijn voorkeurstaal (profieldienst), met Nederlands als terugval. Per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
 
                           <nldd-form-field label="Afzender (e-mailadres)">
                             <nldd-text-field id="afz-email" placeholder="notificaties@kvk.nl"></nldd-text-field>
@@ -895,9 +870,9 @@
 
                           <nldd-tab-bar id="lang-tabs" accessible-label="Taal">
                             <nldd-tab-bar-item selected text="NL" data-lang="nl"></nldd-tab-bar-item>
-                            <nldd-tab-bar-item hidden text="EN" data-lang="en"></nldd-tab-bar-item>
-                            <nldd-tab-bar-item hidden text="DE" data-lang="de"></nldd-tab-bar-item>
-                            <nldd-tab-bar-item hidden text="FR" data-lang="fr"></nldd-tab-bar-item>
+                            <nldd-tab-bar-item text="EN" data-lang="en"></nldd-tab-bar-item>
+                            <nldd-tab-bar-item text="DE" data-lang="de"></nldd-tab-bar-item>
+                            <nldd-tab-bar-item text="FR" data-lang="fr"></nldd-tab-bar-item>
                           </nldd-tab-bar>
 
                           <div data-langpane="nl">
@@ -2005,15 +1980,7 @@
       }
       langTabs.addEventListener('click', e => {
         const t = e.target.closest('nldd-tab-bar-item');
-        if (t && !t.hasAttribute('hidden')) setLang(t.dataset.lang);
-      });
-      root.querySelectorAll('[data-langtoggle]').forEach(chk => {
-        chk.addEventListener('change', () => {
-          const lang = chk.dataset.langtoggle;
-          const tab = langTabs.querySelector('nldd-tab-bar-item[data-lang="' + lang + '"]');
-          if (tab) tab.toggleAttribute('hidden', !chk.checked);
-          if (!chk.checked) setLang('nl');
-        });
+        if (t && t.dataset.lang) setLang(t.dataset.lang);
       });
 
       // --- Templatebibliotheek: vult onderwerp + bericht per taal ---
