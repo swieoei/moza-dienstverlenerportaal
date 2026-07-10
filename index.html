@@ -81,6 +81,32 @@
     .tb-mail-meta { font-size: 0.85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 12px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 2px; }
     .tb-mail-tekst { white-space: pre-wrap; line-height: 1.5; }
     .tb-mail-footer { white-space: pre-wrap; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ececec; color: #555; font-size: 0.9rem; }
+    /* Voorbeeld per kanaal */
+    .tbp-kanalen { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
+    .tbp-kanaal-label { font-size: 0.75rem; font-weight: 700; color: #5a5a5a; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .tbp-pre { white-space: pre-wrap; }
+    .tbp-mail { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
+    .tbp-mail-header { padding: 14px 18px; color: #fff; font-weight: 700; }
+    .tbp-mail-body { padding: 16px 18px; }
+    .tbp-mail-meta { font-size: .85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 2px; }
+    .tbp-mail-body .tbp-pre { line-height: 1.5; }
+    .tbp-mail-footer { margin-top: 16px; padding-top: 10px; border-top: 1px solid #ececec; color: #555; font-size: .9rem; }
+    .tbp-brief { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
+    .tbp-brief-band { height: 8px; }
+    .tbp-brief-body { padding: 20px; line-height: 1.5; }
+    .tbp-brief-afz { font-weight: 600; }
+    .tbp-brief-aan { margin: 16px 0; color: #333; }
+    .tbp-brief-onderwerp { margin: 0 0 12px; }
+    .tbp-push { border: 1px solid #e3e3e3; border-radius: 14px; background: #f3f4f6; color: #1a1a1a; padding: 12px 14px; max-width: 380px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .tbp-push-app { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: #555; margin-bottom: 6px; }
+    .tbp-push-icon { width: 20px; height: 20px; border-radius: 5px; color: #fff; font-weight: 700; font-size: .75rem; display: inline-flex; align-items: center; justify-content: center; }
+    .tbp-push-nu { margin-left: auto; }
+    .tbp-push-titel { font-weight: 700; }
+    .tbp-push-tekst { color: #333; }
+    .tbp-sms-van { font-size: .8rem; color: #5a5a5a; margin-bottom: 4px; }
+    .tbp-bubble { display: inline-block; padding: 10px 14px; border-radius: 16px; max-width: 85%; line-height: 1.4; color: #1a1a1a; }
+    .tbp-bubble-sms { background: #e5e5ea; border-bottom-left-radius: 4px; }
+    .tbp-bubble-whats { background: #dcf8c6; border-bottom-left-radius: 4px; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
     .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
     .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
@@ -1110,7 +1136,7 @@
                         </nldd-form-field>
 
                         <div class="row-actions">
-                          <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Preview e-mail"></nldd-button>
+                          <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Voorbeeld e-mail"></nldd-button>
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
                           <nldd-button id="tb-kopie" variant="secondary" start-icon="square-on-square" text="Kopie maken"></nldd-button>
@@ -1673,22 +1699,11 @@
     <div id="tb-preview-overlay" class="flags-overlay" hidden>
       <div class="tb-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="tbp-titel">
         <div class="flags-head">
-          <nldd-title size="5"><h2 id="tbp-titel">E-mailpreview</h2></nldd-title>
+          <nldd-title size="5"><h2 id="tbp-titel">Voorbeeld per kanaal</h2></nldd-title>
           <nldd-button id="tbp-sluit" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
         </div>
-        <p class="muted-note">Zo ziet de notificatie-e-mail eruit met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld.</p>
-        <div class="tb-mail">
-          <div class="tb-mail-header" id="tbp-header"></div>
-          <div class="tb-mail-body">
-            <div class="tb-mail-meta">
-              <div><strong>Van:</strong> <span id="tbp-van"></span></div>
-              <div><strong>Aan:</strong> <span id="tbp-aan">[voorletter(s)] [achternaam]</span></div>
-              <div><strong>Onderwerp:</strong> <span id="tbp-onderwerp"></span></div>
-            </div>
-            <div class="tb-mail-tekst" id="tbp-tekst"></div>
-            <div class="tb-mail-footer" id="tbp-footer"></div>
-          </div>
-        </div>
+        <p class="muted-note">Voorbeeld van het bericht per kanaal, met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld.</p>
+        <div id="tbp-kanalen" class="tbp-kanalen"></div>
       </div>
     </div>
 
@@ -2893,17 +2908,53 @@
         const naam = eersteRegel(velden.afzenderTekst.value || (werk && werk.afzendertekst) || 'MijnOverheid');
         return ((tekst || '') + '').replace(/\{afzender\}/g, naam);
       }
+      const esc = s => ((s || '') + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const kanaalBlok = (label, inner) => '<div class="tbp-kanaal"><div class="tbp-kanaal-label">' + label + '</div>' + inner + '</div>';
       btnPreview.addEventListener('click', () => {
         if (bewerken) bewaarHuidigeTaal();
         const merk = MERK[(werk && werk.huisstijl) || 'mijnoverheid'] || MERK.mijnoverheid;
         const c = (werk && werk.content && werk.content[taalNu]) || leeg();
-        const header = document.getElementById('tbp-header');
-        header.style.background = merk.kleur;
-        header.textContent = merk.naam;
-        document.getElementById('tbp-van').textContent = eersteRegel(velden.afzenderTekst.value) + ' <' + (velden.afz.value || '') + '>';
-        document.getElementById('tbp-onderwerp').textContent = resolveAfz(c.subject);
-        document.getElementById('tbp-tekst').textContent = resolveAfz(c.body);
-        document.getElementById('tbp-footer').textContent = velden.afzenderTekst.value || '';
+        const handtekening = velden.afzenderTekst.value || '';
+        const naam = eersteRegel(handtekening) || 'MijnOverheid';
+        const email = velden.afz.value || '';
+        const subject = resolveAfz(c.subject);
+        const body = resolveAfz(c.body);
+        const kort = resolveAfz(c.kort);
+        const kanalen = document.getElementById('tbp-kanalen');
+        kanalen.innerHTML =
+          kanaalBlok('E-mail',
+            '<div class="tbp-mail">' +
+              '<div class="tbp-mail-header" style="background:' + merk.kleur + '">' + esc(merk.naam) + '</div>' +
+              '<div class="tbp-mail-body">' +
+                '<div class="tbp-mail-meta">' +
+                  '<div><strong>Van:</strong> ' + esc(naam) + ' &lt;' + esc(email) + '&gt;</div>' +
+                  '<div><strong>Aan:</strong> [voorletter(s)] [achternaam]</div>' +
+                  '<div><strong>Onderwerp:</strong> ' + esc(subject) + '</div>' +
+                '</div>' +
+                '<div class="tbp-pre">' + esc(body) + '</div>' +
+                (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
+              '</div>' +
+            '</div>') +
+          kanaalBlok('Brief (post)',
+            '<div class="tbp-brief">' +
+              '<div class="tbp-brief-band" style="background:' + merk.kleur + '"></div>' +
+              '<div class="tbp-brief-body">' +
+                '<div class="tbp-brief-afz tbp-pre">' + esc(handtekening || naam) + '</div>' +
+                '<div class="tbp-brief-aan">[voorletter(s)] [achternaam]<br>[straat en huisnummer]<br>[postcode en plaats]</div>' +
+                '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
+                '<div class="tbp-pre">' + esc(body) + '</div>' +
+              '</div>' +
+            '</div>') +
+          kanaalBlok('Push (MijnOverheid-app)',
+            '<div class="tbp-push">' +
+              '<div class="tbp-push-app"><span class="tbp-push-icon" style="background:' + merk.kleur + '">M</span> MijnOverheid <span class="tbp-push-nu">nu</span></div>' +
+              '<div class="tbp-push-titel">' + esc(subject) + '</div>' +
+              '<div class="tbp-push-tekst">' + esc(kort) + '</div>' +
+            '</div>') +
+          kanaalBlok('SMS',
+            '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>') +
+          kanaalBlok('WhatsApp / Signal',
+            '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>');
         pvOverlay.removeAttribute('hidden');
       });
       const pvSluit = document.getElementById('tbp-sluit');
@@ -3937,22 +3988,35 @@
         const acties = el.querySelector('.lg-acties');
         if (it.status === 'mislukt' && it.actie === 'bsn') {
           acties.innerHTML = `
-            <div class="row-actions">
-              <nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren en opnieuw versturen"></nldd-button>
+            <div class="row-actions lg-bsn-openrow">
+              <nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren"></nldd-button>
             </div>
             <div class="lg-bsn-form" hidden>
               <nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="lg-bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>
               <div class="row-actions">
-                <nldd-button class="lg-bsn-verstuur" variant="primary" start-icon="paper-plane" text="Corrigeren en versturen"></nldd-button>
+                <nldd-button class="lg-bsn-verstuur" variant="primary" start-icon="paper-plane" text="Versturen"></nldd-button>
                 <nldd-button class="lg-bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>
               </div>
               <nldd-banner class="lg-bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>
             </div>`;
+          const openRow = acties.querySelector('.lg-bsn-openrow');
           const form = acties.querySelector('.lg-bsn-form');
           const veld = acties.querySelector('.lg-bsn-veld');
           const fout = acties.querySelector('.lg-bsn-fout');
-          acties.querySelector('.lg-bsn-open').addEventListener('click', () => { form.removeAttribute('hidden'); fout.setAttribute('hidden', ''); });
-          acties.querySelector('.lg-bsn-annuleer').addEventListener('click', () => form.setAttribute('hidden', ''));
+          // Toon het huidige (onjuiste) BSN zodat je het kunt aanpassen.
+          const vulHuidig = () => { veld.value = it.huidigBsn || ''; };
+          vulHuidig();
+          customElements.whenDefined('nldd-text-field').then(vulHuidig);
+          acties.querySelector('.lg-bsn-open').addEventListener('click', () => {
+            openRow.setAttribute('hidden', '');   // knop 'BSN corrigeren' verdwijnt
+            form.removeAttribute('hidden');
+            fout.setAttribute('hidden', '');
+            vulHuidig();
+          });
+          acties.querySelector('.lg-bsn-annuleer').addEventListener('click', () => {
+            form.setAttribute('hidden', '');
+            openRow.removeAttribute('hidden');
+          });
           acties.querySelector('.lg-bsn-verstuur').addEventListener('click', () => {
             const bsn = ((veld.value || '') + '').replace(/\s/g, '');
             if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
@@ -4010,7 +4074,7 @@
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Groene Vingers Hoveniers', detail: 'Nieuwe regelgeving 2027 · post@groenevingers.nl', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Transport Van Dijk', detail: 'Nieuwe regelgeving 2027 · planning@vandijktransport.nl', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Brouwer Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', actie: 'bsn', titel: 'E-mail mislukt - De Vries Advies', detail: 'Nieuwe regelgeving 2027 · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '123456780', titel: 'E-mail mislukt - De Vries Advies', detail: 'Nieuwe regelgeving 2027 · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
         LOG.unshift(...batch);
