@@ -240,11 +240,11 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="books-vertical"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Templatebibliotheek"></nldd-text-cell>
                 </nldd-list-item>
-                <nldd-list-item button data-view="contactherstel" data-title="Contactherstel" data-parent="notificatiedienst" hidden>
+                <nldd-list-item button data-view="logboek" data-title="Logboek" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
-                  <nldd-icon-cell slot="start"><nldd-icon name="handshake"></nldd-icon></nldd-icon-cell>
-                  <nldd-text-cell text="Contactherstel"></nldd-text-cell>
-                  <nldd-cell slot="end"><nldd-badge color="accent" number="4"></nldd-badge></nldd-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="bullet-list"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Logboek"></nldd-text-cell>
+                  <nldd-cell slot="end"><nldd-badge id="log-badge" color="critical" number="0" hidden></nldd-badge></nldd-cell>
                 </nldd-list-item>
                 <nldd-list-item button data-view="apikeys-notificatiedienst" data-title="API keys" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
@@ -542,9 +542,9 @@
                     <nldd-container padding="16" gap="12">
                       <nldd-title size="5">
                         <h3>Afleverstatus vandaag - 1.248 verzonden</h3>
-                        <p slot="subtitle">Automatisch herzonden bij niet-aflevering; contactherstel vraagt om actie</p>
+                        <p slot="subtitle">Automatisch herzonden bij niet-aflevering; mislukte verzendingen vragen om actie</p>
                       </nldd-title>
-                      <div class="deliver-bar" role="img" aria-label="1.248 verzonden: 1.228 afgeleverd (98,4%), 16 niet afgeleverd (1,3%), 4 contactherstel nodig (0,3%)">
+                      <div class="deliver-bar" role="img" aria-label="1.248 verzonden: 1.228 afgeleverd (98,4%), 16 niet afgeleverd (1,3%), 4 actie nodig (0,3%)">
                         <span class="seg-ok" style="width:98.4%"></span>
                         <span class="seg-warn" style="width:1.3%"></span>
                         <span class="seg-attn" style="width:0.3%"></span>
@@ -552,7 +552,7 @@
                       <div class="deliver-legend">
                         <span><i style="background:#39870c"></i> Afgeleverd - <strong>1.228</strong>&nbsp;(98,4%)</span>
                         <span><i style="background:#e17000"></i> Niet afgeleverd - <strong>16</strong>&nbsp;(1,3%)</span>
-                        <span><i style="background:#d52b1e"></i> Contactherstel nodig - <strong>4</strong>&nbsp;(0,3%)</span>
+                        <span><i style="background:#d52b1e"></i> Actie nodig - <strong>4</strong>&nbsp;(0,3%)</span>
                       </div>
                     </nldd-container>
                   </nldd-card>
@@ -567,12 +567,12 @@
                       </nldd-container>
                     </nldd-card>
 
-                    <!-- Contactherstel -->
-                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="contactherstel" data-nav-title="Contactherstel" aria-label="Naar Contactherstel">
+                    <!-- Logboek -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="logboek" data-nav-title="Logboek" aria-label="Naar Logboek">
                       <nldd-container padding="16" gap="12">
-                        <nldd-title size="5"><h3>Contactherstel</h3><p slot="subtitle">4 ondernemers wachten op actie</p></nldd-title>
-                        <nldd-rich-text><p>Bekijk welke ondernemers contactherstel nodig hebben en herstel het contact via fysieke post naar het geregistreerde adres.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Bekijk contactherstel-acties" data-nav-view="contactherstel" data-nav-title="Contactherstel"></nldd-button></div>
+                        <nldd-title size="5"><h3>Logboek</h3><p slot="subtitle">Verzendingen en API-sleutels, met statusfilters</p></nldd-title>
+                        <nldd-rich-text><p>Bekijk per gebeurtenis de status van notificaties en API-keys. Mislukte verzendingen vragen om actie, zoals een onjuist BSN corrigeren en opnieuw versturen.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek" data-nav-title="Logboek"></nldd-button></div>
                       </nldd-container>
                     </nldd-card>
 
@@ -1080,109 +1080,39 @@
               </section>
 
               <!-- ====================== CONTACTHERSTEL ====================== -->
-              <section class="view" data-view="contactherstel">
+              <section class="view" data-view="logboek">
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
-                      <h2>Aandacht nodig</h2>
-                      <p slot="subtitle">4 ondernemers - bericht kwam niet aan, contactherstel vereist</p>
+                      <h2>Logboek</h2>
+                      <p slot="subtitle">Verzendingen en sleutelgebeurtenissen van de notificatiedienst</p>
                     </nldd-title>
-                    <nldd-tag color="critical" text="4 openstaand"></nldd-tag>
+                    <nldd-button id="log-demo" variant="secondary" start-icon="paper-plane" text="Demo: batch van 7 e-mails"></nldd-button>
                   </div>
 
-                  <nldd-banner variant="neutral" text="De digitale kanalen zijn onbereikbaar. Centraal herstel verloopt daarom via fysieke post naar het bij de KvK geregistreerde adres. Controleer per ondernemer eerst of het adres klopt en verstuur dan de brief."></nldd-banner>
+                  <nldd-banner variant="neutral" text="Het logboek toont per gebeurtenis de status. Mislukte notificaties vragen om actie - bijvoorbeeld een onjuist BSN corrigeren en opnieuw versturen. Let op: fictieve gegevens."></nldd-banner>
 
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <div class="between">
-                        <nldd-title size="5">
-                          <h2>Bakkerij De Korenbloem</h2>
-                          <p slot="subtitle">KvK 81234567 · geïnitieerd door ondernemer · 16 jun 2026</p>
-                        </nldd-title>
-                        <div class="inline">
-                          <nldd-tag color="warning" text="e-mail onbereikbaar"></nldd-tag>
-                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
-                        </div>
-                      </div>
-                      <nldd-rich-text>
-                        <p>Het e-mailadres was onbereikbaar, waardoor notificaties niet aankwamen. De ondernemer geeft via de KvK een <strong>nieuw contactadres</strong> door. Na bevestiging wordt dit centraal gedeeld met alle aangesloten overheidsorganisaties.</p>
-                      </nldd-rich-text>
-                      <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
-                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
-                        <nldd-button variant="secondary" text="Details"></nldd-button>
-                      </div>
-                    </nldd-container>
-                  </nldd-card>
+                  <nldd-form-field label="Filter">
+                    <nldd-segmented-control id="log-filter" value="alles" type="radio" variant="icon-and-text" width="full" accessible-label="Filter logboek">
+                      <nldd-segmented-control-item value="alles" text="Alles" icon="bullet-list"></nldd-segmented-control-item>
+                      <nldd-segmented-control-item value="notificatie" text="Notificaties" icon="bell"></nldd-segmented-control-item>
+                      <nldd-segmented-control-item value="apikey" text="API keys" icon="key"></nldd-segmented-control-item>
+                    </nldd-segmented-control>
+                  </nldd-form-field>
+                  <div id="log-status-wrap" hidden>
+                    <nldd-form-field label="Status notificaties">
+                      <nldd-segmented-control id="log-status" value="alle" type="radio" variant="icon-and-text" width="full" accessible-label="Status notificaties">
+                        <nldd-segmented-control-item value="alle" text="Alle" icon="bullet-list"></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="succesvol" text="Succesvol" icon="check-mark"></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="errors" text="Met errors" icon="arrow-2-counter-clockwise"></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="mislukt" text="Mislukt" icon="dismiss"></nldd-segmented-control-item>
+                      </nldd-segmented-control>
+                    </nldd-form-field>
+                  </div>
 
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <div class="between">
-                        <nldd-title size="5">
-                          <h2>Jansen Installatietechniek BV</h2>
-                          <p slot="subtitle">KvK 84567123 · geïnitieerd door ondernemer · 15 jun 2026</p>
-                        </nldd-title>
-                        <div class="inline">
-                          <nldd-tag color="warning" text="nieuwe contactpersoon"></nldd-tag>
-                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
-                        </div>
-                      </div>
-                      <nldd-rich-text>
-                        <p>Na een bedrijfsoverdracht is er een <strong>nieuwe contactpersoon</strong>. De ondernemer herstelt via de KvK het contact zodat berichten van de overheid weer op de juiste plek aankomen.</p>
-                      </nldd-rich-text>
-                      <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
-                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
-                        <nldd-button variant="secondary" text="Details"></nldd-button>
-                      </div>
-                    </nldd-container>
-                  </nldd-card>
-
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <div class="between">
-                        <nldd-title size="5">
-                          <h2>Groene Vingers Hoveniers</h2>
-                          <p slot="subtitle">KvK 83219876 · geïnitieerd door ondernemer · 14 jun 2026</p>
-                        </nldd-title>
-                        <div class="inline">
-                          <nldd-tag color="warning" text="adres verouderd"></nldd-tag>
-                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
-                        </div>
-                      </div>
-                      <nldd-rich-text>
-                        <p>De onderneming is verhuisd en de contactgegevens waren verouderd. De ondernemer geeft via de KvK de actuele gegevens door voor centraal herstel.</p>
-                      </nldd-rich-text>
-                      <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
-                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
-                        <nldd-button variant="secondary" text="Details"></nldd-button>
-                      </div>
-                    </nldd-container>
-                  </nldd-card>
-
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <div class="between">
-                        <nldd-title size="5">
-                          <h2>Transport Van Dijk</h2>
-                          <p slot="subtitle">KvK 87651234 · geïnitieerd door ondernemer · 13 jun 2026</p>
-                        </nldd-title>
-                        <div class="inline">
-                          <nldd-tag color="warning" text="account ontkoppeld"></nldd-tag>
-                          <nldd-tag color="accent" text="ter bevestiging"></nldd-tag>
-                        </div>
-                      </div>
-                      <nldd-rich-text>
-                        <p>Het account was eerder ontkoppeld. De ondernemer wil via de KvK het contact met de overheid herstellen om weer notificaties te ontvangen.</p>
-                      </nldd-rich-text>
-                      <div class="row-actions">
-                        <nldd-button variant="primary" start-icon="inbox" text="Centraal herstellen via post" class="ch-start"></nldd-button>
-                        <nldd-button variant="secondary" start-icon="dismiss" text="Afwijzen" data-action="ignore"></nldd-button>
-                        <nldd-button variant="secondary" text="Details"></nldd-button>
-                      </div>
-                    </nldd-container>
-                  </nldd-card>
+                  <nldd-banner id="log-actie-melding" variant="success" text="" hidden></nldd-banner>
+                  <div class="stack" id="log-lijst"></div>
+                  <p class="muted-note" id="log-leeg" hidden>Nog geen logboekitems voor dit filter.</p>
                 </div>
               </section>
 
@@ -3490,6 +3420,171 @@
       if (p.get('present') === '1') {
         open(parseInt(p.get('slide') || '1', 10) || 1);
       }
+    })();
+  </script>
+
+  <script>
+    // ====================== Logboek ======================
+    // Filterbare lijst van verzend- en API-key-gebeurtenissen. Een demoknop voegt
+    // een batch van 7 e-mails toe (5 geslaagd waarvan 1 na 2e poging, 2 mislukt).
+    // Mislukte notificaties vragen om actie (BSN corrigeren of opnieuw versturen).
+    (function () {
+      const root = document.querySelector('section[data-view="logboek"]');
+      if (!root) return;
+      const lijst = root.querySelector('#log-lijst');
+      const leegP = root.querySelector('#log-leeg');
+      const filterCtrl = root.querySelector('#log-filter');
+      const statusWrap = root.querySelector('#log-status-wrap');
+      const statusCtrl = root.querySelector('#log-status');
+      const melding = root.querySelector('#log-actie-melding');
+      const badge = document.getElementById('log-badge');
+
+      const STAT = {
+        succesvol: { color: 'success', label: 'succesvol' },
+        errors: { color: 'warning', label: 'succesvol met errors' },
+        mislukt: { color: 'critical', label: 'mislukt' },
+        apikey: { color: 'neutral', label: 'API key' },
+      };
+
+      let teller = 0;
+      const LOG = [
+        { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key aangemaakt', detail: 'Backoffice KvK · rol Notificaties verzenden', tijd: 'Vandaag 09:12' },
+        { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key ingetrokken', detail: 'Oude testkey · door Sanne de Boer', tijd: 'Gisteren 14:30' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie verzonden - jaarlijkse opgave', detail: 'Handelsregister · 320 ondernemers', tijd: 'Gisteren 16:05' },
+      ];
+
+      function segVal(ctrl, fallback) {
+        const sel = ctrl.querySelector('nldd-segmented-control-item[selected]');
+        return (sel && sel.getAttribute('value')) || ctrl.getAttribute('value') || fallback;
+      }
+      function setSeg(ctrl, val) {
+        ctrl.setAttribute('value', val);
+        ctrl.querySelectorAll('nldd-segmented-control-item').forEach(it =>
+          it.toggleAttribute('selected', it.getAttribute('value') === val));
+      }
+      function meld(variant, tekst) {
+        melding.setAttribute('variant', variant);
+        melding.setAttribute('text', tekst);
+        melding.removeAttribute('hidden');
+      }
+
+      function zichtbaar(item) {
+        const f = segVal(filterCtrl, 'alles');
+        if (f === 'alles') return true;
+        if (f === 'apikey') return item.type === 'apikey';
+        if (f === 'notificatie') {
+          if (item.type !== 'notificatie') return false;
+          const s = segVal(statusCtrl, 'alle');
+          return s === 'alle' ? true : item.status === s;
+        }
+        return true;
+      }
+
+      function icoon(it) {
+        if (it.type === 'apikey') return 'key';
+        if (it.status === 'mislukt') return 'dismiss';
+        if (it.status === 'errors') return 'arrow-2-counter-clockwise';
+        return 'check-mark';
+      }
+
+      function kaart(it) {
+        const st = STAT[it.status] || STAT.apikey;
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <nldd-card>
+            <nldd-container padding="12" gap="8">
+              <div class="between">
+                <nldd-title size="6"><h3 class="lg-titel"></h3><p slot="subtitle" class="lg-detail"></p></nldd-title>
+                <div class="inline">
+                  <nldd-icon class="lg-icon" size="20"></nldd-icon>
+                  <nldd-tag class="lg-status"></nldd-tag>
+                </div>
+              </div>
+              <div class="lg-acties"></div>
+            </nldd-container>
+          </nldd-card>`;
+        const el = wrap.firstElementChild;
+        el.querySelector('.lg-titel').textContent = it.titel;
+        el.querySelector('.lg-detail').textContent = it.detail + ' · ' + it.tijd;
+        el.querySelector('.lg-icon').setAttribute('name', icoon(it));
+        const tag = el.querySelector('.lg-status');
+        tag.setAttribute('color', st.color);
+        tag.setAttribute('text', st.label);
+
+        const acties = el.querySelector('.lg-acties');
+        if (it.status === 'mislukt' && it.actie === 'bsn') {
+          acties.innerHTML = `
+            <div class="row-actions">
+              <nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren en opnieuw versturen"></nldd-button>
+            </div>
+            <div class="lg-bsn-form" hidden>
+              <nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="lg-bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>
+              <div class="row-actions">
+                <nldd-button class="lg-bsn-verstuur" variant="primary" start-icon="paper-plane" text="Corrigeren en versturen"></nldd-button>
+                <nldd-button class="lg-bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+              </div>
+              <nldd-banner class="lg-bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>
+            </div>`;
+          const form = acties.querySelector('.lg-bsn-form');
+          const veld = acties.querySelector('.lg-bsn-veld');
+          const fout = acties.querySelector('.lg-bsn-fout');
+          acties.querySelector('.lg-bsn-open').addEventListener('click', () => { form.removeAttribute('hidden'); fout.setAttribute('hidden', ''); });
+          acties.querySelector('.lg-bsn-annuleer').addEventListener('click', () => form.setAttribute('hidden', ''));
+          acties.querySelector('.lg-bsn-verstuur').addEventListener('click', () => {
+            const bsn = ((veld.value || '') + '').replace(/\s/g, '');
+            if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
+            it.status = 'errors';
+            it.actie = null;
+            it.detail = it.detail.split(' · onbekend')[0] + ' · BSN gecorrigeerd naar ' + bsn + ', opnieuw verzonden - geslaagd';
+            render();
+            meld('success', 'BSN gecorrigeerd en notificatie opnieuw verzonden - geslaagd.');
+          });
+        } else if (it.status === 'mislukt' && it.actie === 'retry') {
+          acties.innerHTML = `<div class="row-actions"><nldd-button class="lg-retry" variant="primary" start-icon="arrow-2-counter-clockwise" text="Opnieuw versturen"></nldd-button></div>`;
+          acties.querySelector('.lg-retry').addEventListener('click', () => {
+            it.status = 'errors';
+            it.actie = null;
+            it.detail = it.detail + ' · opnieuw verzonden - geslaagd';
+            render();
+            meld('success', 'Notificatie opnieuw verzonden - geslaagd.');
+          });
+        } else {
+          acties.remove();
+        }
+        return el;
+      }
+
+      function render() {
+        statusWrap.toggleAttribute('hidden', segVal(filterCtrl, 'alles') !== 'notificatie');
+        lijst.textContent = '';
+        const items = LOG.filter(zichtbaar);
+        leegP.toggleAttribute('hidden', items.length > 0);
+        items.forEach(it => lijst.appendChild(kaart(it)));
+        const mislukt = LOG.filter(x => x.status === 'mislukt').length;
+        if (badge) { badge.setAttribute('number', String(mislukt)); badge.toggleAttribute('hidden', mislukt === 0); }
+      }
+
+      filterCtrl.addEventListener('change', render);
+      statusCtrl.addEventListener('change', render);
+
+      root.querySelector('#log-demo').addEventListener('click', () => {
+        const batch = [
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Bakkerij De Korenbloem', detail: 'Nieuwe regelgeving 2027 · info@dekorenbloem.nl', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Café De Brug', detail: 'Nieuwe regelgeving 2027 · info@cafedebrug.nl', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Groene Vingers Hoveniers', detail: 'Nieuwe regelgeving 2027 · post@groenevingers.nl', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Transport Van Dijk', detail: 'Nieuwe regelgeving 2027 · planning@vandijktransport.nl', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Jansen Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', actie: 'bsn', titel: 'E-mail mislukt - De Vries Advies', detail: 'Nieuwe regelgeving 2027 · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
+        ].map(b => Object.assign({ id: ++teller }, b));
+        LOG.unshift(...batch);
+        setSeg(filterCtrl, 'notificatie');
+        setSeg(statusCtrl, 'alle');
+        render();
+        meld('success', 'Demobatch verstuurd: 7 e-mails - 5 geslaagd (waarvan 1 na een 2e poging) en 2 mislukt. De 2 mislukte vragen om actie.');
+      });
+
+      render();
     })();
   </script>
 
