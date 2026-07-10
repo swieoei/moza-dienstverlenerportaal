@@ -3332,11 +3332,21 @@
       const scopeColor = { lezen: 'neutral', schrijven: 'accent', beheer: 'warning' };
       const rollenVan = k => k.rollen || (k.rol ? [k.rol] : []);
 
+      // Een API-key-eigenaar mag de bestaande key alleen kopieren, niet zelf een
+      // nieuwe key aanmaken. De aanmaakknop wordt daarom voor die rol verborgen.
+      const magKeyAanmaken = !window.__MOZA_USER || window.__MOZA_USER.rol !== 'keyeigenaar';
+
       document.querySelectorAll('.api-keys-beheer[data-dienst]').forEach(beheer => {
         const dienst = MP_DIENSTEN[beheer.dataset.dienst];
         if (!dienst || !dienst.keys) return;
         const lijst = beheer.querySelector('[data-keys-lijst]');
         const meldingEl = beheer.querySelector('[data-nk-melding]');
+        if (!magKeyAanmaken) {
+          const openBtn = beheer.querySelector('[data-nk-open]');
+          if (openBtn) openBtn.classList.add('rol-verborgen');
+          const panel = beheer.querySelector('[data-nk-panel]');
+          if (panel) panel.setAttribute('hidden', '');
+        }
 
         function melding(variant, text) {
           meldingEl.setAttribute('variant', variant);
