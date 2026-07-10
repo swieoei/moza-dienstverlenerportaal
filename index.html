@@ -1804,8 +1804,9 @@
       robbert: { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'organisatiebeheerder' },
       fatima:  { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'dienstbeheerder', dienst: 'notificatiedienst' },
       naomi:   { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'dienstbeheerder', dienst: 'profieldienst' },
+      semih:   { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'keyeigenaar', dienst: 'notificatiedienst' },
     };
-    const ROL_LABEL = { organisatiebeheerder: 'Organisatiebeheerder', dienstbeheerder: 'Dienstbeheerder' };
+    const ROL_LABEL = { organisatiebeheerder: 'Organisatiebeheerder', dienstbeheerder: 'Dienstbeheerder', keyeigenaar: 'API-key-eigenaar' };
     let __userKey = 'sanne';
     try { const s = localStorage.getItem('moza-user'); if (s && MOZA_USERS[s]) __userKey = s; } catch (e) {}
     const MOZA_USER = window.__MOZA_USER = MOZA_USERS[__userKey];
@@ -1822,14 +1823,21 @@
       // Plaatsen waar de eigen naam wordt getoond (bv. audit-acties door de beheerder).
       document.querySelectorAll('.js-huidige-gebruiker').forEach(el => el.setAttribute('text', MOZA_USER.naam));
 
-      // Rolgebaseerde toegang: een dienstbeheerder ziet alleen de eigen dienst.
-      if (MOZA_USER.rol === 'dienstbeheerder') {
-        // Alleen de organisatiebeheerder heeft toegang tot Audit en logboek.
-        const perDienst = {
-          notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'analytics'],
-          profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'apikeys-profieldienst', 'rapportage-profieldienst', 'analytics'],
+      // Rolgebaseerde toegang: alleen de organisatiebeheerder ziet alles. Een dienst-
+      // beheerder ziet de eigen dienst; een API-key-eigenaar alleen keys + logboek daarvan.
+      // Audit en logboek is voorbehouden aan de organisatiebeheerder.
+      if (MOZA_USER.rol && MOZA_USER.rol !== 'organisatiebeheerder') {
+        const TOEGANG = {
+          dienstbeheerder: {
+            notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'analytics'],
+            profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'apikeys-profieldienst', 'rapportage-profieldienst', 'analytics'],
+          },
+          keyeigenaar: {
+            notificatiedienst: ['dashboard', 'notificatiedienst', 'apikeys-notificatiedienst', 'logboek'],
+            profieldienst: ['dashboard', 'profieldienst', 'apikeys-profieldienst'],
+          },
         };
-        const toegestaan = perDienst[MOZA_USER.dienst] || ['dashboard'];
+        const toegestaan = ((TOEGANG[MOZA_USER.rol] || {})[MOZA_USER.dienst]) || ['dashboard'];
         document.querySelectorAll('nldd-list-item[data-view]').forEach(it => {
           if (toegestaan.indexOf(it.dataset.view) < 0) it.classList.add('rol-verborgen');
         });

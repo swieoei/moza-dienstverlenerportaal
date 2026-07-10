@@ -17,8 +17,7 @@
     .auth-center { display: flex; justify-content: center; align-items: flex-start; padding: 48px 16px; }
     .auth-card { width: 100%; max-width: 440px; }
     .full > nldd-button { display: block; }
-    .quick { display: flex; flex-direction: column; gap: 8px; }
-    .quick nldd-button { display: block; }
+    .quick { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
     .muted { text-align: center; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.85rem; }
   </style>
 </head>
@@ -60,11 +59,12 @@
 
                 <nldd-divider></nldd-divider>
                 <nldd-rich-text><p class="muted">Demo: snel inloggen als</p></nldd-rich-text>
-                <div class="full quick">
-                  <nldd-button class="qbtn" data-user="robbert" variant="secondary" start-icon="person" text="Robbert Bos · BZK · organisatiebeheerder"></nldd-button>
-                  <nldd-button class="qbtn" data-user="fatima" variant="secondary" start-icon="person" text="Fatima Ouahabi · BZK · beheerder Notificatiedienst"></nldd-button>
-                  <nldd-button class="qbtn" data-user="naomi" variant="secondary" start-icon="person" text="Naomi Sedney · BZK · beheerder Profieldienst"></nldd-button>
-                  <nldd-button class="qbtn" data-user="sanne" variant="secondary" start-icon="person" text="Sanne de Boer · KvK · organisatiebeheerder"></nldd-button>
+                <div class="quick">
+                  <nldd-link class="qbtn" data-user="robbert" href="#" start-icon="person" text="Robbert Bos · BZK · organisatiebeheerder"></nldd-link>
+                  <nldd-link class="qbtn" data-user="fatima" href="#" start-icon="person" text="Fatima Ouahabi · BZK · beheerder Notificatiedienst"></nldd-link>
+                  <nldd-link class="qbtn" data-user="naomi" href="#" start-icon="person" text="Naomi Sedney · BZK · beheerder Profieldienst"></nldd-link>
+                  <nldd-link class="qbtn" data-user="semih" href="#" start-icon="person" text="Semih Aydın · BZK · API-key-eigenaar"></nldd-link>
+                  <nldd-link class="qbtn" data-user="sanne" href="#" start-icon="person" text="Sanne de Boer · KvK · organisatiebeheerder"></nldd-link>
                 </div>
 
                 <nldd-rich-text><p class="muted">Wachtwoord vergeten? Neem contact op met uw lokale beheerder.</p></nldd-rich-text>
@@ -85,8 +85,9 @@
       'robbert.bos@rijksoverheid.nl': { key: 'robbert', org: 'Ministerie van BZK' },
       'f.ouahabi@rijksoverheid.nl': { key: 'fatima', org: 'Ministerie van BZK' },
       'n.sedney@rijksoverheid.nl': { key: 'naomi', org: 'Ministerie van BZK' },
+      's.aydin@rijksoverheid.nl': { key: 'semih', org: 'Ministerie van BZK' },
     };
-    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl', fatima: 'f.ouahabi@rijksoverheid.nl', naomi: 'n.sedney@rijksoverheid.nl' };
+    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl', fatima: 'f.ouahabi@rijksoverheid.nl', naomi: 'n.sedney@rijksoverheid.nl', semih: 's.aydin@rijksoverheid.nl' };
     const uVeld = document.getElementById('u');
     const orgTitel = document.getElementById('org-titel');
 
@@ -100,7 +101,7 @@
 
     document.getElementById('login-btn').addEventListener('click', () => login(uVeld.value));
     document.querySelectorAll('.qbtn').forEach(b =>
-      b.addEventListener('click', () => login(KEY_EMAIL[b.dataset.user])));
+      b.addEventListener('click', e => { e.preventDefault(); login(KEY_EMAIL[b.dataset.user]); }));
 
     // Demo-gemak: Robbert (BZK) staat standaard ingevuld; org-titel volgt de invoer.
     customElements.whenDefined('nldd-text-field').then(() => {
