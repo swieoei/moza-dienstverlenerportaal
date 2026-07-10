@@ -177,7 +177,7 @@
             <nldd-menu-bar-item id="account-menu" text="Sanne de Boer · KvK" icon="person" expandable haspopup="menu">
               <nldd-menu accessible-label="Account en organisatie">
                 <nldd-menu-item id="mi-organisatie" text="**Kamer van Koophandel**" icon="person-badge-gear" details="Organisatie-instellingen"></nldd-menu-item>
-                <nldd-menu-item text="Sanne de Boer" icon="person" details="Developer administrator"></nldd-menu-item>
+                <nldd-menu-item id="mi-gebruiker" text="Sanne de Boer" icon="person" details="Organisatiebeheerder"></nldd-menu-item>
                 <nldd-menu-divider></nldd-menu-divider>
                 <nldd-menu-item id="mi-logout" text="Uitloggen" icon="arrow-right-out-bucket" destructive></nldd-menu-item>
               </nldd-menu>
@@ -268,6 +268,10 @@
                 <nldd-list-item button data-view="marktplaats" data-title="Dienstenaanbod">
                   <nldd-icon-cell slot="start"><nldd-icon name="shopping-cart"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Dienstenaanbod"></nldd-text-cell>
+                </nldd-list-item>
+                <nldd-list-item button data-view="gebruikersbeheer" data-title="Gebruikersbeheer">
+                  <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Gebruikersbeheer"></nldd-text-cell>
                 </nldd-list-item>
               </nldd-list>
             </div>
@@ -1481,6 +1485,19 @@
                 </div>
               </section>
 
+              <!-- ====================== GEBRUIKERSBEHEER ====================== -->
+              <section class="view" data-view="gebruikersbeheer">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4"><h2>Gebruikersbeheer</h2><p slot="subtitle" id="gb-sub">Beheer wie toegang heeft en met welke rol</p></nldd-title>
+                    <nldd-button id="gb-uitnodigen" variant="primary" start-icon="plus" text="Gebruiker uitnodigen"></nldd-button>
+                  </div>
+                  <nldd-banner variant="neutral" text="Als organisatiebeheerder bepaal je welke medewerkers toegang hebben en met welke rol. Elke rol heeft toegang tot het dashboard; daarnaast verschilt de toegang per rol. Let op: fictieve gegevens."></nldd-banner>
+                  <nldd-banner id="gb-melding" variant="success" text="" hidden></nldd-banner>
+                  <div class="stack" id="gb-lijst"></div>
+                </div>
+              </section>
+
               <!-- ====================== INSTELLINGEN ORGANISATIE ====================== -->
               <section class="view" data-view="organisatie">
                 <div class="stack">
@@ -1663,6 +1680,24 @@
 
     const sbsec = document.getElementById('sbsec');
 
+    // Ingelogde gebruiker: bepaald op de inlogpagina (localStorage 'moza-user').
+    // Twee demo-accounts, beide organisatiebeheerder met dezelfde rechten.
+    const MOZA_USERS = {
+      sanne:   { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk' },
+      robbert: { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk' },
+    };
+    let __userKey = 'sanne';
+    try { const s = localStorage.getItem('moza-user'); if (s && MOZA_USERS[s]) __userKey = s; } catch (e) {}
+    const MOZA_USER = window.__MOZA_USER = MOZA_USERS[__userKey];
+    (function () {
+      const am = document.getElementById('account-menu');
+      const org = document.getElementById('mi-organisatie');
+      const gb = document.getElementById('mi-gebruiker');
+      if (am) am.setAttribute('text', MOZA_USER.naam + ' · ' + MOZA_USER.orgKort);
+      if (org) org.setAttribute('text', '**' + MOZA_USER.org + '**');
+      if (gb) gb.setAttribute('text', MOZA_USER.naam);
+    })();
+
     navwrap.addEventListener('click', (e) => {
       const item = e.target.closest('nldd-list-item');
       if (!item || !item.dataset.view) return;
@@ -1843,10 +1878,12 @@
 
     // Beginwaarden voor de tekstvelden zetten via de .value-property (na component-upgrade).
     customElements.whenDefined('nldd-text-field').then(() => {
+      const u = window.__MOZA_USER || {};
+      const mailDomein = (u.email || 'storingen@kvk.nl').split('@')[1] || 'kvk.nl';
       const vals = {
-        'f-org': 'Kamer van Koophandel',
+        'f-org': u.org || 'Kamer van Koophandel',
         'f-afd': 'Notificatiebeheer',
-        'f-mail': 'storingen@kvk.nl',
+        'f-mail': 'storingen@' + mailDomein,
       };
       Object.entries(vals).forEach(([id, v]) => {
         const el = document.getElementById(id);
@@ -3420,6 +3457,95 @@
       if (p.get('present') === '1') {
         open(parseInt(p.get('slide') || '1', 10) || 1);
       }
+    })();
+  </script>
+
+  <script>
+    // ====================== Gebruikersbeheer ======================
+    // Overzicht van de gebruikers van de organisatie en hun rol. Dezelfde roltypen
+    // bij elke organisatie (KvK, BZK); alleen de namen verschillen. Inclusieve namen.
+    (function () {
+      const root = document.querySelector('section[data-view="gebruikersbeheer"]');
+      if (!root) return;
+      const lijst = root.querySelector('#gb-lijst');
+      const sub = root.querySelector('#gb-sub');
+      const melding = root.querySelector('#gb-melding');
+      const user = window.__MOZA_USER || { org: 'Kamer van Koophandel', orgKey: 'kvk', email: 'sanne.deboer@kvk.nl' };
+
+      const ROLLEN = {
+        organisatiebeheerder: { label: 'Organisatiebeheerder', color: 'accent',
+          toegang: () => ['Volledige toegang tot alle diensten en instellingen', 'Beheert gebruikers en rollen', 'Inclusief Dashboard, Audit en logboek en Analytics'] },
+        dienstbeheerder: { label: 'Dienstbeheerder', color: 'accent',
+          toegang: (u) => [u.dienst + ' - volledig beheer (alles binnen deze dienst)', 'Dashboard', 'Audit en logboek', 'Analytics'] },
+        keyeigenaar: { label: 'API-key-eigenaar', color: 'neutral',
+          toegang: (u) => [u.dienst + ' - eigenaar van API-key ' + u.key, 'Logboek - alleen voor deze key', 'Mag keys met deze functionaliteit zelf distribueren', 'Dashboard'] },
+      };
+
+      const ORG = {
+        kvk: { naam: 'Kamer van Koophandel', users: [
+          { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder' },
+          { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst' },
+          { naam: 'Deniz Yılmaz', email: 'd.yilmaz@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs' },
+        ] },
+        bzk: { naam: 'Ministerie van BZK', users: [
+          { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder' },
+          { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst' },
+          { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc' },
+        ] },
+      };
+
+      const org = ORG[user.orgKey] || ORG.kvk;
+      if (sub) sub.textContent = org.naam + ' - beheer wie toegang heeft en met welke rol';
+
+      function meld(v, t) { melding.setAttribute('variant', v); melding.setAttribute('text', t); melding.removeAttribute('hidden'); }
+
+      function kaart(u) {
+        const meta = ROLLEN[u.rol] || ROLLEN.dienstbeheerder;
+        const jij = (u.email || '').toLowerCase() === (user.email || '').toLowerCase();
+        const toeg = (typeof meta.toegang === 'function' ? meta.toegang(u) : meta.toegang) || [];
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <nldd-card>
+            <nldd-container padding="16" gap="12">
+              <div class="between">
+                <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title>
+                <div class="inline">
+                  ${jij ? '<nldd-tag color="success" text="jij"></nldd-tag>' : ''}
+                  <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
+                </div>
+              </div>
+              <div class="gb-toegang"></div>
+              <div class="row-actions gb-acties"></div>
+            </nldd-container>
+          </nldd-card>`;
+        const el = wrap.firstElementChild;
+        el.querySelector('.gb-naam').textContent = u.naam;
+        el.querySelector('.gb-mail').textContent = u.email;
+        const tb = el.querySelector('.gb-toegang');
+        const kop = document.createElement('p'); kop.className = 'muted-note'; kop.textContent = 'Toegang';
+        tb.appendChild(kop);
+        const ul = document.createElement('ul');
+        ul.style.margin = '4px 0 0'; ul.style.paddingInlineStart = '18px';
+        toeg.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+        tb.appendChild(ul);
+        const acties = el.querySelector('.gb-acties');
+        if (u.rol === 'keyeigenaar') {
+          const b = document.createElement('nldd-button');
+          b.setAttribute('variant', 'secondary'); b.setAttribute('start-icon', 'key'); b.setAttribute('text', 'Key distribueren');
+          b.addEventListener('click', () => meld('success', u.naam + ' kan de API-key ' + u.key + ' distribueren aan een nieuwe gebruiker - met alleen deze functionaliteit en logboekinzicht voor deze key. (demo)'));
+          acties.appendChild(b);
+        }
+        const rolBtn = document.createElement('nldd-button');
+        rolBtn.setAttribute('variant', 'secondary'); rolBtn.setAttribute('text', 'Rol wijzigen');
+        rolBtn.addEventListener('click', () => meld('success', 'Rol van ' + u.naam + ' wijzigen. (demo)'));
+        acties.appendChild(rolBtn);
+        return el;
+      }
+
+      root.querySelector('#gb-uitnodigen').addEventListener('click', () =>
+        meld('success', 'Nieuwe gebruiker uitnodigen voor ' + org.naam + ' - kies een rol: organisatiebeheerder, dienstbeheerder of API-key-eigenaar. (demo)'));
+
+      org.users.forEach(u => lijst.appendChild(kaart(u)));
     })();
   </script>
 

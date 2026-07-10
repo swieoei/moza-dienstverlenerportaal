@@ -17,6 +17,8 @@
     .auth-center { display: flex; justify-content: center; align-items: flex-start; padding: 48px 16px; }
     .auth-card { width: 100%; max-width: 440px; }
     .full > nldd-button { display: block; }
+    .quick { display: flex; flex-direction: column; gap: 8px; }
+    .quick nldd-button { display: block; }
     .muted { text-align: center; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.85rem; }
   </style>
 </head>
@@ -39,14 +41,14 @@
 
                 <nldd-title size="2">
                   <p slot="overline">Inloggen bij</p>
-                  <h1>Kamer van Koophandel</h1>
+                  <h1 id="org-titel">Ministerie van BZK</h1>
                   <p slot="subtitle">Log in met uw Rijksaccount om door te gaan.</p>
                 </nldd-title>
 
                 <nldd-divider></nldd-divider>
 
                 <nldd-form-field label="Gebruikersnaam of e-mailadres">
-                  <nldd-text-field id="u" placeholder="naam@kvk.nl"></nldd-text-field>
+                  <nldd-text-field id="u" placeholder="naam@organisatie.nl"></nldd-text-field>
                 </nldd-form-field>
                 <nldd-form-field label="Wachtwoord">
                   <nldd-password-field id="p"></nldd-password-field>
@@ -54,6 +56,13 @@
 
                 <div class="full">
                   <nldd-button id="login-btn" variant="primary" size="lg" end-icon="arrow-right" text="Inloggen"></nldd-button>
+                </div>
+
+                <nldd-divider></nldd-divider>
+                <nldd-rich-text><p class="muted">Demo: snel inloggen als</p></nldd-rich-text>
+                <div class="full quick">
+                  <nldd-button class="qbtn" data-user="robbert" variant="secondary" start-icon="person" text="Robbert Bos · Ministerie van BZK"></nldd-button>
+                  <nldd-button class="qbtn" data-user="sanne" variant="secondary" start-icon="person" text="Sanne de Boer · Kamer van Koophandel"></nldd-button>
                 </div>
 
                 <nldd-rich-text><p class="muted">Wachtwoord vergeten? Neem contact op met uw lokale beheerder.</p></nldd-rich-text>
@@ -67,15 +76,33 @@
   </div>
 
   <script>
-    // Inloggen → dashboard van het portaal.
-    document.getElementById('login-btn').addEventListener('click', () => {
+    // Twee demo-accounts: Robbert Bos (BZK) en Sanne de Boer (KvK). Beide organisatie-
+    // beheerders met dezelfde rechten. De keuze wordt doorgegeven aan het portaal.
+    const USERS = {
+      'sanne.deboer@kvk.nl': { key: 'sanne', org: 'Kamer van Koophandel' },
+      'robbert.bos@rijksoverheid.nl': { key: 'robbert', org: 'Ministerie van BZK' },
+    };
+    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl' };
+    const uVeld = document.getElementById('u');
+    const orgTitel = document.getElementById('org-titel');
+
+    function huidigeUser() { return USERS[((uVeld.value || '') + '').trim().toLowerCase()] || null; }
+    function werkOrgBij() { const m = huidigeUser(); if (orgTitel) orgTitel.textContent = m ? m.org : 'SSO Rijk'; }
+    function login(email) {
+      const m = USERS[(email || '').trim().toLowerCase()];
+      try { localStorage.setItem('moza-user', m ? m.key : 'sanne'); } catch (e) {}
       window.location.href = 'index.html';
-    });
-    // Demo-gemak: een gebruikersnaam voorinvullen.
+    }
+
+    document.getElementById('login-btn').addEventListener('click', () => login(uVeld.value));
+    document.querySelectorAll('.qbtn').forEach(b =>
+      b.addEventListener('click', () => login(KEY_EMAIL[b.dataset.user])));
+
+    // Demo-gemak: Robbert (BZK) staat standaard ingevuld; org-titel volgt de invoer.
     customElements.whenDefined('nldd-text-field').then(() => {
-      const u = document.getElementById('u');
-      if (u) u.value = 'sanne.deboer@kvk.nl';
+      if (uVeld) { uVeld.value = 'Robbert.Bos@rijksoverheid.nl'; werkOrgBij(); }
     });
+    if (uVeld) uVeld.addEventListener('input', werkOrgBij);
   </script>
 </body>
 </html>
