@@ -65,6 +65,9 @@
                   <nldd-link class="qbtn" data-user="naomi" href="#" start-icon="person" text="Naomi Sedney · BZK · beheerder Profieldienst"></nldd-link>
                   <nldd-link class="qbtn" data-user="semih" href="#" start-icon="person" text="Semih Aydın · BZK · API-key-eigenaar"></nldd-link>
                   <nldd-link class="qbtn" data-user="sanne" href="#" start-icon="person" text="Sanne de Boer · KvK · organisatiebeheerder"></nldd-link>
+                  <nldd-link class="qbtn" data-user="aicha" href="#" start-icon="person" text="Aïcha El Idrissi · KvK · beheerder Notificatiedienst"></nldd-link>
+                  <nldd-link class="qbtn" data-user="wei" href="#" start-icon="person" text="Wei Chen · KvK · beheerder Profieldienst"></nldd-link>
+                  <nldd-link class="qbtn" data-user="deniz" href="#" start-icon="person" text="Deniz Öztürk · KvK · API-key-eigenaar"></nldd-link>
                 </div>
 
                 <nldd-rich-text><p class="muted">Wachtwoord vergeten? Neem contact op met uw lokale beheerder.</p></nldd-rich-text>
@@ -82,12 +85,15 @@
     // beheerders met dezelfde rechten. De keuze wordt doorgegeven aan het portaal.
     const USERS = {
       'sanne.deboer@kvk.nl': { key: 'sanne', org: 'Kamer van Koophandel' },
+      'a.elidrissi@kvk.nl': { key: 'aicha', org: 'Kamer van Koophandel' },
+      'w.chen@kvk.nl': { key: 'wei', org: 'Kamer van Koophandel' },
+      'd.ozturk@kvk.nl': { key: 'deniz', org: 'Kamer van Koophandel' },
       'robbert.bos@rijksoverheid.nl': { key: 'robbert', org: 'Ministerie van BZK' },
       'f.ouahabi@rijksoverheid.nl': { key: 'fatima', org: 'Ministerie van BZK' },
       'n.sedney@rijksoverheid.nl': { key: 'naomi', org: 'Ministerie van BZK' },
       's.aydin@rijksoverheid.nl': { key: 'semih', org: 'Ministerie van BZK' },
     };
-    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl', fatima: 'f.ouahabi@rijksoverheid.nl', naomi: 'n.sedney@rijksoverheid.nl', semih: 's.aydin@rijksoverheid.nl' };
+    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', aicha: 'a.elidrissi@kvk.nl', wei: 'w.chen@kvk.nl', deniz: 'd.ozturk@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl', fatima: 'f.ouahabi@rijksoverheid.nl', naomi: 'n.sedney@rijksoverheid.nl', semih: 's.aydin@rijksoverheid.nl' };
     const uVeld = document.getElementById('u');
     const orgTitel = document.getElementById('org-titel');
 

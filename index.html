@@ -58,8 +58,10 @@
     /* Contactherstel via fysieke post: uitklapbaar herstelblok binnen een kaart */
     .ch-herstel { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-top: 4px; }
     /* Logboek: gelaagd filter - statusfilter genest binnen 'Notificaties' */
-    .log-filterblok { display: flex; flex-direction: column; gap: 8px; }
+    .log-filterblok { display: flex; flex-direction: column; gap: 10px; }
     .log-substatus { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-inline-start: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .log-checks { display: flex; gap: 20px; flex-wrap: wrap; }
+    .log-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
     /* Flags (feature-toggles) */
     .flags-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
     .flags-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
@@ -1136,19 +1138,17 @@
 
                   <nldd-form-field label="Filter">
                     <div class="log-filterblok">
-                      <nldd-segmented-control id="log-filter" value="alles" type="radio" variant="icon-and-text" width="full" accessible-label="Filter logboek">
-                        <nldd-segmented-control-item value="alles" text="Alles" icon="bullet-list"></nldd-segmented-control-item>
-                        <nldd-segmented-control-item value="notificatie" text="Notificaties" icon="bell"></nldd-segmented-control-item>
-                        <nldd-segmented-control-item value="apikey" text="API keys" icon="key"></nldd-segmented-control-item>
-                      </nldd-segmented-control>
+                      <div class="log-checks" id="log-type-checks">
+                        <div class="log-check" data-val="notificatie"><nldd-checkbox accessible-label="Notificaties"></nldd-checkbox><span>Notificaties</span></div>
+                        <div class="log-check" data-val="apikey"><nldd-checkbox accessible-label="API keys"></nldd-checkbox><span>API keys</span></div>
+                      </div>
                       <div id="log-status-wrap" class="log-substatus" hidden>
                         <span class="muted-note">Binnen notificaties</span>
-                        <nldd-segmented-control id="log-status" value="alle" type="radio" variant="icon-and-text" width="full" accessible-label="Status notificaties">
-                          <nldd-segmented-control-item value="alle" text="Alle" icon="bullet-list"></nldd-segmented-control-item>
-                          <nldd-segmented-control-item value="succesvol" text="Succesvol" icon="check-mark"></nldd-segmented-control-item>
-                          <nldd-segmented-control-item value="errors" text="Met errors" icon="arrow-2-counter-clockwise"></nldd-segmented-control-item>
-                          <nldd-segmented-control-item value="mislukt" text="Mislukt" icon="dismiss"></nldd-segmented-control-item>
-                        </nldd-segmented-control>
+                        <div class="log-checks" id="log-status-checks">
+                          <div class="log-check" data-val="succesvol"><nldd-checkbox accessible-label="Succesvol"></nldd-checkbox><span>Succesvol</span></div>
+                          <div class="log-check" data-val="errors"><nldd-checkbox accessible-label="Met errors"></nldd-checkbox><span>Met errors</span></div>
+                          <div class="log-check" data-val="mislukt"><nldd-checkbox accessible-label="Mislukt"></nldd-checkbox><span>Mislukt</span></div>
+                        </div>
                       </div>
                     </div>
                   </nldd-form-field>
@@ -1801,6 +1801,9 @@
     // Naomi) zien alleen hun eigen dienst plus dashboard, audit en analytics.
     const MOZA_USERS = {
       sanne:   { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk', rol: 'organisatiebeheerder' },
+      aicha:   { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk', rol: 'dienstbeheerder', dienst: 'notificatiedienst' },
+      wei:     { naam: 'Wei Chen', email: 'w.chen@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk', rol: 'dienstbeheerder', dienst: 'profieldienst' },
+      deniz:   { naam: 'Deniz Öztürk', email: 'd.ozturk@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk', rol: 'keyeigenaar', dienst: 'notificatiedienst' },
       robbert: { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'organisatiebeheerder' },
       fatima:  { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'dienstbeheerder', dienst: 'notificatiedienst' },
       naomi:   { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'dienstbeheerder', dienst: 'profieldienst' },
@@ -2607,7 +2610,7 @@
       const MERK = {
         mijnoverheid: { kleur: '#154273', naam: 'MijnOverheid' },
         bzk: { kleur: '#154273', naam: 'Rijksoverheid' },
-        kvk: { kleur: '#6b2c91', naam: 'KvK' },
+        kvk: { kleur: '#7b2e8e', naam: 'KvK' },
       };
       // Volledige handtekening (afzender-veld) en verzend-adres per merk.
       const HANDTEKENING = {
@@ -2618,6 +2621,8 @@
       const MAIL = { mijnoverheid: 'noreply@mijn.overheid.nl', bzk: 'noreply@rijksoverheid.nl', kvk: 'noreply@kvk.nl' };
       const MERK_VAN_ORG = { kvk: 'kvk', bzk: 'bzk' };
       const HUIDIGE_ORG = (window.__MOZA_USER && window.__MOZA_USER.orgKey) || 'kvk';
+      // Alleen de organisatiebeheerder mag templates aanmaken/beheren en ziet custom templates.
+      const magBeheren = !window.__MOZA_USER || window.__MOZA_USER.rol === 'organisatiebeheerder';
       // Eerste regel van de handtekening = afzendernaam voor {afzender} in de tekst.
       const eersteRegel = s => ((s || '') + '').split('\n')[0];
       function statusMeta(t) {
@@ -2743,7 +2748,7 @@
       function renderLijst() {
         lijst.textContent = '';
         // Standaardtemplates altijd tonen; custom templates alleen voor de eigen organisatie.
-        const zichtbaar = BIB.filter(t => !t.org || t.org === HUIDIGE_ORG);
+        const zichtbaar = BIB.filter(t => !t.org || (magBeheren && t.org === HUIDIGE_ORG));
         if (!zichtbaar.length) {
           const leegP = document.createElement('p');
           leegP.className = 'muted-note';
@@ -2905,6 +2910,11 @@
       if (pvSluit) pvSluit.addEventListener('click', () => pvOverlay.setAttribute('hidden', ''));
       if (pvOverlay) pvOverlay.addEventListener('click', e => { if (e.target === pvOverlay) pvOverlay.setAttribute('hidden', ''); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && pvOverlay && !pvOverlay.hasAttribute('hidden')) pvOverlay.setAttribute('hidden', ''); });
+
+      // Niet-beheerders: alleen bekijken en preview. Geen aanmaken/bewerken/kopie/verwijderen.
+      if (!magBeheren) {
+        [root.querySelector('#tb-nieuw'), btnBewerk, btnKopie, btnVerwijder].forEach(b => b && b.classList.add('rol-verborgen'));
+      }
 
       renderLijst();
     })();
@@ -3839,9 +3849,9 @@
       if (!root) return;
       const lijst = root.querySelector('#log-lijst');
       const leegP = root.querySelector('#log-leeg');
-      const filterCtrl = root.querySelector('#log-filter');
       const statusWrap = root.querySelector('#log-status-wrap');
-      const statusCtrl = root.querySelector('#log-status');
+      const typeChecks = root.querySelector('#log-type-checks');
+      const statusChecks = root.querySelector('#log-status-checks');
       const melding = root.querySelector('#log-actie-melding');
       const badge = document.getElementById('log-badge');
 
@@ -3859,14 +3869,11 @@
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie verzonden - jaarlijkse opgave', detail: 'Handelsregister · 320 ondernemers', tijd: 'Gisteren 16:05' },
       ];
 
-      function segVal(ctrl, fallback) {
-        const sel = ctrl.querySelector('nldd-segmented-control-item[selected]');
-        return (sel && sel.getAttribute('value')) || ctrl.getAttribute('value') || fallback;
-      }
-      function setSeg(ctrl, val) {
-        ctrl.setAttribute('value', val);
-        ctrl.querySelectorAll('nldd-segmented-control-item').forEach(it =>
-          it.toggleAttribute('selected', it.getAttribute('value') === val));
+      // Aangevinkte waarden binnen een checkboxgroep.
+      function checkedVals(container) {
+        return Array.from(container.querySelectorAll('.log-check')).filter(r => {
+          const cb = r.querySelector('nldd-checkbox'); return cb && cb.checked;
+        }).map(r => r.dataset.val);
       }
       function meld(variant, tekst) {
         melding.setAttribute('variant', variant);
@@ -3875,13 +3882,13 @@
       }
 
       function zichtbaar(item) {
-        const f = segVal(filterCtrl, 'alles');
-        if (f === 'alles') return true;
-        if (f === 'apikey') return item.type === 'apikey';
-        if (f === 'notificatie') {
-          if (item.type !== 'notificatie') return false;
-          const s = segVal(statusCtrl, 'alle');
-          return s === 'alle' ? true : item.status === s;
+        const types = checkedVals(typeChecks);
+        if (types.length === 0) return true; // niets aangevinkt = alles tonen
+        if (item.type === 'apikey') return types.indexOf('apikey') >= 0;
+        if (item.type === 'notificatie') {
+          if (types.indexOf('notificatie') < 0) return false;
+          const stats = checkedVals(statusChecks);
+          return stats.length === 0 ? true : stats.indexOf(item.status) >= 0;
         }
         return true;
       }
@@ -3961,7 +3968,8 @@
       }
 
       function render() {
-        statusWrap.toggleAttribute('hidden', segVal(filterCtrl, 'alles') !== 'notificatie');
+        // Statusfilters (succesvol/errors/mislukt) alleen tonen als Notificaties is aangevinkt.
+        statusWrap.toggleAttribute('hidden', checkedVals(typeChecks).indexOf('notificatie') < 0);
         lijst.textContent = '';
         const items = LOG.filter(zichtbaar);
         leegP.toggleAttribute('hidden', items.length > 0);
@@ -3970,8 +3978,20 @@
         if (badge) { badge.setAttribute('number', String(mislukt)); badge.toggleAttribute('hidden', mislukt === 0); }
       }
 
-      filterCtrl.addEventListener('change', render);
-      statusCtrl.addEventListener('change', render);
+      // Checkbox-rijen bedienbaar maken (klik op de rij toggelt de checkbox) + herfilteren.
+      function wireChecks(container) {
+        container.querySelectorAll('.log-check').forEach(rij => {
+          const cb = rij.querySelector('nldd-checkbox');
+          rij.addEventListener('click', e => {
+            if (e.target.closest('nldd-checkbox')) return;
+            const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+            if (input) input.click(); else cb.toggleAttribute('checked');
+          });
+          cb.addEventListener('change', render);
+        });
+      }
+      wireChecks(typeChecks);
+      wireChecks(statusChecks);
 
       root.querySelector('#log-demo').addEventListener('click', () => {
         const batch = [
@@ -3984,8 +4004,10 @@
           { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
         LOG.unshift(...batch);
-        setSeg(filterCtrl, 'notificatie');
-        setSeg(statusCtrl, 'alle');
+        // Zet de weergave op Notificaties zodat de batch meteen zichtbaar is.
+        const notifCb = typeChecks.querySelector('.log-check[data-val="notificatie"] nldd-checkbox');
+        if (notifCb) notifCb.setAttribute('checked', '');
+        statusChecks.querySelectorAll('nldd-checkbox').forEach(cb => cb.removeAttribute('checked'));
         render();
         meld('success', 'Demobatch verstuurd: 7 e-mails - 5 geslaagd (waarvan 1 na een 2e poging) en 2 mislukt. De 2 mislukte vragen om actie.');
       });
