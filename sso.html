@@ -61,8 +61,10 @@
                 <nldd-divider></nldd-divider>
                 <nldd-rich-text><p class="muted">Demo: snel inloggen als</p></nldd-rich-text>
                 <div class="full quick">
-                  <nldd-button class="qbtn" data-user="robbert" variant="secondary" start-icon="person" text="Robbert Bos · Ministerie van BZK"></nldd-button>
-                  <nldd-button class="qbtn" data-user="sanne" variant="secondary" start-icon="person" text="Sanne de Boer · Kamer van Koophandel"></nldd-button>
+                  <nldd-button class="qbtn" data-user="robbert" variant="secondary" start-icon="person" text="Robbert Bos · BZK · organisatiebeheerder"></nldd-button>
+                  <nldd-button class="qbtn" data-user="fatima" variant="secondary" start-icon="person" text="Fatima Ouahabi · BZK · beheerder Notificatiedienst"></nldd-button>
+                  <nldd-button class="qbtn" data-user="naomi" variant="secondary" start-icon="person" text="Naomi Sedney · BZK · beheerder Profieldienst"></nldd-button>
+                  <nldd-button class="qbtn" data-user="sanne" variant="secondary" start-icon="person" text="Sanne de Boer · KvK · organisatiebeheerder"></nldd-button>
                 </div>
 
                 <nldd-rich-text><p class="muted">Wachtwoord vergeten? Neem contact op met uw lokale beheerder.</p></nldd-rich-text>
@@ -81,8 +83,10 @@
     const USERS = {
       'sanne.deboer@kvk.nl': { key: 'sanne', org: 'Kamer van Koophandel' },
       'robbert.bos@rijksoverheid.nl': { key: 'robbert', org: 'Ministerie van BZK' },
+      'f.ouahabi@rijksoverheid.nl': { key: 'fatima', org: 'Ministerie van BZK' },
+      'n.sedney@rijksoverheid.nl': { key: 'naomi', org: 'Ministerie van BZK' },
     };
-    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl' };
+    const KEY_EMAIL = { sanne: 'sanne.deboer@kvk.nl', robbert: 'Robbert.Bos@rijksoverheid.nl', fatima: 'f.ouahabi@rijksoverheid.nl', naomi: 'n.sedney@rijksoverheid.nl' };
     const uVeld = document.getElementById('u');
     const orgTitel = document.getElementById('org-titel');
 

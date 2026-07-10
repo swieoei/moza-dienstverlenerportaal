@@ -70,6 +70,18 @@
     .flag-tekst { line-height: 1.35; }
     .flag-tekst strong { display: block; }
     .flag-off { display: none !important; }
+    .rol-verborgen { display: none !important; }
+    /* Gebruikersbeheer: dienst-chip en filterbalk */
+    .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
+    .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .dienst-notificatiedienst { color: #a3120a; background: #fce8e6; border-color: #f5c6c1; }
+    .dienst-profieldienst { color: #0b71a8; background: #e3f1fb; border-color: #b6dcf3; }
+    .dienst-alle { color: #4f5b66; background: #eef1f4; border-color: #d6dce2; }
+    .gb-kaart { border-inline-start: 4px solid #d6dce2; }
+    .gb-kaart.rand-notificatiedienst { border-inline-start-color: #d52b1e; }
+    .gb-kaart.rand-profieldienst { border-inline-start-color: #007bc7; }
+    .gb-filterbalk { display: flex; gap: 16px; flex-wrap: wrap; }
+    .gb-filterbalk nldd-dropdown { min-width: 200px; }
     /* Voorkeurskanaal: prioriteit per kanaal */
     .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
     .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -1055,8 +1067,11 @@
                         <nldd-form-field label="Titel">
                           <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
                         </nldd-form-field>
-                        <nldd-form-field label="Afzender (e-mailadres)">
+                        <nldd-form-field label="Verzonden vanuit e-mailadres">
                           <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Afzender">
+                          <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
 
                         <nldd-tab-bar id="tb-langtabs" accessible-label="Taal">
@@ -1498,9 +1513,31 @@
                     <nldd-title size="4"><h2>Gebruikersbeheer</h2><p slot="subtitle" id="gb-sub">Beheer wie toegang heeft en met welke rol</p></nldd-title>
                     <nldd-button id="gb-uitnodigen" variant="primary" start-icon="plus" text="Gebruiker uitnodigen"></nldd-button>
                   </div>
-                  <nldd-banner variant="neutral" text="Als organisatiebeheerder bepaal je welke medewerkers toegang hebben en met welke rol. Elke rol heeft toegang tot het dashboard; daarnaast verschilt de toegang per rol. Let op: fictieve gegevens."></nldd-banner>
+                  <nldd-banner variant="neutral" text="Als organisatiebeheerder bepaal je welke medewerkers toegang hebben en met welke rol. Elke rol heeft toegang tot het dashboard; daarnaast verschilt de toegang per rol. De dienst waar iemand een rol voor heeft is met een gekleurde chip aangegeven. Let op: fictieve gegevens."></nldd-banner>
+                  <div class="gb-filterbalk">
+                    <nldd-form-field label="Filter op rol">
+                      <nldd-dropdown>
+                        <select id="gb-filter-rol" aria-label="Filter op rol">
+                          <option value="alle" selected>Alle rollen</option>
+                          <option value="organisatiebeheerder">Organisatiebeheerder</option>
+                          <option value="dienstbeheerder">Dienstbeheerder</option>
+                          <option value="keyeigenaar">API-key-eigenaar</option>
+                        </select>
+                      </nldd-dropdown>
+                    </nldd-form-field>
+                    <nldd-form-field label="Filter op dienst">
+                      <nldd-dropdown>
+                        <select id="gb-filter-dienst" aria-label="Filter op dienst">
+                          <option value="alle" selected>Alle diensten</option>
+                          <option value="Notificatiedienst">Notificatiedienst</option>
+                          <option value="Profieldienst">Profieldienst</option>
+                        </select>
+                      </nldd-dropdown>
+                    </nldd-form-field>
+                  </div>
                   <nldd-banner id="gb-melding" variant="success" text="" hidden></nldd-banner>
                   <div class="stack" id="gb-lijst"></div>
+                  <p class="muted-note" id="gb-leeg" hidden>Geen gebruikers voor dit filter.</p>
                 </div>
               </section>
 
@@ -1687,11 +1724,15 @@
     const sbsec = document.getElementById('sbsec');
 
     // Ingelogde gebruiker: bepaald op de inlogpagina (localStorage 'moza-user').
-    // Twee demo-accounts, beide organisatiebeheerder met dezelfde rechten.
+    // Organisatiebeheerders (Sanne, Robbert) zien alles; dienstbeheerders (Fatima,
+    // Naomi) zien alleen hun eigen dienst plus dashboard, audit en analytics.
     const MOZA_USERS = {
-      sanne:   { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk' },
-      robbert: { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk' },
+      sanne:   { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', org: 'Kamer van Koophandel', orgKort: 'KvK', orgKey: 'kvk', rol: 'organisatiebeheerder' },
+      robbert: { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'organisatiebeheerder' },
+      fatima:  { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'dienstbeheerder', dienst: 'notificatiedienst' },
+      naomi:   { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', org: 'Ministerie van BZK', orgKort: 'BZK', orgKey: 'bzk', rol: 'dienstbeheerder', dienst: 'profieldienst' },
     };
+    const ROL_LABEL = { organisatiebeheerder: 'Organisatiebeheerder', dienstbeheerder: 'Dienstbeheerder' };
     let __userKey = 'sanne';
     try { const s = localStorage.getItem('moza-user'); if (s && MOZA_USERS[s]) __userKey = s; } catch (e) {}
     const MOZA_USER = window.__MOZA_USER = MOZA_USERS[__userKey];
@@ -1701,12 +1742,30 @@
       const gb = document.getElementById('mi-gebruiker');
       if (am) am.setAttribute('text', MOZA_USER.naam + ' · ' + MOZA_USER.orgKort);
       if (org) org.setAttribute('text', '**' + MOZA_USER.org + '**');
-      if (gb) gb.setAttribute('text', MOZA_USER.naam);
+      if (gb) { gb.setAttribute('text', MOZA_USER.naam); gb.setAttribute('details', ROL_LABEL[MOZA_USER.rol] || 'Gebruiker'); }
       // Welkomsttekst op het dashboard met de voornaam van de ingelogde gebruiker.
       const welkom = document.getElementById('dash-welkom');
       if (welkom) welkom.setAttribute('text', 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0] + '.');
       // Plaatsen waar de eigen naam wordt getoond (bv. audit-acties door de beheerder).
       document.querySelectorAll('.js-huidige-gebruiker').forEach(el => el.setAttribute('text', MOZA_USER.naam));
+
+      // Rolgebaseerde toegang: een dienstbeheerder ziet alleen de eigen dienst.
+      if (MOZA_USER.rol === 'dienstbeheerder') {
+        const perDienst = {
+          notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'audit', 'analytics'],
+          profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'apikeys-profieldienst', 'rapportage-profieldienst', 'audit', 'analytics'],
+        };
+        const toegestaan = perDienst[MOZA_USER.dienst] || ['dashboard'];
+        document.querySelectorAll('nldd-list-item[data-view]').forEach(it => {
+          if (toegestaan.indexOf(it.dataset.view) < 0) it.classList.add('rol-verborgen');
+        });
+        document.querySelectorAll('.nav-tile[data-nav-view]').forEach(tile => {
+          if (toegestaan.indexOf(tile.dataset.navView) < 0) tile.classList.add('rol-verborgen');
+        });
+        if (org) org.classList.add('rol-verborgen'); // organisatie-instellingen alleen voor de organisatiebeheerder
+        const actief = document.querySelector('.view.is-active');
+        if (actief && toegestaan.indexOf(actief.dataset.view) < 0) showView('dashboard', 'Dashboard');
+      }
     })();
 
     navwrap.addEventListener('click', (e) => {
@@ -2458,6 +2517,18 @@
         eigen: { color: 'accent', label: 'eigen' },
         concept: { color: 'warning', label: 'concept' },
       };
+      const ORGKORT = { kvk: 'KvK', bzk: 'BZK' };
+      // Afzender-blok (aanpasbare handtekening) en verzend-adres per organisatie.
+      const AFZENDER = {
+        kvk: 'Kamer van Koophandel\nAfdeling Notificatiebeheer\nW https://www.kvk.nl',
+        bzk: 'Ministerie van Binnenlandse Zaken en Koninkrijksrelaties\nDirectie Digitale Overheid\nW https://digitaleoverheid.nl',
+      };
+      const AFZENDER_MAIL = { kvk: 'noreply@kvk.nl', bzk: 'noreply@rijksoverheid.nl' };
+      const HUIDIGE_ORG = (window.__MOZA_USER && window.__MOZA_USER.orgKey) || 'kvk';
+      function statusMeta(t) {
+        if (t.status === 'custom') return { color: 'accent', label: 'custom voor ' + (ORGKORT[t.org] || t.org || 'organisatie') };
+        return STATUS[t.status] || STATUS.standaard;
+      }
       const leeg = () => ({ subject: '', body: '', kort: '' });
 
       // Opbouw van de notificatietekst per taal (vast format, verrijkt tot volledige tekst).
@@ -2518,13 +2589,34 @@
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           content[l] = { subject: TXT[l].subj(spec.type[l]), body: TXT[l].body(spec.reden[l], spec.actie[l]), kort: TXT[l].kort(spec.type[l]) };
         });
-        return { id: spec.id, titel: spec.titel, status: 'standaard', afzender: 'noreply@mijn.overheid.nl', content: content };
+        return { id: spec.id, titel: spec.titel, status: 'standaard', afzender: 'noreply@mijn.overheid.nl', afzendertekst: 'MijnOverheid\nW https://mijn.overheid.nl', content: content };
       }
       const BIB = TYPES.map(bouw);
+
+      // Organisatie-specifieke (custom) templates. Alleen zichtbaar voor de eigen organisatie.
+      BIB.push({
+        id: 'agenda-stuurgroep', titel: 'Agenda stuurgroep', status: 'custom', org: 'bzk',
+        afzender: 'stuurgroep@rijksoverheid.nl', afzendertekst: AFZENDER.bzk,
+        content: {
+          nl: { subject: 'Agenda stuurgroep Digitale Overheid - [datum]',
+                body: 'Beste leden van de stuurgroep,\n\nHierbij de agenda voor de stuurgroep Digitale Overheid op [datum] van [begintijd] tot [eindtijd], locatie [locatie].\n\nAgenda:\n1. Opening en mededelingen\n2. Vaststellen verslag vorige vergadering\n3. Voortgang programma\'s en projecten\n4. Besluitvorming [onderwerp]\n5. Rondvraag en sluiting\n\nDe vergaderstukken vindt u in de bijlage. Graag tot dan.\n\nMet vriendelijke groet,\n[Naam]',
+                kort: 'Agenda stuurgroep Digitale Overheid op [datum], [begintijd]. De stukken staan in de bijlage.' },
+          en: { subject: 'Agenda steering group Digital Government - [datum]',
+                body: 'Dear members of the steering group,\n\nPlease find the agenda for the steering group Digital Government on [datum] from [begintijd] to [eindtijd], location [locatie].\n\nAgenda:\n1. Opening and announcements\n2. Approval of the previous minutes\n3. Progress of programmes and projects\n4. Decision-making [onderwerp]\n5. Any other business and closing\n\nThe documents are attached. See you then.\n\nKind regards,\n[Naam]',
+                kort: 'Steering group Digital Government on [datum], [begintijd]. Documents attached.' },
+          de: { subject: 'Tagesordnung Lenkungsausschuss Digitale Verwaltung - [datum]',
+                body: 'Liebe Mitglieder des Lenkungsausschusses,\n\nanbei die Tagesordnung für den Lenkungsausschuss Digitale Verwaltung am [datum] von [begintijd] bis [eindtijd], Ort [locatie].\n\nTagesordnung:\n1. Eröffnung und Mitteilungen\n2. Genehmigung des letzten Protokolls\n3. Fortschritt der Programme und Projekte\n4. Beschlussfassung [onderwerp]\n5. Verschiedenes und Schluss\n\nDie Unterlagen finden Sie im Anhang. Bis dahin.\n\nMit freundlichen Grüßen,\n[Naam]',
+                kort: 'Lenkungsausschuss Digitale Verwaltung am [datum], [begintijd]. Unterlagen im Anhang.' },
+          fr: { subject: 'Ordre du jour comité de pilotage Administration numérique - [datum]',
+                body: 'Chers membres du comité de pilotage,\n\nveuillez trouver l\'ordre du jour du comité de pilotage Administration numérique le [datum] de [begintijd] à [eindtijd], lieu [locatie].\n\nOrdre du jour :\n1. Ouverture et communications\n2. Approbation du compte rendu précédent\n3. Avancement des programmes et projets\n4. Prise de décision [onderwerp]\n5. Questions diverses et clôture\n\nLes documents sont en pièce jointe. À bientôt.\n\nCordialement,\n[Naam]',
+                kort: 'Comité de pilotage Administration numérique le [datum], [begintijd]. Documents en pièce jointe.' },
+        },
+      });
 
       const velden = {
         titel: root.querySelector('#tb-d-titelveld'),
         afz: root.querySelector('#tb-d-afz'),
+        afzenderTekst: root.querySelector('#tb-d-afzender'),
         subj: root.querySelector('#tb-d-subj'),
         body: root.querySelector('#tb-d-body'),
         kort: root.querySelector('#tb-d-kort'),
@@ -2549,15 +2641,17 @@
 
       function renderLijst() {
         lijst.textContent = '';
-        if (!BIB.length) {
+        // Standaardtemplates altijd tonen; custom templates alleen voor de eigen organisatie.
+        const zichtbaar = BIB.filter(t => !t.org || t.org === HUIDIGE_ORG);
+        if (!zichtbaar.length) {
           const leegP = document.createElement('p');
           leegP.className = 'muted-note';
           leegP.textContent = 'Nog geen templates. Maak een nieuwe template aan.';
           lijst.appendChild(leegP);
           return;
         }
-        BIB.forEach(t => {
-          const st = STATUS[t.status] || STATUS.standaard;
+        zichtbaar.forEach(t => {
+          const st = statusMeta(t);
           const item = document.createElement('nldd-list-item');
           item.setAttribute('button', '');
           item.dataset.id = t.id;
@@ -2584,11 +2678,12 @@
         if (!bewerken || !werk) return;
         werk.titel = velden.titel.value;
         werk.afzender = velden.afz.value;
+        werk.afzendertekst = velden.afzenderTekst.value;
         werk.content[taalNu] = { subject: velden.subj.value, body: velden.body.value, kort: velden.kort.value };
       }
       function setBewerken(on) {
         bewerken = on;
-        [velden.titel, velden.afz, velden.subj, velden.body, velden.kort].forEach(el => {
+        [velden.titel, velden.afz, velden.afzenderTekst, velden.subj, velden.body, velden.kort].forEach(el => {
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
         btnBewerk.toggleAttribute('hidden', on);
@@ -2599,12 +2694,13 @@
         if (!t) return;
         huidigId = id;
         werk = kloon(t);
-        const st = STATUS[t.status] || STATUS.standaard;
+        const st = statusMeta(t);
         dTitel.textContent = werk.titel;
         dSub.textContent = st.label + ' - meertalig (NL, EN, DE, FR)';
         dTag.setAttribute('color', st.color); dTag.setAttribute('text', st.label);
         velden.titel.value = werk.titel;
         velden.afz.value = werk.afzender || '';
+        velden.afzenderTekst.value = werk.afzendertekst || '';
         langTabs.querySelectorAll('nldd-tab-bar-item').forEach(tab => tab.toggleAttribute('selected', tab.dataset.tl === 'nl'));
         laadTaal('nl');
         setBewerken(edit);
@@ -2628,6 +2724,7 @@
         if (!t) return;
         t.titel = werk.titel || 'Naamloze template';
         t.afzender = werk.afzender;
+        t.afzendertekst = werk.afzendertekst;
         t.content = werk.content;
         dTitel.textContent = t.titel;
         renderLijst();
@@ -2649,7 +2746,9 @@
       });
       root.querySelector('#tb-nieuw').addEventListener('click', () => {
         const id = 'nieuw-' + (++teller);
-        BIB.push({ id, titel: 'Nieuwe template', status: 'concept', afzender: 'noreply@mijn.overheid.nl',
+        // Een nieuwe template is meteen een custom template van de eigen organisatie.
+        BIB.push({ id, titel: 'Nieuwe template', status: 'custom', org: HUIDIGE_ORG,
+          afzender: AFZENDER_MAIL[HUIDIGE_ORG] || 'noreply@mijn.overheid.nl', afzendertekst: AFZENDER[HUIDIGE_ORG] || '',
           content: { nl: leeg(), en: leeg(), de: leeg(), fr: leeg() } });
         renderLijst();
         openDetail(id, true);
@@ -3459,6 +3558,9 @@
       const lijst = root.querySelector('#gb-lijst');
       const sub = root.querySelector('#gb-sub');
       const melding = root.querySelector('#gb-melding');
+      const leegP = root.querySelector('#gb-leeg');
+      const filterRol = root.querySelector('#gb-filter-rol');
+      const filterDienst = root.querySelector('#gb-filter-dienst');
       const user = window.__MOZA_USER || { org: 'Kamer van Koophandel', orgKey: 'kvk', email: 'sanne.deboer@kvk.nl' };
 
       const ROLLEN = {
@@ -3485,6 +3587,14 @@
         ] },
       };
 
+      // Dienst-styling: gelijke dienst = gelijke kleur, zodat je in een oogopslag ziet
+      // wie toegang heeft tot dezelfde dienst (bv. Fatima en Semih -> Notificatiedienst).
+      const DIENST = {
+        'Notificatiedienst': { chip: 'dienst-notificatiedienst', rand: 'rand-notificatiedienst' },
+        'Profieldienst': { chip: 'dienst-profieldienst', rand: 'rand-profieldienst' },
+      };
+      const dienstVan = u => (u.rol === 'organisatiebeheerder' ? null : u.dienst);
+
       const org = ORG[user.orgKey] || ORG.kvk;
       if (sub) sub.textContent = org.naam + ' - beheer wie toegang heeft en met welke rol';
 
@@ -3494,9 +3604,11 @@
         const meta = ROLLEN[u.rol] || ROLLEN.dienstbeheerder;
         const jij = (u.email || '').toLowerCase() === (user.email || '').toLowerCase();
         const toeg = (typeof meta.toegang === 'function' ? meta.toegang(u) : meta.toegang) || [];
+        const dienst = dienstVan(u);
+        const dm = dienst && DIENST[dienst];
         const wrap = document.createElement('div');
         wrap.innerHTML = `
-          <nldd-card>
+          <nldd-card class="gb-kaart ${dm ? dm.rand : ''}">
             <nldd-container padding="16" gap="12">
               <div class="between">
                 <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title>
@@ -3504,6 +3616,10 @@
                   ${jij ? '<nldd-tag color="success" text="jij"></nldd-tag>' : ''}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                 </div>
+              </div>
+              <div class="inline">
+                <span class="muted-note">Dienst</span>
+                <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
               </div>
               <div class="gb-toegang"></div>
               <div class="row-actions gb-acties"></div>
@@ -3520,12 +3636,6 @@
         toeg.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
         tb.appendChild(ul);
         const acties = el.querySelector('.gb-acties');
-        if (u.rol === 'keyeigenaar') {
-          const b = document.createElement('nldd-button');
-          b.setAttribute('variant', 'secondary'); b.setAttribute('start-icon', 'key'); b.setAttribute('text', 'Key distribueren');
-          b.addEventListener('click', () => meld('success', u.naam + ' kan de API-key ' + u.key + ' distribueren aan een nieuwe gebruiker - met alleen deze functionaliteit en logboekinzicht voor deze key. (demo)'));
-          acties.appendChild(b);
-        }
         const rolBtn = document.createElement('nldd-button');
         rolBtn.setAttribute('variant', 'secondary'); rolBtn.setAttribute('text', 'Rol wijzigen');
         rolBtn.addEventListener('click', () => meld('success', 'Rol van ' + u.naam + ' wijzigen. (demo)'));
@@ -3533,10 +3643,25 @@
         return el;
       }
 
+      function render() {
+        const fr = filterRol ? filterRol.value : 'alle';
+        const fd = filterDienst ? filterDienst.value : 'alle';
+        lijst.textContent = '';
+        const zichtbaar = org.users.filter(u => {
+          if (fr !== 'alle' && u.rol !== fr) return false;
+          if (fd !== 'alle' && dienstVan(u) !== fd) return false;
+          return true;
+        });
+        if (leegP) leegP.toggleAttribute('hidden', zichtbaar.length > 0);
+        zichtbaar.forEach(u => lijst.appendChild(kaart(u)));
+      }
+      if (filterRol) filterRol.addEventListener('change', render);
+      if (filterDienst) filterDienst.addEventListener('change', render);
+
       root.querySelector('#gb-uitnodigen').addEventListener('click', () =>
         meld('success', 'Nieuwe gebruiker uitnodigen voor ' + org.naam + ' - kies een rol: organisatiebeheerder, dienstbeheerder of API-key-eigenaar. (demo)'));
 
-      org.users.forEach(u => lijst.appendChild(kaart(u)));
+      render();
     })();
   </script>
 
