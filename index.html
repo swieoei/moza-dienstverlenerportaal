@@ -57,6 +57,9 @@
     .k-rollen .k-rollen-label { font-size: 0.85rem; color: #5a5a5a; margin-inline-end: 2px; }
     /* Contactherstel via fysieke post: uitklapbaar herstelblok binnen een kaart */
     .ch-herstel { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-top: 4px; }
+    /* Logboek: gelaagd filter - statusfilter genest binnen 'Notificaties' */
+    .log-filterblok { display: flex; flex-direction: column; gap: 8px; }
+    .log-substatus { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-inline-start: 8px; display: flex; flex-direction: column; gap: 6px; }
     /* Flags (feature-toggles) */
     .flags-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
     .flags-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
@@ -1023,26 +1026,28 @@
 
               <!-- ====================== TEMPLATEBIBLIOTHEEK (onder Notificatiedienst) ====================== -->
               <section class="view" data-view="templates">
-                <div class="stack">
-                  <nldd-banner variant="neutral" text="Standaardtemplates, eigen (KvK) templates en concepten. Een template is gekoppeld aan ondernemers of ambtenaren - kies de doelgroep om de bijbehorende set te zien. Bekijk, bewerk of verwijder een template - meertalig (NL, EN, DE, FR)."></nldd-banner>
-                  <nldd-form-field label="Doelgroep">
-                    <nldd-segmented-control id="tb-filter" value="ondernemer" type="radio" variant="icon-and-text" width="full" accessible-label="Doelgroep templates">
-                      <nldd-segmented-control-item value="ondernemer" text="Ondernemers" icon="person-badge-gear"></nldd-segmented-control-item>
-                      <nldd-segmented-control-item value="ambtenaar" text="Ambtenaren" icon="person"></nldd-segmented-control-item>
-                    </nldd-segmented-control>
-                  </nldd-form-field>
-                  <div class="inline">
-                    <nldd-button id="tb-nieuw" variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
+                <!-- Lijstpagina -->
+                <div id="tb-list-page">
+                  <div class="stack">
+                    <nldd-banner variant="neutral" text="De standaard notificatieteksten voor MijnOverheid, per handelingsperspectief (bron: Logius). Open een template om hem op een eigen pagina te bekijken of te bewerken - meertalig (NL, EN, DE, FR)."></nldd-banner>
+                    <nldd-banner id="tb-lijstmelding" variant="success" text="" hidden></nldd-banner>
+                    <nldd-list id="tb-lijst" variant="box"></nldd-list>
+                    <div class="inline">
+                      <nldd-button id="tb-nieuw" variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
+                    </div>
                   </div>
-                  <nldd-banner id="tb-lijstmelding" variant="success" text="" hidden></nldd-banner>
-                  <nldd-list id="tb-lijst" variant="box"></nldd-list>
+                </div>
 
-                  <!-- Detail: bekijken / bewerken -->
-                  <div id="tb-detail" hidden>
+                <!-- Detailpagina: template op een aparte pagina -->
+                <div id="tb-detail" hidden>
+                  <div class="stack">
+                    <div class="inline">
+                      <nldd-button id="tb-terug" variant="secondary" start-icon="arrow-left" text="Terug naar templates"></nldd-button>
+                    </div>
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
                         <div class="between">
-                          <nldd-title size="5"><h2 id="tb-d-titel">-</h2><p slot="subtitle" id="tb-d-sub">-</p></nldd-title>
+                          <nldd-title size="4"><h2 id="tb-d-titel">-</h2><p slot="subtitle" id="tb-d-sub">-</p></nldd-title>
                           <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
                         </div>
 
@@ -1059,12 +1064,12 @@
                           <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
                           <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
                         </nldd-tab-bar>
-                        <nldd-banner id="tb-d-leegtaal" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken of gebruik automatisch vertalen." hidden></nldd-banner>
+                        <nldd-banner id="tb-d-leegtaal" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
                         <nldd-form-field label="Onderwerp">
                           <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                         </nldd-form-field>
                         <nldd-form-field label="Lange tekst (e-mail, post)">
-                          <nldd-multi-line-text-field id="tb-d-body" rows="8" readonly></nldd-multi-line-text-field>
+                          <nldd-multi-line-text-field id="tb-d-body" rows="12" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
                         <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)">
                           <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
@@ -1074,7 +1079,6 @@
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
                           <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash-can" text="Verwijderen" destructive></nldd-button>
-                          <nldd-button id="tb-sluit" variant="secondary" text="Sluiten"></nldd-button>
                         </div>
                         <nldd-banner id="tb-d-melding" variant="success" text="" hidden></nldd-banner>
                       </nldd-container>
@@ -1097,22 +1101,23 @@
                   <nldd-banner variant="neutral" text="Het logboek toont per gebeurtenis de status. Mislukte notificaties vragen om actie - bijvoorbeeld een onjuist BSN corrigeren en opnieuw versturen. Let op: fictieve gegevens."></nldd-banner>
 
                   <nldd-form-field label="Filter">
-                    <nldd-segmented-control id="log-filter" value="alles" type="radio" variant="icon-and-text" width="full" accessible-label="Filter logboek">
-                      <nldd-segmented-control-item value="alles" text="Alles" icon="bullet-list"></nldd-segmented-control-item>
-                      <nldd-segmented-control-item value="notificatie" text="Notificaties" icon="bell"></nldd-segmented-control-item>
-                      <nldd-segmented-control-item value="apikey" text="API keys" icon="key"></nldd-segmented-control-item>
-                    </nldd-segmented-control>
-                  </nldd-form-field>
-                  <div id="log-status-wrap" hidden>
-                    <nldd-form-field label="Status notificaties">
-                      <nldd-segmented-control id="log-status" value="alle" type="radio" variant="icon-and-text" width="full" accessible-label="Status notificaties">
-                        <nldd-segmented-control-item value="alle" text="Alle" icon="bullet-list"></nldd-segmented-control-item>
-                        <nldd-segmented-control-item value="succesvol" text="Succesvol" icon="check-mark"></nldd-segmented-control-item>
-                        <nldd-segmented-control-item value="errors" text="Met errors" icon="arrow-2-counter-clockwise"></nldd-segmented-control-item>
-                        <nldd-segmented-control-item value="mislukt" text="Mislukt" icon="dismiss"></nldd-segmented-control-item>
+                    <div class="log-filterblok">
+                      <nldd-segmented-control id="log-filter" value="alles" type="radio" variant="icon-and-text" width="full" accessible-label="Filter logboek">
+                        <nldd-segmented-control-item value="alles" text="Alles" icon="bullet-list"></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="notificatie" text="Notificaties" icon="bell"></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="apikey" text="API keys" icon="key"></nldd-segmented-control-item>
                       </nldd-segmented-control>
-                    </nldd-form-field>
-                  </div>
+                      <div id="log-status-wrap" class="log-substatus" hidden>
+                        <span class="muted-note">Binnen notificaties</span>
+                        <nldd-segmented-control id="log-status" value="alle" type="radio" variant="icon-and-text" width="full" accessible-label="Status notificaties">
+                          <nldd-segmented-control-item value="alle" text="Alle" icon="bullet-list"></nldd-segmented-control-item>
+                          <nldd-segmented-control-item value="succesvol" text="Succesvol" icon="check-mark"></nldd-segmented-control-item>
+                          <nldd-segmented-control-item value="errors" text="Met errors" icon="arrow-2-counter-clockwise"></nldd-segmented-control-item>
+                          <nldd-segmented-control-item value="mislukt" text="Mislukt" icon="dismiss"></nldd-segmented-control-item>
+                        </nldd-segmented-control>
+                      </div>
+                    </div>
+                  </nldd-form-field>
 
                   <nldd-banner id="log-actie-melding" variant="success" text="" hidden></nldd-banner>
                   <div class="stack" id="log-lijst"></div>
@@ -2431,99 +2436,85 @@
 
   <script>
     // ====================== Templatebibliotheek ======================
-    // Bekijken, bewerken en verwijderen van templates, inclusief concepten (drafts).
-    // Meertalig: NL/EN/DE/FR. Concepten hebben vaak alleen nog een Nederlandse versie.
+    // De 7 standaard MijnOverheid-notificatieteksten (bron: Logius), per handelings-
+    // perspectief. Vast format, meertalig NL/EN/DE/FR. Placeholders {afzender} en
+    // [datum_actie] blijven staan. Openen toont de template op een aparte pagina.
     (function () {
       const root = document.querySelector('section[data-view="templates"]');
       if (!root) return;
+      const listPage = root.querySelector('#tb-list-page');
       const lijst = root.querySelector('#tb-lijst');
       const detail = root.querySelector('#tb-detail');
-      if (!lijst || !detail) return;
+      if (!listPage || !lijst || !detail) return;
 
       const STATUS = {
         standaard: { color: 'neutral', label: 'standaard' },
-        eigen: { color: 'accent', label: 'eigen (KvK)' },
+        eigen: { color: 'accent', label: 'eigen' },
         concept: { color: 'warning', label: 'concept' },
       };
       const leeg = () => ({ subject: '', body: '', kort: '' });
 
-      // Eigen kopie van de content zodat bewerken/verwijderen alleen deze bibliotheek raakt.
-      const BIB = [
-        { id: 'regelgeving', titel: 'Wetswijziging / nieuwe regelgeving', status: 'eigen', afzender: 'regelgeving@kvk.nl', content: {
-          nl: { subject: 'Nieuwe regelgeving vanaf 1 januari 2027',
-                body: 'Geachte ondernemer,\n\nPer 1 januari 2027 wijzigt de regelgeving voor inschrijving in het Handelsregister. Wij informeren u tijdig zodat u uw administratie kunt aanpassen.\n\nMeer informatie vindt u op kvk.nl.\n\nMet vriendelijke groet,\nKamer van Koophandel',
-                kort: 'KvK: per 1 jan 2027 wijzigt de inschrijving in het Handelsregister. Bekijk wat dit voor u betekent op kvk.nl.' },
-          en: { subject: 'New regulations as of 1 January 2027',
-                body: 'Dear entrepreneur,\n\nAs of 1 January 2027, the rules for registration in the Business Register will change. We are informing you in good time so you can update your records.\n\nMore information at kvk.nl.\n\nKind regards,\nNetherlands Chamber of Commerce',
-                kort: 'KvK: from 1 Jan 2027 the Business Register registration rules change. See kvk.nl.' },
-          de: { subject: 'Neue Vorschriften ab dem 1. Januar 2027',
-                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nzum 1. Januar 2027 ändern sich die Vorschriften für die Eintragung im Handelsregister. Wir informieren Sie rechtzeitig, damit Sie Ihre Unterlagen anpassen können.\n\nWeitere Informationen unter kvk.nl.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer',
-                kort: 'KvK: ab 1.1.2027 ändern sich die Handelsregister-Vorschriften. Mehr auf kvk.nl.' },
-          fr: { subject: 'Nouvelle réglementation à partir du 1er janvier 2027',
-                body: 'Madame, Monsieur,\n\nà partir du 1er janvier 2027, la réglementation relative à l\'inscription au registre du commerce change. Nous vous informons à temps afin que vous puissiez adapter vos documents.\n\nPlus d\'informations sur kvk.nl.\n\nCordialement,\nChambre de commerce des Pays-Bas',
-                kort: 'KvK : dès le 01/01/2027, les règles du registre du commerce changent. Voir kvk.nl.' } } },
-        { id: 'reminder', titel: 'Herinnering openstaande zaak', status: 'standaard', afzender: 'zaken@kvk.nl', content: {
-          nl: { subject: 'Herinnering: actie vereist voor uw zaak',
-                body: 'Geachte ondernemer,\n\nVoor uw lopende zaak ontbreekt nog een aanvulling. Wij verzoeken u deze vóór de vervaldatum aan te leveren.\n\nMet vriendelijke groet,\nKamer van Koophandel',
-                kort: 'KvK-herinnering: uw zaak mist nog een aanvulling. Lever deze aan vóór de vervaldatum via kvk.nl.' },
-          en: { subject: 'Reminder: action required for your case',
-                body: 'Dear entrepreneur,\n\nYour ongoing case is still missing additional information. Please provide this before the due date.\n\nKind regards,\nNetherlands Chamber of Commerce',
-                kort: 'KvK reminder: your case needs additional info before the due date. See kvk.nl.' },
-          de: { subject: 'Erinnerung: Handlungsbedarf für Ihren Vorgang',
-                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nfür Ihren laufenden Vorgang fehlt noch eine Ergänzung. Wir bitten Sie, diese vor dem Fälligkeitsdatum einzureichen.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer',
-                kort: 'KvK-Erinnerung: Für Ihren Vorgang fehlt noch eine Ergänzung. Bitte vor dem Fälligkeitsdatum über kvk.nl einreichen.' },
-          fr: { subject: 'Rappel : action requise pour votre dossier',
-                body: 'Madame, Monsieur,\n\nun complément est encore manquant pour votre dossier en cours. Nous vous prions de le fournir avant la date d\'échéance.\n\nCordialement,\nChambre de commerce des Pays-Bas',
-                kort: 'Rappel KvK : votre dossier nécessite un complément avant la date d\'échéance. Voir kvk.nl.' } } },
-        { id: 'terugkerend', titel: 'Terugkerend: jaarlijkse opgave Handelsregister', status: 'eigen', afzender: 'handelsregister@kvk.nl', content: {
-          nl: { subject: 'Jaarlijkse opgave Handelsregister',
-                body: 'Geachte ondernemer,\n\nHet is weer tijd voor uw jaarlijkse opgave voor het Handelsregister. Controleer en bevestig uw gegevens vóór de gestelde datum.\n\nMet vriendelijke groet,\nKamer van Koophandel',
-                kort: 'KvK: tijd voor uw jaarlijkse opgave Handelsregister. Bevestig uw gegevens op kvk.nl.' },
-          en: { subject: 'Annual Business Register filing',
-                body: 'Dear entrepreneur,\n\nIt is time for your annual Business Register filing. Please review and confirm your details before the deadline.\n\nKind regards,\nNetherlands Chamber of Commerce',
-                kort: 'KvK: time for your annual Business Register filing. Confirm at kvk.nl.' },
-          de: { subject: 'Jährliche Meldung Handelsregister',
-                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nes ist wieder Zeit für Ihre jährliche Meldung an das Handelsregister. Bitte überprüfen und bestätigen Sie Ihre Daten vor dem festgelegten Datum.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer',
-                kort: 'KvK: Zeit für Ihre jährliche Handelsregister-Meldung. Bestätigen Sie Ihre Daten auf kvk.nl.' },
-          fr: { subject: 'Déclaration annuelle au registre du commerce',
-                body: 'Madame, Monsieur,\n\nil est temps d\'effectuer votre déclaration annuelle au registre du commerce. Veuillez vérifier et confirmer vos données avant la date limite.\n\nCordialement,\nChambre de commerce des Pays-Bas',
-                kort: 'KvK : il est temps de faire votre déclaration annuelle au registre du commerce. Confirmez sur kvk.nl.' } } },
-        { id: 'welkom', titel: 'Welkomstbericht nieuwe inschrijving', status: 'standaard', afzender: 'welkom@kvk.nl', content: {
-          nl: { subject: 'Welkom bij het Handelsregister',
-                body: 'Geachte ondernemer,\n\nVan harte welkom. Uw onderneming is ingeschreven in het Handelsregister van de Kamer van Koophandel. In dit bericht leest u wat u kunt verwachten en waar u terecht kunt met vragen.\n\nMet vriendelijke groet,\nKamer van Koophandel',
-                kort: 'Welkom bij de KvK! Uw onderneming is ingeschreven in het Handelsregister. Meer info op kvk.nl.' },
-          en: { subject: 'Welcome to the Business Register',
-                body: 'Dear entrepreneur,\n\nA warm welcome. Your business has been registered in the Business Register of the Netherlands Chamber of Commerce. This message explains what to expect and where to go with questions.\n\nKind regards,\nNetherlands Chamber of Commerce',
-                kort: 'Welcome to KvK! Your business is registered in the Business Register. More at kvk.nl.' },
-          de: { subject: 'Willkommen im Handelsregister',
-                body: 'Sehr geehrte Unternehmerin, sehr geehrter Unternehmer,\n\nherzlich willkommen. Ihr Unternehmen wurde im Handelsregister der Niederländischen Handelskammer eingetragen. Diese Nachricht erklärt, was Sie erwartet und an wen Sie sich mit Fragen wenden können.\n\nMit freundlichen Grüßen,\nNiederländische Handelskammer',
-                kort: 'Willkommen bei der KvK! Ihr Unternehmen ist im Handelsregister eingetragen. Mehr auf kvk.nl.' },
-          fr: { subject: 'Bienvenue au registre du commerce',
-                body: 'Madame, Monsieur,\n\nsoyez le bienvenu. Votre entreprise a été inscrite au registre du commerce de la Chambre de commerce des Pays-Bas. Ce message explique ce à quoi vous attendre et à qui vous adresser pour toute question.\n\nCordialement,\nChambre de commerce des Pays-Bas',
-                kort: 'Bienvenue à la KvK ! Votre entreprise est inscrite au registre du commerce. Plus d\'infos sur kvk.nl.' } } },
-        { id: 'draft-woonadres', titel: 'Afscherming woonadres - toelichting', status: 'concept', afzender: 'privacy@kvk.nl', content: {
-          nl: { subject: 'Afscherming van uw woonadres in het Handelsregister',
-                body: 'Geachte ondernemer,\n\n[CONCEPT] Binnenkort kunt u uw woonadres in het Handelsregister laten afschermen. In dit bericht leggen we uit hoe u dit aanvraagt en wat er verandert.\n\nMet vriendelijke groet,\nKamer van Koophandel',
-                kort: '[CONCEPT] U kunt uw woonadres in het Handelsregister laten afschermen. Lees hoe op kvk.nl.' },
-          en: leeg(), de: leeg(), fr: leeg() } },
-        { id: 'draft-webinar', titel: 'Uitnodiging webinar nieuwe ondernemers', status: 'concept', afzender: 'events@kvk.nl', content: {
-          nl: { subject: 'Uitnodiging: webinar voor nieuwe ondernemers',
-                body: 'Geachte ondernemer,\n\n[CONCEPT] Wij nodigen u uit voor ons webinar voor startende ondernemers. U leert alles over uw verplichtingen en de dienstverlening van de KvK.\n\nMet vriendelijke groet,\nKamer van Koophandel',
-                kort: '[CONCEPT] Doe mee aan ons webinar voor nieuwe ondernemers. Meld u aan via kvk.nl.' },
-          en: leeg(), de: leeg(), fr: leeg() } },
+      // Opbouw van de notificatietekst per taal (vast format, verrijkt tot volledige tekst).
+      const TXT = {
+        nl: {
+          subj: t => 'Bericht van {afzender} (' + t + ')',
+          body: (r, a) => 'Geachte heer/mevrouw,\n\nU hebt een nieuw bericht van {afzender} in uw Berichtenbox op MijnOverheid.\n\nWaarom ontvangt u dit bericht?\n' + r + '\n\nWat moet u doen?\n' + a + ' Doe dit vóór [datum_actie].\n\nLog in op MijnOverheid of open de MijnOverheid-app om het bericht te lezen.\n\nMet vriendelijke groet,\n{afzender}',
+          kort: t => '{afzender}: er staat een bericht voor u klaar in uw Berichtenbox (' + t + '). Reageer vóór [datum_actie] via MijnOverheid.',
+        },
+        en: {
+          subj: t => 'Message from {afzender} (' + t + ')',
+          body: (r, a) => 'Dear Sir or Madam,\n\nYou have received a new message from {afzender} in your Message Box on MijnOverheid.\n\nWhy am I receiving this message?\n' + r + '\n\nWhat do I need to do?\n' + a + ' Please do this before [datum_actie].\n\nLog in to MijnOverheid or open the MijnOverheid app to read the message.\n\nKind regards,\n{afzender}',
+          kort: t => '{afzender}: a message is waiting in your Message Box (' + t + '). Respond before [datum_actie] via MijnOverheid.',
+        },
+        de: {
+          subj: t => 'Nachricht von {afzender} (' + t + ')',
+          body: (r, a) => 'Sehr geehrte Damen und Herren,\n\nSie haben eine neue Nachricht von {afzender} in Ihrer Berichtenbox auf MijnOverheid erhalten.\n\nWarum erhalte ich diese Nachricht?\n' + r + '\n\nWas muss ich tun?\n' + a + ' Bitte erledigen Sie dies vor [datum_actie].\n\nMelden Sie sich bei MijnOverheid an oder öffnen Sie die MijnOverheid-App, um die Nachricht zu lesen.\n\nMit freundlichen Grüßen,\n{afzender}',
+          kort: t => '{afzender}: In Ihrer Berichtenbox liegt eine Nachricht (' + t + '). Reagieren Sie vor [datum_actie] über MijnOverheid.',
+        },
+        fr: {
+          subj: t => 'Message de {afzender} (' + t + ')',
+          body: (r, a) => 'Madame, Monsieur,\n\nvous avez reçu un nouveau message de {afzender} dans votre Boîte de messages sur MijnOverheid.\n\nPourquoi je reçois ce message ?\n' + r + '\n\nQue dois-je faire ?\n' + a + ' Veuillez le faire avant [datum_actie].\n\nConnectez-vous à MijnOverheid ou ouvrez l\'application MijnOverheid pour lire le message.\n\nCordialement,\n{afzender}',
+          kort: t => '{afzender} : un message vous attend dans votre Boîte de messages (' + t + '). Répondez avant [datum_actie] via MijnOverheid.',
+        },
+      };
+      const TYPES = [
+        { id: 'betaling', titel: 'Betaling',
+          type: { nl: 'betaling', en: 'payment', de: 'Zahlung', fr: 'paiement' },
+          reden: { nl: 'U moet een betaling doen aan {afzender}.', en: 'You need to make a payment to {afzender}.', de: '{afzender} erwartet eine Zahlung von Ihnen.', fr: 'Vous devez effectuer un paiement à {afzender}.' },
+          actie: { nl: 'Bekijk het bericht en betaal het openstaande bedrag.', en: 'Open the message and pay the outstanding amount.', de: 'Öffnen Sie die Nachricht und begleichen Sie den offenen Betrag.', fr: 'Consultez le message et réglez le montant dû.' } },
+        { id: 'incasso', titel: 'Automatische incasso',
+          type: { nl: 'automatische incasso', en: 'direct debit', de: 'Lastschrift', fr: 'prélèvement automatique' },
+          reden: { nl: '{afzender} schrijft binnenkort automatisch een bedrag van uw rekening af.', en: '{afzender} will soon debit an amount from your account automatically.', de: '{afzender} bucht demnächst automatisch einen Betrag von Ihrem Konto ab.', fr: '{afzender} prélèvera prochainement un montant sur votre compte.' },
+          actie: { nl: 'Controleer het bericht en zorg voor voldoende saldo.', en: 'Check the message and make sure there is enough balance.', de: 'Prüfen Sie die Nachricht und sorgen Sie für ausreichende Deckung.', fr: 'Vérifiez le message et assurez-vous d\'avoir un solde suffisant.' } },
+        { id: 'informatie-aanleveren', titel: 'Informatie aanleveren',
+          type: { nl: 'lever informatie aan', en: 'provide information', de: 'Informationen liefern', fr: 'fournir des informations' },
+          reden: { nl: '{afzender} heeft informatie of documenten van u nodig.', en: '{afzender} needs information or documents from you.', de: '{afzender} benötigt Informationen oder Unterlagen von Ihnen.', fr: '{afzender} a besoin d\'informations ou de documents de votre part.' },
+          actie: { nl: 'Lever de gevraagde informatie aan.', en: 'Submit the requested information.', de: 'Reichen Sie die angeforderten Informationen ein.', fr: 'Fournissez les informations demandées.' } },
+        { id: 'document-ontvangen', titel: 'Document ontvangen',
+          type: { nl: 'document ontvangen', en: 'document received', de: 'Dokument erhalten', fr: 'document reçu' },
+          reden: { nl: 'U hebt een document of besluit van {afzender} ontvangen.', en: 'You have received a document or decision from {afzender}.', de: 'Sie haben ein Dokument oder einen Bescheid von {afzender} erhalten.', fr: 'Vous avez reçu un document ou une décision de {afzender}.' },
+          actie: { nl: 'Bekijk het document en onderneem zo nodig actie.', en: 'Review the document and take action if needed.', de: 'Sehen Sie sich das Dokument an und handeln Sie bei Bedarf.', fr: 'Consultez le document et agissez si nécessaire.' } },
+        { id: 'afspraak', titel: 'Uitnodiging voor afspraak',
+          type: { nl: 'uitnodiging voor afspraak', en: 'appointment invitation', de: 'Termineinladung', fr: 'invitation à un rendez-vous' },
+          reden: { nl: '{afzender} nodigt u uit voor een afspraak.', en: '{afzender} invites you to an appointment.', de: '{afzender} lädt Sie zu einem Termin ein.', fr: '{afzender} vous invite à un rendez-vous.' },
+          actie: { nl: 'Bekijk de afspraakgegevens en bevestig of verzet de afspraak.', en: 'Check the appointment details and confirm or reschedule.', de: 'Prüfen Sie die Termindaten und bestätigen oder verschieben Sie den Termin.', fr: 'Consultez les détails du rendez-vous et confirmez ou reportez-le.' } },
+        { id: 'reactie', titel: 'Reactie ontvangen',
+          type: { nl: 'reactie', en: 'response', de: 'Antwort', fr: 'réponse' },
+          reden: { nl: 'U hebt een reactie van {afzender} ontvangen op een eerdere zaak.', en: 'You have received a response from {afzender} regarding an earlier case.', de: 'Sie haben eine Antwort von {afzender} zu einem früheren Vorgang erhalten.', fr: 'Vous avez reçu une réponse de {afzender} concernant un dossier précédent.' },
+          actie: { nl: 'Lees de reactie en onderneem zo nodig actie.', en: 'Read the response and take action if needed.', de: 'Lesen Sie die Antwort und handeln Sie bei Bedarf.', fr: 'Lisez la réponse et agissez si nécessaire.' } },
+        { id: 'vernieuwing', titel: 'Vernieuwing nodig',
+          type: { nl: 'vernieuw een document', en: 'renew a document', de: 'Dokument erneuern', fr: 'renouveler un document' },
+          reden: { nl: 'Een document of registratie moet worden vernieuwd bij {afzender}.', en: 'A document or registration needs to be renewed with {afzender}.', de: 'Ein Dokument oder eine Registrierung muss bei {afzender} erneuert werden.', fr: 'Un document ou une inscription doit être renouvelé auprès de {afzender}.' },
+          actie: { nl: 'Vernieuw het document op tijd.', en: 'Renew the document in time.', de: 'Erneuern Sie das Dokument rechtzeitig.', fr: 'Renouvelez le document à temps.' } },
       ];
-      // Bestaande templates zijn gericht op ondernemers.
-      BIB.forEach(t => { if (!t.publiek) t.publiek = 'ondernemer'; });
-      // Ambtenaar-templates: overgenomen uit de composer zodat de inhoud niet dubbel staat.
-      const CT = window.__COMPOSER_TEMPLATES || {};
-      function uitComposer(id, titel, status) {
-        const t = CT[id] || {};
-        return { id: 'ambt-' + id, titel: titel, status: status, publiek: 'ambtenaar', afzender: t.afzender || 'notificaties@kvk.nl',
-          content: { nl: t.nl || leeg(), en: t.en || leeg(), de: t.de || leeg(), fr: t.fr || leeg() } };
+      function bouw(spec) {
+        const content = {};
+        ['nl', 'en', 'de', 'fr'].forEach(l => {
+          content[l] = { subject: TXT[l].subj(spec.type[l]), body: TXT[l].body(spec.reden[l], spec.actie[l]), kort: TXT[l].kort(spec.type[l]) };
+        });
+        return { id: spec.id, titel: spec.titel, status: 'standaard', afzender: 'noreply@mijn.overheid.nl', content: content };
       }
-      BIB.push(uitComposer('agenda', 'Agenda-uitnodiging', 'standaard'));
-      BIB.push(uitComposer('memo', 'Interne memo / mededeling', 'eigen'));
-      BIB.push(uitComposer('vergaderstukken', 'Vergaderstukken delen', 'standaard'));
+      const BIB = TYPES.map(bouw);
 
       const velden = {
         titel: root.querySelector('#tb-d-titelveld'),
@@ -2542,22 +2533,24 @@
       const btnBewerk = root.querySelector('#tb-bewerk');
       const btnOpslaan = root.querySelector('#tb-opslaan');
       const btnVerwijder = root.querySelector('#tb-verwijder');
-      const btnSluit = root.querySelector('#tb-sluit');
+      const btnTerug = root.querySelector('#tb-terug');
 
-      let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0, publiekNu = 'ondernemer';
+      let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0;
       const kloon = t => JSON.parse(JSON.stringify(t));
+
+      function toonLijst() { detail.setAttribute('hidden', ''); listPage.removeAttribute('hidden'); }
+      function toonDetail() { listPage.setAttribute('hidden', ''); detail.removeAttribute('hidden'); window.scrollTo(0, 0); }
 
       function renderLijst() {
         lijst.textContent = '';
-        const zichtbaar = BIB.filter(t => t.publiek === publiekNu);
-        if (!zichtbaar.length) {
+        if (!BIB.length) {
           const leegP = document.createElement('p');
           leegP.className = 'muted-note';
-          leegP.textContent = 'Nog geen templates voor deze doelgroep. Maak een nieuwe template aan.';
+          leegP.textContent = 'Nog geen templates. Maak een nieuwe template aan.';
           lijst.appendChild(leegP);
           return;
         }
-        zichtbaar.forEach(t => {
+        BIB.forEach(t => {
           const st = STATUS[t.status] || STATUS.standaard;
           const item = document.createElement('nldd-list-item');
           item.setAttribute('button', '');
@@ -2611,8 +2604,7 @@
         setBewerken(edit);
         melding.setAttribute('hidden', '');
         lijstMelding.setAttribute('hidden', '');
-        detail.removeAttribute('hidden');
-        detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        toonDetail();
       }
 
       langTabs.addEventListener('click', e => {
@@ -2623,7 +2615,7 @@
         laadTaal(tab.dataset.tl);
       });
       btnBewerk.addEventListener('click', () => setBewerken(true));
-      btnSluit.addEventListener('click', () => detail.setAttribute('hidden', ''));
+      btnTerug.addEventListener('click', toonLijst);
       btnOpslaan.addEventListener('click', () => {
         bewaarHuidigeTaal();
         const t = BIB.find(x => x.id === huidigId);
@@ -2644,26 +2636,17 @@
         const naam = BIB[idx].titel;
         BIB.splice(idx, 1);
         renderLijst();
-        detail.setAttribute('hidden', '');
+        toonLijst();
         lijstMelding.setAttribute('variant', 'success');
         lijstMelding.setAttribute('text', 'Template "' + naam + '" verwijderd.');
         lijstMelding.removeAttribute('hidden');
       });
       root.querySelector('#tb-nieuw').addEventListener('click', () => {
         const id = 'nieuw-' + (++teller);
-        BIB.push({ id, titel: 'Nieuwe template', status: 'concept', publiek: publiekNu, afzender: 'notificaties@kvk.nl',
+        BIB.push({ id, titel: 'Nieuwe template', status: 'concept', afzender: 'noreply@mijn.overheid.nl',
           content: { nl: leeg(), en: leeg(), de: leeg(), fr: leeg() } });
         renderLijst();
         openDetail(id, true);
-      });
-
-      // Doelgroepfilter: toont de templateset voor ondernemers of ambtenaren.
-      const filterCtrl = root.querySelector('#tb-filter');
-      if (filterCtrl) filterCtrl.addEventListener('change', e => {
-        publiekNu = (e.detail && e.detail.value) || 'ondernemer';
-        detail.setAttribute('hidden', '');
-        lijstMelding.setAttribute('hidden', '');
-        renderLijst();
       });
 
       renderLijst();
@@ -3485,11 +3468,13 @@
         kvk: { naam: 'Kamer van Koophandel', users: [
           { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder' },
           { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst' },
+          { naam: 'Wei Chen', email: 'w.chen@kvk.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst' },
           { naam: 'Deniz Yılmaz', email: 'd.yilmaz@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs' },
         ] },
         bzk: { naam: 'Ministerie van BZK', users: [
           { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder' },
           { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst' },
+          { naam: 'Naomi Pinas', email: 'n.pinas@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst' },
           { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc' },
         ] },
       };
