@@ -71,6 +71,14 @@
     .flag-tekst strong { display: block; }
     .flag-off { display: none !important; }
     .rol-verborgen { display: none !important; }
+    /* E-mailpreview met huisstijl */
+    .tb-preview-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 20px; max-width: 640px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+    .tb-mail { border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 8px; overflow: hidden; margin-top: 12px; background: #fff; color: #1a1a1a; }
+    .tb-mail-header { padding: 16px 20px; color: #fff; font-weight: 700; font-size: 1.1rem; }
+    .tb-mail-body { padding: 20px; }
+    .tb-mail-meta { font-size: 0.85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 12px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 2px; }
+    .tb-mail-tekst { white-space: pre-wrap; line-height: 1.5; }
+    .tb-mail-footer { white-space: pre-wrap; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ececec; color: #555; font-size: 0.9rem; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
     .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
     .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
@@ -80,8 +88,13 @@
     .gb-kaart { border-inline-start: 4px solid #d6dce2; }
     .gb-kaart.rand-notificatiedienst { border-inline-start-color: #d52b1e; }
     .gb-kaart.rand-profieldienst { border-inline-start-color: #007bc7; }
-    .gb-filterbalk { display: flex; gap: 16px; flex-wrap: wrap; }
-    .gb-filterbalk nldd-dropdown { min-width: 200px; }
+    .gb-filterbalk { display: flex; gap: 16px; align-items: flex-end; }
+    .gb-filterbalk nldd-form-field { flex: 1 1 0; min-width: 0; }
+    .gb-filterbalk nldd-dropdown { width: 100%; }
+    /* Compacte gebruikerskaarten */
+    .gb-cards { display: flex; flex-direction: column; gap: 10px; }
+    .gb-toegang-inline { font-size: 0.85rem; color: #444; }
+    .gb-toegang-inline strong { color: inherit; }
     /* Voorkeurskanaal: prioriteit per kanaal */
     .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
     .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -1061,7 +1074,10 @@
                       <nldd-container padding="16" gap="12">
                         <div class="between">
                           <nldd-title size="4"><h2 id="tb-d-titel">-</h2><p slot="subtitle" id="tb-d-sub">-</p></nldd-title>
-                          <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
+                          <div class="inline">
+                            <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
+                            <nldd-tag id="tb-d-cat" color="success" text="-" hidden></nldd-tag>
+                          </div>
                         </div>
 
                         <nldd-form-field label="Titel">
@@ -1092,8 +1108,10 @@
                         </nldd-form-field>
 
                         <div class="row-actions">
+                          <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Preview e-mail"></nldd-button>
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
+                          <nldd-button id="tb-kopie" variant="secondary" start-icon="square-on-square" text="Kopie maken"></nldd-button>
                           <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash-can" text="Verwijderen" destructive></nldd-button>
                         </div>
                         <nldd-banner id="tb-d-melding" variant="success" text="" hidden></nldd-banner>
@@ -1513,7 +1531,39 @@
                     <nldd-title size="4"><h2>Gebruikersbeheer</h2><p slot="subtitle" id="gb-sub">Beheer wie toegang heeft en met welke rol</p></nldd-title>
                     <nldd-button id="gb-uitnodigen" variant="primary" start-icon="plus" text="Gebruiker uitnodigen"></nldd-button>
                   </div>
-                  <nldd-banner variant="neutral" text="Als organisatiebeheerder bepaal je welke medewerkers toegang hebben en met welke rol. Elke rol heeft toegang tot het dashboard; daarnaast verschilt de toegang per rol. De dienst waar iemand een rol voor heeft is met een gekleurde chip aangegeven. Let op: fictieve gegevens."></nldd-banner>
+
+                  <!-- Uitnodig-formulier: gebruiker opzetten en rol configureren -->
+                  <div id="gb-uitnodig-form" hidden>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="6"><h3>Nieuwe gebruiker uitnodigen</h3><p slot="subtitle">Zet de gebruiker op en configureer de rol</p></nldd-title>
+                        <nldd-form-field label="Naam"><nldd-text-field id="gbf-naam" placeholder="Voor- en achternaam"></nldd-text-field></nldd-form-field>
+                        <nldd-form-field label="E-mailadres"><nldd-text-field id="gbf-email" placeholder="naam@organisatie.nl"></nldd-text-field></nldd-form-field>
+                        <nldd-form-field label="Rol">
+                          <nldd-dropdown>
+                            <select id="gbf-rol" aria-label="Rol">
+                              <option value="dienstbeheerder" selected>Dienstbeheerder</option>
+                              <option value="keyeigenaar">API-key-eigenaar</option>
+                              <option value="organisatiebeheerder">Organisatiebeheerder</option>
+                            </select>
+                          </nldd-dropdown>
+                        </nldd-form-field>
+                        <nldd-form-field id="gbf-dienst-field" label="Dienst">
+                          <nldd-dropdown>
+                            <select id="gbf-dienst" aria-label="Dienst">
+                              <option value="Notificatiedienst" selected>Notificatiedienst</option>
+                              <option value="Profieldienst">Profieldienst</option>
+                            </select>
+                          </nldd-dropdown>
+                        </nldd-form-field>
+                        <div class="row-actions">
+                          <nldd-button id="gbf-verstuur" variant="primary" start-icon="paper-plane" text="Uitnodiging versturen"></nldd-button>
+                          <nldd-button id="gbf-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+                        </div>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+
                   <div class="gb-filterbalk">
                     <nldd-form-field label="Filter op rol">
                       <nldd-dropdown>
@@ -1536,7 +1586,7 @@
                     </nldd-form-field>
                   </div>
                   <nldd-banner id="gb-melding" variant="success" text="" hidden></nldd-banner>
-                  <div class="stack" id="gb-lijst"></div>
+                  <div class="gb-cards" id="gb-lijst"></div>
                   <p class="muted-note" id="gb-leeg" hidden>Geen gebruikers voor dit filter.</p>
                 </div>
               </section>
@@ -1616,6 +1666,29 @@
         </div>
         <p class="muted-note">Experimentele functionaliteit aan- of uitzetten. De keuze blijft bewaard in deze browser.</p>
         <div id="flags-lijst" class="flags-lijst"></div>
+      </div>
+    </div>
+
+    <!-- ===== E-mailpreview van een template (met huisstijl van de organisatie) ===== -->
+    <div id="tb-preview-overlay" class="flags-overlay" hidden>
+      <div class="tb-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="tbp-titel">
+        <div class="flags-head">
+          <nldd-title size="5"><h2 id="tbp-titel">E-mailpreview</h2></nldd-title>
+          <nldd-button id="tbp-sluit" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
+        </div>
+        <p class="muted-note">Zo ziet de notificatie-e-mail eruit met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld.</p>
+        <div class="tb-mail">
+          <div class="tb-mail-header" id="tbp-header"></div>
+          <div class="tb-mail-body">
+            <div class="tb-mail-meta">
+              <div><strong>Van:</strong> <span id="tbp-van"></span></div>
+              <div><strong>Aan:</strong> <span id="tbp-aan">[voorletter(s)] [achternaam]</span></div>
+              <div><strong>Onderwerp:</strong> <span id="tbp-onderwerp"></span></div>
+            </div>
+            <div class="tb-mail-tekst" id="tbp-tekst"></div>
+            <div class="tb-mail-footer" id="tbp-footer"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1751,9 +1824,10 @@
 
       // Rolgebaseerde toegang: een dienstbeheerder ziet alleen de eigen dienst.
       if (MOZA_USER.rol === 'dienstbeheerder') {
+        // Alleen de organisatiebeheerder heeft toegang tot Audit en logboek.
         const perDienst = {
-          notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'audit', 'analytics'],
-          profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'apikeys-profieldienst', 'rapportage-profieldienst', 'audit', 'analytics'],
+          notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'analytics'],
+          profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'apikeys-profieldienst', 'rapportage-profieldienst', 'analytics'],
         };
         const toegestaan = perDienst[MOZA_USER.dienst] || ['dashboard'];
         document.querySelectorAll('nldd-list-item[data-view]').forEach(it => {
@@ -2514,89 +2588,105 @@
 
       const STATUS = {
         standaard: { color: 'neutral', label: 'standaard' },
-        eigen: { color: 'accent', label: 'eigen' },
         concept: { color: 'warning', label: 'concept' },
       };
-      const ORGKORT = { kvk: 'KvK', bzk: 'BZK' };
-      // Afzender-blok (aanpasbare handtekening) en verzend-adres per organisatie.
-      const AFZENDER = {
-        kvk: 'Kamer van Koophandel\nAfdeling Notificatiebeheer\nW https://www.kvk.nl',
-        bzk: 'Ministerie van Binnenlandse Zaken en Koninkrijksrelaties\nDirectie Digitale Overheid\nW https://digitaleoverheid.nl',
+      const CAT = {
+        'gevraagde-actie': { color: 'success', label: 'gevraagde actie' },
+        'bezwaar': { color: 'warning', label: 'bezwaar' },
       };
-      const AFZENDER_MAIL = { kvk: 'noreply@kvk.nl', bzk: 'noreply@rijksoverheid.nl' };
+      const ORGKORT = { kvk: 'KvK', bzk: 'BZK' };
+      // Huisstijl (benadering) per merk voor de e-mailpreview.
+      const MERK = {
+        mijnoverheid: { kleur: '#154273', naam: 'MijnOverheid' },
+        bzk: { kleur: '#154273', naam: 'Rijksoverheid' },
+        kvk: { kleur: '#6b2c91', naam: 'KvK' },
+      };
+      // Volledige handtekening (afzender-veld) en verzend-adres per merk.
+      const HANDTEKENING = {
+        mijnoverheid: 'MijnOverheid',
+        bzk: 'Ministerie van Binnenlandse Zaken en Koninkrijksrelaties\nDirectie Digitale Overheid\nW https://digitaleoverheid.nl',
+        kvk: 'Kamer van Koophandel\nAfdeling Notificatiebeheer\nW https://www.kvk.nl',
+      };
+      const MAIL = { mijnoverheid: 'noreply@mijn.overheid.nl', bzk: 'noreply@rijksoverheid.nl', kvk: 'noreply@kvk.nl' };
+      const MERK_VAN_ORG = { kvk: 'kvk', bzk: 'bzk' };
       const HUIDIGE_ORG = (window.__MOZA_USER && window.__MOZA_USER.orgKey) || 'kvk';
+      // Eerste regel van de handtekening = afzendernaam voor {afzender} in de tekst.
+      const eersteRegel = s => ((s || '') + '').split('\n')[0];
       function statusMeta(t) {
         if (t.status === 'custom') return { color: 'accent', label: 'custom voor ' + (ORGKORT[t.org] || t.org || 'organisatie') };
         return STATUS[t.status] || STATUS.standaard;
       }
       const leeg = () => ({ subject: '', body: '', kort: '' });
 
-      // Opbouw van de notificatietekst per taal (vast format, verrijkt tot volledige tekst).
-      const TXT = {
-        nl: {
-          subj: t => 'Bericht van {afzender} (' + t + ')',
-          body: (r, a) => 'Geachte heer/mevrouw,\n\nU hebt een nieuw bericht van {afzender} in uw Berichtenbox op MijnOverheid.\n\nWaarom ontvangt u dit bericht?\n' + r + '\n\nWat moet u doen?\n' + a + ' Doe dit vóór [datum_actie].\n\nLog in op MijnOverheid of open de MijnOverheid-app om het bericht te lezen.\n\nMet vriendelijke groet,\n{afzender}',
-          kort: t => '{afzender}: er staat een bericht voor u klaar in uw Berichtenbox (' + t + '). Reageer vóór [datum_actie] via MijnOverheid.',
-        },
-        en: {
-          subj: t => 'Message from {afzender} (' + t + ')',
-          body: (r, a) => 'Dear Sir or Madam,\n\nYou have received a new message from {afzender} in your Message Box on MijnOverheid.\n\nWhy am I receiving this message?\n' + r + '\n\nWhat do I need to do?\n' + a + ' Please do this before [datum_actie].\n\nLog in to MijnOverheid or open the MijnOverheid app to read the message.\n\nKind regards,\n{afzender}',
-          kort: t => '{afzender}: a message is waiting in your Message Box (' + t + '). Respond before [datum_actie] via MijnOverheid.',
-        },
-        de: {
-          subj: t => 'Nachricht von {afzender} (' + t + ')',
-          body: (r, a) => 'Sehr geehrte Damen und Herren,\n\nSie haben eine neue Nachricht von {afzender} in Ihrer Berichtenbox auf MijnOverheid erhalten.\n\nWarum erhalte ich diese Nachricht?\n' + r + '\n\nWas muss ich tun?\n' + a + ' Bitte erledigen Sie dies vor [datum_actie].\n\nMelden Sie sich bei MijnOverheid an oder öffnen Sie die MijnOverheid-App, um die Nachricht zu lesen.\n\nMit freundlichen Grüßen,\n{afzender}',
-          kort: t => '{afzender}: In Ihrer Berichtenbox liegt eine Nachricht (' + t + '). Reagieren Sie vor [datum_actie] über MijnOverheid.',
-        },
-        fr: {
-          subj: t => 'Message de {afzender} (' + t + ')',
-          body: (r, a) => 'Madame, Monsieur,\n\nvous avez reçu un nouveau message de {afzender} dans votre Boîte de messages sur MijnOverheid.\n\nPourquoi je reçois ce message ?\n' + r + '\n\nQue dois-je faire ?\n' + a + ' Veuillez le faire avant [datum_actie].\n\nConnectez-vous à MijnOverheid ou ouvrez l\'application MijnOverheid pour lire le message.\n\nCordialement,\n{afzender}',
-          kort: t => '{afzender} : un message vous attend dans votre Boîte de messages (' + t + '). Répondez avant [datum_actie] via MijnOverheid.',
-        },
+      // Vast e-mailformat per taal. {afzender} = afzendernaam (eerste regel handtekening);
+      // [datum_actie] blijft een placeholder. Onderwerp: "<type> (bericht van {afzender})".
+      const FRAME = {
+        nl: { aanhef: 'Geachte [voorletter(s)] [achternaam],', groet: 'Met vriendelijke groet,',
+          subj: d => d + ' (bericht van {afzender})',
+          kort: d => 'Er staat een bericht voor u klaar in uw Berichtenbox (' + d + '). Reageer vóór [datum_actie] via MijnOverheid - {afzender}' },
+        en: { aanhef: 'Dear [initials] [surname],', groet: 'Kind regards,',
+          subj: d => d + ' (message from {afzender})',
+          kort: d => 'A message is waiting in your Message Box (' + d + '). Respond before [datum_actie] via MijnOverheid - {afzender}' },
+        de: { aanhef: 'Sehr geehrte(r) [Initialen] [Nachname],', groet: 'Mit freundlichen Grüßen,',
+          subj: d => d + ' (Nachricht von {afzender})',
+          kort: d => 'In Ihrer Berichtenbox liegt eine Nachricht (' + d + '). Reagieren Sie vor [datum_actie] über MijnOverheid - {afzender}' },
+        fr: { aanhef: 'Madame, Monsieur,', groet: 'Cordialement,',
+          subj: d => d + ' (message de {afzender})',
+          kort: d => 'Un message vous attend dans votre Boîte de messages (' + d + '). Répondez avant [datum_actie] via MijnOverheid - {afzender}' },
       };
+      // 7 gevraagde-actie-templates + 4 bezwaar-varianten (titels exact volgens Logius-tabel).
       const TYPES = [
-        { id: 'betaling', titel: 'Betaling',
-          type: { nl: 'betaling', en: 'payment', de: 'Zahlung', fr: 'paiement' },
-          reden: { nl: 'U moet een betaling doen aan {afzender}.', en: 'You need to make a payment to {afzender}.', de: '{afzender} erwartet eine Zahlung von Ihnen.', fr: 'Vous devez effectuer un paiement à {afzender}.' },
-          actie: { nl: 'Bekijk het bericht en betaal het openstaande bedrag.', en: 'Open the message and pay the outstanding amount.', de: 'Öffnen Sie die Nachricht und begleichen Sie den offenen Betrag.', fr: 'Consultez le message et réglez le montant dû.' } },
-        { id: 'incasso', titel: 'Automatische incasso',
-          type: { nl: 'automatische incasso', en: 'direct debit', de: 'Lastschrift', fr: 'prélèvement automatique' },
-          reden: { nl: '{afzender} schrijft binnenkort automatisch een bedrag van uw rekening af.', en: '{afzender} will soon debit an amount from your account automatically.', de: '{afzender} bucht demnächst automatisch einen Betrag von Ihrem Konto ab.', fr: '{afzender} prélèvera prochainement un montant sur votre compte.' },
-          actie: { nl: 'Controleer het bericht en zorg voor voldoende saldo.', en: 'Check the message and make sure there is enough balance.', de: 'Prüfen Sie die Nachricht und sorgen Sie für ausreichende Deckung.', fr: 'Vérifiez le message et assurez-vous d\'avoir un solde suffisant.' } },
-        { id: 'informatie-aanleveren', titel: 'Informatie aanleveren',
-          type: { nl: 'lever informatie aan', en: 'provide information', de: 'Informationen liefern', fr: 'fournir des informations' },
-          reden: { nl: '{afzender} heeft informatie of documenten van u nodig.', en: '{afzender} needs information or documents from you.', de: '{afzender} benötigt Informationen oder Unterlagen von Ihnen.', fr: '{afzender} a besoin d\'informations ou de documents de votre part.' },
-          actie: { nl: 'Lever de gevraagde informatie aan.', en: 'Submit the requested information.', de: 'Reichen Sie die angeforderten Informationen ein.', fr: 'Fournissez les informations demandées.' } },
-        { id: 'document-ontvangen', titel: 'Document ontvangen',
-          type: { nl: 'document ontvangen', en: 'document received', de: 'Dokument erhalten', fr: 'document reçu' },
-          reden: { nl: 'U hebt een document of besluit van {afzender} ontvangen.', en: 'You have received a document or decision from {afzender}.', de: 'Sie haben ein Dokument oder einen Bescheid von {afzender} erhalten.', fr: 'Vous avez reçu un document ou une décision de {afzender}.' },
-          actie: { nl: 'Bekijk het document en onderneem zo nodig actie.', en: 'Review the document and take action if needed.', de: 'Sehen Sie sich das Dokument an und handeln Sie bei Bedarf.', fr: 'Consultez le document et agissez si nécessaire.' } },
-        { id: 'afspraak', titel: 'Uitnodiging voor afspraak',
-          type: { nl: 'uitnodiging voor afspraak', en: 'appointment invitation', de: 'Termineinladung', fr: 'invitation à un rendez-vous' },
-          reden: { nl: '{afzender} nodigt u uit voor een afspraak.', en: '{afzender} invites you to an appointment.', de: '{afzender} lädt Sie zu einem Termin ein.', fr: '{afzender} vous invite à un rendez-vous.' },
-          actie: { nl: 'Bekijk de afspraakgegevens en bevestig of verzet de afspraak.', en: 'Check the appointment details and confirm or reschedule.', de: 'Prüfen Sie die Termindaten und bestätigen oder verschieben Sie den Termin.', fr: 'Consultez les détails du rendez-vous et confirmez ou reportez-le.' } },
-        { id: 'reactie', titel: 'Reactie ontvangen',
-          type: { nl: 'reactie', en: 'response', de: 'Antwort', fr: 'réponse' },
-          reden: { nl: 'U hebt een reactie van {afzender} ontvangen op een eerdere zaak.', en: 'You have received a response from {afzender} regarding an earlier case.', de: 'Sie haben eine Antwort von {afzender} zu einem früheren Vorgang erhalten.', fr: 'Vous avez reçu une réponse de {afzender} concernant un dossier précédent.' },
-          actie: { nl: 'Lees de reactie en onderneem zo nodig actie.', en: 'Read the response and take action if needed.', de: 'Lesen Sie die Antwort und handeln Sie bei Bedarf.', fr: 'Lisez la réponse et agissez si nécessaire.' } },
-        { id: 'vernieuwing', titel: 'Vernieuwing nodig',
-          type: { nl: 'vernieuw een document', en: 'renew a document', de: 'Dokument erneuern', fr: 'renouveler un document' },
-          reden: { nl: 'Een document of registratie moet worden vernieuwd bij {afzender}.', en: 'A document or registration needs to be renewed with {afzender}.', de: 'Ein Dokument oder eine Registrierung muss bei {afzender} erneuert werden.', fr: 'Un document ou une inscription doit être renouvelé auprès de {afzender}.' },
-          actie: { nl: 'Vernieuw het document op tijd.', en: 'Renew the document in time.', de: 'Erneuern Sie das Dokument rechtzeitig.', fr: 'Renouvelez le document à temps.' } },
+        { id: 'betalen', titel: 'Betalen', cat: 'gevraagde-actie',
+          desc: { nl: 'Betalen', en: 'Payment', de: 'Zahlung', fr: 'Paiement' },
+          inhoud: { nl: 'U hebt een betaling openstaan bij {afzender}. Bekijk het bericht en betaal het bedrag vóór [datum_actie].', en: 'You have an outstanding payment with {afzender}. Open the message and pay the amount before [datum_actie].', de: 'Bei {afzender} ist eine Zahlung offen. Öffnen Sie die Nachricht und begleichen Sie den Betrag vor [datum_actie].', fr: 'Vous avez un paiement en attente auprès de {afzender}. Consultez le message et réglez le montant avant [datum_actie].' } },
+        { id: 'incasso', titel: 'Incasso', cat: 'gevraagde-actie',
+          desc: { nl: 'Incasso', en: 'Direct debit', de: 'Lastschrift', fr: 'Prélèvement' },
+          inhoud: { nl: '{afzender} schrijft binnenkort automatisch een bedrag van uw rekening af. Controleer het bericht en zorg voor voldoende saldo vóór [datum_actie].', en: '{afzender} will soon debit an amount from your account. Check the message and ensure sufficient balance before [datum_actie].', de: '{afzender} bucht demnächst automatisch einen Betrag von Ihrem Konto ab. Prüfen Sie die Nachricht und sorgen Sie vor [datum_actie] für ausreichende Deckung.', fr: '{afzender} prélèvera bientôt un montant sur votre compte. Vérifiez le message et assurez un solde suffisant avant [datum_actie].' } },
+        { id: 'informatie-geven', titel: 'Informatie geven', cat: 'gevraagde-actie',
+          desc: { nl: 'Informatie geven', en: 'Provide information', de: 'Informationen geben', fr: 'Fournir des informations' },
+          inhoud: { nl: '{afzender} heeft informatie van u nodig. Lever de gevraagde informatie aan vóór [datum_actie].', en: '{afzender} needs information from you. Provide the requested information before [datum_actie].', de: '{afzender} benötigt Informationen von Ihnen. Reichen Sie die angeforderten Informationen vor [datum_actie] ein.', fr: '{afzender} a besoin d\'informations de votre part. Fournissez les informations demandées avant [datum_actie].' } },
+        { id: 'informatie-krijgen', titel: 'Informatie krijgen', cat: 'gevraagde-actie',
+          desc: { nl: 'Informatie krijgen', en: 'Receive information', de: 'Informationen erhalten', fr: 'Recevoir des informations' },
+          inhoud: { nl: 'U hebt een document of besluit van {afzender} ontvangen. Bekijk het bericht en onderneem zo nodig actie vóór [datum_actie].', en: 'You have received a document or decision from {afzender}. Review the message and take action if needed before [datum_actie].', de: 'Sie haben ein Dokument oder einen Bescheid von {afzender} erhalten. Sehen Sie sich die Nachricht an und handeln Sie bei Bedarf vor [datum_actie].', fr: 'Vous avez reçu un document ou une décision de {afzender}. Consultez le message et agissez si nécessaire avant [datum_actie].' } },
+        { id: 'reactie-ontvangen', titel: 'Reactie ontvangen', cat: 'gevraagde-actie',
+          desc: { nl: 'Reactie ontvangen', en: 'Response received', de: 'Antwort erhalten', fr: 'Réponse reçue' },
+          inhoud: { nl: 'U hebt een reactie van {afzender} ontvangen. Lees de reactie en onderneem zo nodig actie vóór [datum_actie].', en: 'You have received a response from {afzender}. Read the response and take action if needed before [datum_actie].', de: 'Sie haben eine Antwort von {afzender} erhalten. Lesen Sie die Antwort und handeln Sie bei Bedarf vor [datum_actie].', fr: 'Vous avez reçu une réponse de {afzender}. Lisez la réponse et agissez si nécessaire avant [datum_actie].' } },
+        { id: 'vernieuwing-nodig', titel: 'Vernieuwing nodig', cat: 'gevraagde-actie',
+          desc: { nl: 'Vernieuwing nodig', en: 'Renewal required', de: 'Erneuerung erforderlich', fr: 'Renouvellement requis' },
+          inhoud: { nl: 'Een document of registratie bij {afzender} moet worden vernieuwd. Vernieuw dit vóór [datum_actie].', en: 'A document or registration with {afzender} needs to be renewed. Renew it before [datum_actie].', de: 'Ein Dokument oder eine Registrierung bei {afzender} muss erneuert werden. Erneuern Sie dies vor [datum_actie].', fr: 'Un document ou une inscription auprès de {afzender} doit être renouvelé. Renouvelez-le avant [datum_actie].' } },
+        { id: 'afspraak', titel: 'Uitnodiging voor afspraak', cat: 'gevraagde-actie',
+          desc: { nl: 'Uitnodiging voor afspraak', en: 'Appointment invitation', de: 'Termineinladung', fr: 'Invitation à un rendez-vous' },
+          inhoud: { nl: '{afzender} nodigt u uit voor een afspraak. Bekijk de afspraakgegevens en reageer vóór [datum_actie].', en: '{afzender} invites you to an appointment. Check the appointment details and respond before [datum_actie].', de: '{afzender} lädt Sie zu einem Termin ein. Prüfen Sie die Termindaten und antworten Sie vor [datum_actie].', fr: '{afzender} vous invite à un rendez-vous. Consultez les détails et répondez avant [datum_actie].' } },
+        { id: 'betalen-bezwaar', titel: 'Betalen (bezwaar)', cat: 'bezwaar',
+          desc: { nl: 'Betalen, bezwaar', en: 'Payment, objection', de: 'Zahlung, Widerspruch', fr: 'Paiement, contestation' },
+          inhoud: { nl: 'U hebt een betaling openstaan bij {afzender}. Bent u het niet eens met dit besluit? Dan kunt u vóór [datum_actie] bezwaar maken. Bekijk het bericht voor meer informatie.', en: 'You have an outstanding payment with {afzender}. Do you disagree with this decision? You can object before [datum_actie]. See the message for details.', de: 'Bei {afzender} ist eine Zahlung offen. Sind Sie mit der Entscheidung nicht einverstanden? Sie können vor [datum_actie] Widerspruch einlegen. Details in der Nachricht.', fr: 'Vous avez un paiement en attente auprès de {afzender}. Vous n\'êtes pas d\'accord ? Vous pouvez contester avant [datum_actie]. Voir le message.' } },
+        { id: 'incasso-bezwaar', titel: 'Incasso (bezwaar)', cat: 'bezwaar',
+          desc: { nl: 'Incasso, bezwaar', en: 'Direct debit, objection', de: 'Lastschrift, Widerspruch', fr: 'Prélèvement, contestation' },
+          inhoud: { nl: '{afzender} schrijft binnenkort automatisch een bedrag van uw rekening af. Bent u het niet eens met deze incasso? Dan kunt u vóór [datum_actie] bezwaar maken. Bekijk het bericht voor meer informatie.', en: '{afzender} will soon debit an amount from your account. Do you disagree with this direct debit? You can object before [datum_actie]. See the message for details.', de: '{afzender} bucht demnächst automatisch einen Betrag ab. Sind Sie damit nicht einverstanden? Sie können vor [datum_actie] Widerspruch einlegen. Details in der Nachricht.', fr: '{afzender} prélèvera bientôt un montant sur votre compte. Vous n\'êtes pas d\'accord ? Vous pouvez contester avant [datum_actie]. Voir le message.' } },
+        { id: 'informatie-krijgen-bezwaar', titel: 'Informatie krijgen (bezwaar)', cat: 'bezwaar',
+          desc: { nl: 'Informatie krijgen, bezwaar', en: 'Receive information, objection', de: 'Informationen erhalten, Widerspruch', fr: 'Recevoir des informations, contestation' },
+          inhoud: { nl: 'U hebt een besluit van {afzender} ontvangen. Bent u het niet eens met dit besluit? Dan kunt u vóór [datum_actie] bezwaar of beroep aantekenen. Bekijk het bericht voor meer informatie.', en: 'You have received a decision from {afzender}. Do you disagree with this decision? You can lodge an objection or appeal before [datum_actie]. See the message for details.', de: 'Sie haben einen Bescheid von {afzender} erhalten. Sind Sie nicht einverstanden? Sie können vor [datum_actie] Widerspruch oder Einspruch einlegen. Details in der Nachricht.', fr: 'Vous avez reçu une décision de {afzender}. Vous n\'êtes pas d\'accord ? Vous pouvez introduire une réclamation ou un recours avant [datum_actie]. Voir le message.' } },
+        { id: 'reactie-ontvangen-bezwaar', titel: 'Reactie ontvangen (bezwaar)', cat: 'bezwaar',
+          desc: { nl: 'Reactie ontvangen, bezwaar', en: 'Response received, objection', de: 'Antwort erhalten, Widerspruch', fr: 'Réponse reçue, contestation' },
+          inhoud: { nl: 'U hebt een reactie van {afzender} ontvangen op een eerder besluit. Bent u het niet eens? Dan kunt u vóór [datum_actie] bezwaar of beroep aantekenen. Bekijk het bericht voor meer informatie.', en: 'You have received a response from {afzender} on an earlier decision. Do you disagree? You can lodge an objection or appeal before [datum_actie]. See the message for details.', de: 'Sie haben eine Antwort von {afzender} zu einer früheren Entscheidung erhalten. Nicht einverstanden? Sie können vor [datum_actie] Widerspruch oder Einspruch einlegen. Details in der Nachricht.', fr: 'Vous avez reçu une réponse de {afzender} sur une décision antérieure. Pas d\'accord ? Vous pouvez introduire une réclamation ou un recours avant [datum_actie]. Voir le message.' } },
       ];
-      function bouw(spec) {
+      function bouwContent(spec) {
         const content = {};
         ['nl', 'en', 'de', 'fr'].forEach(l => {
-          content[l] = { subject: TXT[l].subj(spec.type[l]), body: TXT[l].body(spec.reden[l], spec.actie[l]), kort: TXT[l].kort(spec.type[l]) };
+          const f = FRAME[l];
+          content[l] = { subject: f.subj(spec.desc[l]), body: f.aanhef + '\n\n' + spec.inhoud[l] + '\n\n' + f.groet + '\n\n{afzender}', kort: f.kort(spec.desc[l]) };
         });
-        return { id: spec.id, titel: spec.titel, status: 'standaard', afzender: 'noreply@mijn.overheid.nl', afzendertekst: 'MijnOverheid\nW https://mijn.overheid.nl', content: content };
+        return content;
       }
-      const BIB = TYPES.map(bouw);
+      const BIB = TYPES.map(spec => ({
+        id: spec.id, titel: spec.titel, cat: spec.cat, status: 'standaard', huisstijl: 'mijnoverheid',
+        afzender: MAIL.mijnoverheid, afzendertekst: HANDTEKENING.mijnoverheid, content: bouwContent(spec),
+      }));
 
-      // Organisatie-specifieke (custom) templates. Alleen zichtbaar voor de eigen organisatie.
+      // Organisatie-specifieke (custom) template. Alleen zichtbaar voor de eigen organisatie.
       BIB.push({
-        id: 'agenda-stuurgroep', titel: 'Agenda stuurgroep', status: 'custom', org: 'bzk',
-        afzender: 'stuurgroep@rijksoverheid.nl', afzendertekst: AFZENDER.bzk,
+        id: 'agenda-stuurgroep', titel: 'Agenda stuurgroep', cat: null, status: 'custom', org: 'bzk', huisstijl: 'bzk',
+        afzender: 'stuurgroep@rijksoverheid.nl', afzendertekst: HANDTEKENING.bzk,
         content: {
           nl: { subject: 'Agenda stuurgroep Digitale Overheid - [datum]',
                 body: 'Beste leden van de stuurgroep,\n\nHierbij de agenda voor de stuurgroep Digitale Overheid op [datum] van [begintijd] tot [eindtijd], locatie [locatie].\n\nAgenda:\n1. Opening en mededelingen\n2. Vaststellen verslag vorige vergadering\n3. Voortgang programma\'s en projecten\n4. Besluitvorming [onderwerp]\n5. Rondvraag en sluiting\n\nDe vergaderstukken vindt u in de bijlage. Graag tot dan.\n\nMet vriendelijke groet,\n[Naam]',
@@ -2624,6 +2714,7 @@
       const dTitel = root.querySelector('#tb-d-titel');
       const dSub = root.querySelector('#tb-d-sub');
       const dTag = root.querySelector('#tb-d-tag');
+      const dCat = root.querySelector('#tb-d-cat');
       const leegBanner = root.querySelector('#tb-d-leegtaal');
       const melding = root.querySelector('#tb-d-melding');
       const lijstMelding = root.querySelector('#tb-lijstmelding');
@@ -2632,6 +2723,8 @@
       const btnOpslaan = root.querySelector('#tb-opslaan');
       const btnVerwijder = root.querySelector('#tb-verwijder');
       const btnTerug = root.querySelector('#tb-terug');
+      const btnPreview = root.querySelector('#tb-preview');
+      const btnKopie = root.querySelector('#tb-kopie');
 
       let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0;
       const kloon = t => JSON.parse(JSON.stringify(t));
@@ -2656,10 +2749,12 @@
           item.setAttribute('button', '');
           item.dataset.id = t.id;
           const titelCel = t.status === 'concept' ? t.titel : '**' + t.titel + '**';
+          const cm = t.cat && CAT[t.cat];
+          const catTag = cm ? '<nldd-tag color="' + cm.color + '" text="' + cm.label + '"></nldd-tag>' : '';
           item.innerHTML =
             '<nldd-icon-cell slot="start"><nldd-icon name="' + (t.status === 'concept' ? 'pencil' : 'file-text') + '"></nldd-icon></nldd-icon-cell>' +
             '<nldd-text-cell text="' + titelCel + '"></nldd-text-cell>' +
-            '<nldd-cell slot="end"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag></nldd-cell>';
+            '<nldd-cell slot="end"><div class="inline"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</div></nldd-cell>';
           item.addEventListener('click', () => openDetail(t.id, false));
           lijst.appendChild(item);
         });
@@ -2698,6 +2793,9 @@
         dTitel.textContent = werk.titel;
         dSub.textContent = st.label + ' - meertalig (NL, EN, DE, FR)';
         dTag.setAttribute('color', st.color); dTag.setAttribute('text', st.label);
+        const cm = t.cat && CAT[t.cat];
+        if (cm) { dCat.setAttribute('color', cm.color); dCat.setAttribute('text', cm.label); dCat.removeAttribute('hidden'); }
+        else dCat.setAttribute('hidden', '');
         velden.titel.value = werk.titel;
         velden.afz.value = werk.afzender || '';
         velden.afzenderTekst.value = werk.afzendertekst || '';
@@ -2746,13 +2844,59 @@
       });
       root.querySelector('#tb-nieuw').addEventListener('click', () => {
         const id = 'nieuw-' + (++teller);
+        const merk = MERK_VAN_ORG[HUIDIGE_ORG] || 'mijnoverheid';
         // Een nieuwe template is meteen een custom template van de eigen organisatie.
-        BIB.push({ id, titel: 'Nieuwe template', status: 'custom', org: HUIDIGE_ORG,
-          afzender: AFZENDER_MAIL[HUIDIGE_ORG] || 'noreply@mijn.overheid.nl', afzendertekst: AFZENDER[HUIDIGE_ORG] || '',
+        BIB.push({ id, titel: 'Nieuwe template', cat: null, status: 'custom', org: HUIDIGE_ORG, huisstijl: merk,
+          afzender: MAIL[merk] || MAIL.mijnoverheid, afzendertekst: HANDTEKENING[merk] || '',
           content: { nl: leeg(), en: leeg(), de: leeg(), fr: leeg() } });
         renderLijst();
         openDetail(id, true);
       });
+
+      // Kopie maken: nieuwe custom-draft van de huidige template, direct in bewerkmodus.
+      btnKopie.addEventListener('click', () => {
+        bewaarHuidigeTaal();
+        const bron = werk || BIB.find(x => x.id === huidigId);
+        if (!bron) return;
+        const id = 'kopie-' + (++teller);
+        const merk = MERK_VAN_ORG[HUIDIGE_ORG] || 'mijnoverheid';
+        const nieuw = kloon(bron);
+        nieuw.id = id;
+        nieuw.titel = 'Kopie van ' + (bron.titel || 'template');
+        nieuw.status = 'custom';
+        nieuw.org = HUIDIGE_ORG;
+        nieuw.huisstijl = merk;
+        BIB.push(nieuw);
+        renderLijst();
+        openDetail(id, true);
+        melding.setAttribute('variant', 'success');
+        melding.setAttribute('text', 'Kopie aangemaakt als nieuwe custom template. Pas aan en sla op, of verwijder.');
+        melding.removeAttribute('hidden');
+      });
+
+      // E-mailpreview met de huisstijl van de afzender (per merk).
+      const pvOverlay = document.getElementById('tb-preview-overlay');
+      function resolveAfz(tekst) {
+        const naam = eersteRegel(velden.afzenderTekst.value || (werk && werk.afzendertekst) || 'MijnOverheid');
+        return ((tekst || '') + '').replace(/\{afzender\}/g, naam);
+      }
+      btnPreview.addEventListener('click', () => {
+        if (bewerken) bewaarHuidigeTaal();
+        const merk = MERK[(werk && werk.huisstijl) || 'mijnoverheid'] || MERK.mijnoverheid;
+        const c = (werk && werk.content && werk.content[taalNu]) || leeg();
+        const header = document.getElementById('tbp-header');
+        header.style.background = merk.kleur;
+        header.textContent = merk.naam;
+        document.getElementById('tbp-van').textContent = eersteRegel(velden.afzenderTekst.value) + ' <' + (velden.afz.value || '') + '>';
+        document.getElementById('tbp-onderwerp').textContent = resolveAfz(c.subject);
+        document.getElementById('tbp-tekst').textContent = resolveAfz(c.body);
+        document.getElementById('tbp-footer').textContent = velden.afzenderTekst.value || '';
+        pvOverlay.removeAttribute('hidden');
+      });
+      const pvSluit = document.getElementById('tbp-sluit');
+      if (pvSluit) pvSluit.addEventListener('click', () => pvOverlay.setAttribute('hidden', ''));
+      if (pvOverlay) pvOverlay.addEventListener('click', e => { if (e.target === pvOverlay) pvOverlay.setAttribute('hidden', ''); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && pvOverlay && !pvOverlay.hasAttribute('hidden')) pvOverlay.setAttribute('hidden', ''); });
 
       renderLijst();
     })();
@@ -3565,11 +3709,11 @@
 
       const ROLLEN = {
         organisatiebeheerder: { label: 'Organisatiebeheerder', color: 'accent',
-          toegang: () => ['Volledige toegang tot alle diensten en instellingen', 'Beheert gebruikers en rollen', 'Inclusief Dashboard, Audit en logboek en Analytics'] },
+          toegang: () => ['Volledige toegang tot alle diensten en instellingen', 'Beheert gebruikers en rollen', 'Dienstenaanbod, Audit en logboek en Analytics'] },
         dienstbeheerder: { label: 'Dienstbeheerder', color: 'accent',
-          toegang: (u) => [u.dienst + ' - volledig beheer (alles binnen deze dienst)', 'Dashboard', 'Audit en logboek', 'Analytics'] },
+          toegang: (u) => [u.dienst + ' - volledig beheer (alles binnen deze dienst)', 'Analytics'] },
         keyeigenaar: { label: 'API-key-eigenaar', color: 'neutral',
-          toegang: (u) => [u.dienst + ' - eigenaar van API-key ' + u.key, 'Logboek - alleen voor deze key', 'Mag keys met deze functionaliteit zelf distribueren', 'Dashboard'] },
+          toegang: (u) => [u.dienst + ' - eigenaar van API-key ' + u.key, 'Logboek - alleen voor deze API-key', 'Mag API-keys met deze functionaliteit zelf distribueren'] },
       };
 
       const ORG = {
@@ -3609,32 +3753,23 @@
         const wrap = document.createElement('div');
         wrap.innerHTML = `
           <nldd-card class="gb-kaart ${dm ? dm.rand : ''}">
-            <nldd-container padding="16" gap="12">
+            <nldd-container padding="12" gap="8">
               <div class="between">
                 <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title>
                 <div class="inline">
                   ${jij ? '<nldd-tag color="success" text="jij"></nldd-tag>' : ''}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
+                  <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
                 </div>
               </div>
-              <div class="inline">
-                <span class="muted-note">Dienst</span>
-                <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
-              </div>
-              <div class="gb-toegang"></div>
+              <p class="gb-toegang-inline"><strong>Toegang:</strong> <span class="gb-toeg"></span></p>
               <div class="row-actions gb-acties"></div>
             </nldd-container>
           </nldd-card>`;
         const el = wrap.firstElementChild;
         el.querySelector('.gb-naam').textContent = u.naam;
         el.querySelector('.gb-mail').textContent = u.email;
-        const tb = el.querySelector('.gb-toegang');
-        const kop = document.createElement('p'); kop.className = 'muted-note'; kop.textContent = 'Toegang';
-        tb.appendChild(kop);
-        const ul = document.createElement('ul');
-        ul.style.margin = '4px 0 0'; ul.style.paddingInlineStart = '18px';
-        toeg.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
-        tb.appendChild(ul);
+        el.querySelector('.gb-toeg').textContent = toeg.join(' · ');
         const acties = el.querySelector('.gb-acties');
         const rolBtn = document.createElement('nldd-button');
         rolBtn.setAttribute('variant', 'secondary'); rolBtn.setAttribute('text', 'Rol wijzigen');
@@ -3658,8 +3793,29 @@
       if (filterRol) filterRol.addEventListener('change', render);
       if (filterDienst) filterDienst.addEventListener('change', render);
 
-      root.querySelector('#gb-uitnodigen').addEventListener('click', () =>
-        meld('success', 'Nieuwe gebruiker uitnodigen voor ' + org.naam + ' - kies een rol: organisatiebeheerder, dienstbeheerder of API-key-eigenaar. (demo)'));
+      // Uitnodig-formulier: gebruiker opzetten en rol configureren.
+      const form = root.querySelector('#gb-uitnodig-form');
+      const fRol = root.querySelector('#gbf-rol');
+      const fDienstField = root.querySelector('#gbf-dienst-field');
+      function toonDienstVeld() { fDienstField.toggleAttribute('hidden', fRol.value === 'organisatiebeheerder'); }
+      fRol.addEventListener('change', toonDienstVeld);
+      toonDienstVeld();
+      root.querySelector('#gb-uitnodigen').addEventListener('click', () => { form.toggleAttribute('hidden'); if (!form.hasAttribute('hidden')) root.querySelector('#gbf-naam').focus(); });
+      root.querySelector('#gbf-annuleer').addEventListener('click', () => form.setAttribute('hidden', ''));
+      root.querySelector('#gbf-verstuur').addEventListener('click', () => {
+        const naam = (root.querySelector('#gbf-naam').value || '').trim() || 'Nieuwe gebruiker';
+        const email = (root.querySelector('#gbf-email').value || '').trim() || 'nieuw@' + (org.naam === 'Ministerie van BZK' ? 'rijksoverheid.nl' : 'kvk.nl');
+        const rol = fRol.value;
+        const nieuw = { naam: naam, email: email, rol: rol };
+        if (rol !== 'organisatiebeheerder') nieuw.dienst = root.querySelector('#gbf-dienst').value;
+        if (rol === 'keyeigenaar') nieuw.key = 'nmp_demo_nieuw';
+        org.users.push(nieuw);
+        render();
+        form.setAttribute('hidden', '');
+        root.querySelector('#gbf-naam').value = '';
+        root.querySelector('#gbf-email').value = '';
+        meld('success', naam + ' uitgenodigd als ' + ((ROLLEN[rol] || {}).label || rol) + (nieuw.dienst ? ' voor de ' + nieuw.dienst : '') + '. (demo)');
+      });
 
       render();
     })();
