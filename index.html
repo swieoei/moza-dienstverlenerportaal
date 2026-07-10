@@ -292,9 +292,10 @@
               <section class="view is-active" data-view="dashboard">
                 <div class="stack">
                   <nldd-banner
+                    id="dash-welkom"
                     variant="accent"
-                    text="Welkom terug, Sanne."
-                    supporting-text="Vandaag zijn er 1.248 notificaties verzonden. 4 ondernemers wachten op contactherstel via de KvK.">
+                    text="Welkom terug."
+                    supporting-text="Vandaag zijn er 1.248 notificaties verzonden. Bekijk het logboek voor de mislukte verzendingen die om actie vragen.">
                   </nldd-banner>
 
                   <div class="kpi-grid">
@@ -810,7 +811,7 @@
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
-                          <nldd-text-cell text="**Herinnering: aanvulling zaak ZA-2026-0481** - Jansen Installatietechniek · reminder bij zaak"></nldd-text-cell>
+                          <nldd-text-cell text="**Herinnering: aanvulling zaak ZA-2026-0481** - Brouwer Installatietechniek · reminder bij zaak"></nldd-text-cell>
                           <nldd-cell slot="end"><nldd-tag color="warning" text="reminder"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
@@ -934,7 +935,7 @@
                               <nldd-form-field label="Koppel aan zaak">
                                 <nldd-dropdown>
                                   <select aria-label="Koppel aan zaak">
-                                    <option value="0481" selected>ZA-2026-0481 · Jansen Installatietechniek</option>
+                                    <option value="0481" selected>ZA-2026-0481 · Brouwer Installatietechniek</option>
                                     <option value="0467">ZA-2026-0467 · Bakkerij De Korenbloem</option>
                                     <option value="0443">ZA-2026-0443 · Café De Brug</option>
                                   </select>
@@ -1348,31 +1349,31 @@
                           <nldd-text-cell text="06 jul 2026 09:12"></nldd-text-cell>
                           <nldd-text-cell text="API-key aangemaakt 'Verificatie-app'"></nldd-text-cell>
                           <nldd-text-cell text="Profieldienst"></nldd-text-cell>
-                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                          <nldd-text-cell class="js-huidige-gebruiker" text="Sanne de Boer"></nldd-text-cell>
                         </nldd-table-row>
                         <nldd-table-row>
                           <nldd-text-cell text="06 jul 2026 08:40"></nldd-text-cell>
                           <nldd-text-cell text="API-key ingetrokken 'UWV-prod (oud)'"></nldd-text-cell>
                           <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
-                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                          <nldd-text-cell class="js-huidige-gebruiker" text="Sanne de Boer"></nldd-text-cell>
                         </nldd-table-row>
                         <nldd-table-row>
                           <nldd-text-cell text="05 jul 2026 16:22"></nldd-text-cell>
                           <nldd-text-cell text="Notificatie-instellingen gewijzigd (SMS-kanaal aan)"></nldd-text-cell>
                           <nldd-text-cell text="Instellingen"></nldd-text-cell>
-                          <nldd-text-cell text="Tom Bakker"></nldd-text-cell>
+                          <nldd-text-cell text="Ingrid Vos"></nldd-text-cell>
                         </nldd-table-row>
                         <nldd-table-row>
                           <nldd-text-cell text="05 jul 2026 11:05"></nldd-text-cell>
                           <nldd-text-cell text="Contactherstel goedgekeurd (Bakkerij De Korenbloem)"></nldd-text-cell>
                           <nldd-text-cell text="Contactherstel"></nldd-text-cell>
-                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                          <nldd-text-cell class="js-huidige-gebruiker" text="Sanne de Boer"></nldd-text-cell>
                         </nldd-table-row>
                         <nldd-table-row>
                           <nldd-text-cell text="02 jul 2026 14:03"></nldd-text-cell>
                           <nldd-text-cell text="API-key aangemaakt 'Zaaksysteem'"></nldd-text-cell>
                           <nldd-text-cell text="Profieldienst"></nldd-text-cell>
-                          <nldd-text-cell text="Sanne de Boer"></nldd-text-cell>
+                          <nldd-text-cell class="js-huidige-gebruiker" text="Sanne de Boer"></nldd-text-cell>
                         </nldd-table-row>
                       </nldd-table>
                     </div>
@@ -1701,6 +1702,11 @@
       if (am) am.setAttribute('text', MOZA_USER.naam + ' · ' + MOZA_USER.orgKort);
       if (org) org.setAttribute('text', '**' + MOZA_USER.org + '**');
       if (gb) gb.setAttribute('text', MOZA_USER.naam);
+      // Welkomsttekst op het dashboard met de voornaam van de ingelogde gebruiker.
+      const welkom = document.getElementById('dash-welkom');
+      if (welkom) welkom.setAttribute('text', 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0] + '.');
+      // Plaatsen waar de eigen naam wordt getoond (bv. audit-acties door de beheerder).
+      document.querySelectorAll('.js-huidige-gebruiker').forEach(el => el.setAttribute('text', MOZA_USER.naam));
     })();
 
     navwrap.addEventListener('click', (e) => {
@@ -1807,7 +1813,7 @@
     (function () {
       const CH_ADRES = {
         'Bakkerij De Korenbloem': 'Dorpsstraat 12, 3811 AB Amersfoort',
-        'Jansen Installatietechniek BV': 'Industrieweg 5, 7424 PT Deventer',
+        'Brouwer Installatietechniek BV': 'Industrieweg 5, 7424 PT Deventer',
         'Groene Vingers Hoveniers': 'Tuinderslaan 34, 6712 CD Ede',
         'Transport Van Dijk': 'Havenkade 88, 3071 AA Rotterdam',
       };
@@ -1968,25 +1974,25 @@
           ondernemer: {
             doelgroep: [['alle', 'Alle ondernemers'], ['sector', 'Per sector…'], ['nieuw', 'Nieuwe inschrijvingen'], ['specifiek', 'Specifieke ondernemer…']],
             emailLabel: 'E-mailadres(sen) van de ondernemer(s)', addText: 'Ondernemer(s) toevoegen',
-            hint: 'Bekend: info@dekorenbloem.nl · administratie@jansen-it.nl · planning@vandijktransport.nl',
+            hint: 'Bekend: info@dekorenbloem.nl · administratie@brouwer-it.nl · planning@vandijktransport.nl',
             idLabel: 'Gekoppeld BSN', idPlaceholder: '9 cijfers', idTerm: 'BSN',
             onbekend: 'Onbekende ondernemer - controleer het e-mailadres', woord: ['ondernemer', 'ondernemers'],
             map: {
               'info@dekorenbloem.nl': { id: '123456782', naam: 'Bakkerij De Korenbloem' },
-              'administratie@jansen-it.nl': { id: '234567891', naam: 'Jansen Installatietechniek BV' },
+              'administratie@brouwer-it.nl': { id: '234567891', naam: 'Brouwer Installatietechniek BV' },
               'planning@vandijktransport.nl': { id: '345678916', naam: 'Transport Van Dijk' },
             },
           },
           ambtenaar: {
             doelgroep: [['alle', 'Alle ambtenaren'], ['organisatie', 'Per organisatie…'], ['specifiek', 'Specifieke ambtenaar…']],
             emailLabel: 'E-mailadres(sen) van de ambtena(a)r(en)', addText: 'Ambtena(a)r(en) toevoegen',
-            hint: 'Bekend: j.devries@utrecht.nl · m.jansen@rvo.nl · a.bakker@kvk.nl',
+            hint: 'Bekend: j.devries@utrecht.nl · m.postma@rvo.nl · a.terpstra@kvk.nl',
             idLabel: 'Organisatie / afdeling', idPlaceholder: 'Organisatie - afdeling', idTerm: 'organisatie',
             onbekend: 'Onbekende ambtenaar - controleer het e-mailadres', woord: ['ambtenaar', 'ambtenaren'],
             map: {
               'j.devries@utrecht.nl': { id: 'Gemeente Utrecht - Vergunningen', naam: 'J. de Vries' },
-              'm.jansen@rvo.nl': { id: 'RVO - Subsidies', naam: 'M. Jansen' },
-              'a.bakker@kvk.nl': { id: 'Kamer van Koophandel - Handelsregister', naam: 'A. Bakker' },
+              'm.postma@rvo.nl': { id: 'RVO - Subsidies', naam: 'M. Postma' },
+              'a.terpstra@kvk.nl': { id: 'Kamer van Koophandel - Handelsregister', naam: 'A. Terpstra' },
             },
           },
         };
@@ -2321,8 +2327,8 @@
       const ONDERNEMERS = {
         '81234567': { naam: 'Bakkerij De Korenbloem', kvk: '81234567', bsn: '123456782', prioriteit: { email: 1, push: 2, sms: 3, whatsapp: 4, post: 5 },
           email: 'info@dekorenbloem.nl', push: 'MijnOverheid-app (gekoppeld)', sms: '06-21345678', whatsapp: '06-21345678', post: 'Dorpsstraat 12, 3811 AB Amersfoort' },
-        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891', prioriteit: { push: 1, whatsapp: 2, sms: 3, email: 4, post: 0 },
-          email: 'administratie@jansen-it.nl', push: 'MijnOverheid-app (gekoppeld)', sms: '06-34567812', whatsapp: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer' },
+        '84567123': { naam: 'Brouwer Installatietechniek BV', kvk: '84567123', bsn: '234567891', prioriteit: { push: 1, whatsapp: 2, sms: 3, email: 4, post: 0 },
+          email: 'administratie@brouwer-it.nl', push: 'MijnOverheid-app (gekoppeld)', sms: '06-34567812', whatsapp: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer' },
         '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916', prioriteit: { post: 1, email: 2, sms: 3, whatsapp: 0, push: 0 },
           email: 'planning@vandijktransport.nl', push: 'Niet gekoppeld', sms: '06-45678123', whatsapp: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam' },
       };
@@ -2668,12 +2674,12 @@
           ontvangers: [
             { type: 'ondernemer', naam: 'Bakkerij De Korenbloem', contact: 'info@dekorenbloem.nl', actief: true },
           ] },
-        '84567123': { naam: 'Jansen Installatietechniek BV', kvk: '84567123', bsn: '234567891',
-          email: 'administratie@jansen-it.nl', telefoon: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer',
+        '84567123': { naam: 'Brouwer Installatietechniek BV', kvk: '84567123', bsn: '234567891',
+          email: 'administratie@brouwer-it.nl', telefoon: '06-34567812', post: 'Industrieweg 5, 7424 PT Deventer',
           kanaal: 'sms', taal: 'nl', bron: 'KvK Handelsregister',
           ontvangers: [
-            { type: 'ondernemer', naam: 'Jansen Installatietechniek BV', contact: 'administratie@jansen-it.nl', actief: true },
-            { type: 'gemachtigde', naam: 'P. de Wit (bedrijfsleider)', contact: 'p.dewit@jansen-it.nl', actief: true },
+            { type: 'ondernemer', naam: 'Brouwer Installatietechniek BV', contact: 'administratie@brouwer-it.nl', actief: true },
+            { type: 'gemachtigde', naam: 'P. de Wit (bedrijfsleider)', contact: 'p.dewit@brouwer-it.nl', actief: true },
           ] },
         '87651234': { naam: 'Transport Van Dijk', kvk: '87651234', bsn: '345678916',
           email: 'planning@vandijktransport.nl', telefoon: '06-45678123', post: 'Havenkade 88, 3071 AA Rotterdam',
@@ -3034,7 +3040,7 @@
       window.__mpOpenDienst = openDienst;
       root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => {
         const b = root.querySelector('#dp-prod-bevestig');
-        b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met Sanne de Boer (Kamer van Koophandel).');
+        b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met ' + ((window.__MOZA_USER && (window.__MOZA_USER.naam + ' (' + window.__MOZA_USER.org + ')')) || 'de organisatiebeheerder') + '.');
         b.removeAttribute('hidden');
       });
     })();
@@ -3560,7 +3566,7 @@
       let teller = 0;
       const LOG = [
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key aangemaakt', detail: 'Backoffice KvK · rol Notificaties verzenden', tijd: 'Vandaag 09:12' },
-        { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key ingetrokken', detail: 'Oude testkey · door Sanne de Boer', tijd: 'Gisteren 14:30' },
+        { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key ingetrokken', detail: 'Oude testkey · door ' + ((window.__MOZA_USER && window.__MOZA_USER.naam) || 'de beheerder'), tijd: 'Gisteren 14:30' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie verzonden - jaarlijkse opgave', detail: 'Handelsregister · 320 ondernemers', tijd: 'Gisteren 16:05' },
       ];
 
@@ -3684,7 +3690,7 @@
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Café De Brug', detail: 'Nieuwe regelgeving 2027 · info@cafedebrug.nl', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Groene Vingers Hoveniers', detail: 'Nieuwe regelgeving 2027 · post@groenevingers.nl', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Transport Van Dijk', detail: 'Nieuwe regelgeving 2027 · planning@vandijktransport.nl', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Jansen Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Brouwer Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'mislukt', actie: 'bsn', titel: 'E-mail mislukt - De Vries Advies', detail: 'Nieuwe regelgeving 2027 · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
