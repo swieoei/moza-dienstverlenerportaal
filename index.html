@@ -138,6 +138,19 @@
     .tbp-test-rij nldd-text-field { flex: 1 1 240px; }
     .tbp-test-links { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     .tbp-test-uitleg { font-size: 0.9rem; color: var(--context-muted-foreground-color, #5a5a5a); margin: 0; }
+    /* Instellingen: notificatie-instellingen als lijst per kanaal */
+    .inst-groep-kop { font-weight: 700; font-size: 1rem; padding: 14px 0 4px; }
+    .inst-groep:first-child .inst-groep-kop { padding-top: 0; }
+    .inst-rij { display: grid; grid-template-columns: minmax(150px, 1.3fr) minmax(120px, 1.6fr) auto; gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--context-border-color, #ececec); }
+    .inst-rij-label { font-weight: 600; }
+    .inst-rij-waarde { color: var(--context-muted-foreground-color, #5a5a5a); word-break: break-word; }
+    .inst-rij-waarde .inst-sub { display: block; font-size: 0.9rem; }
+    .inst-rij-actie { white-space: nowrap; text-align: right; }
+    .inst-edit { padding: 4px 0 14px; }
+    .inst-edit-form { display: flex; flex-direction: column; gap: 10px; max-width: 460px; }
+    .inst-highlight { animation: instPuls 1.6s ease; }
+    @keyframes instPuls { 0%,100% { background: transparent; } 20%,50% { background: rgba(0,123,199,.12); } }
+    @media (max-width: 640px) { .inst-rij { grid-template-columns: 1fr; gap: 4px; } .inst-rij-actie { text-align: left; } }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
     .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
     .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
@@ -1179,6 +1192,7 @@
                         <nldd-form-field label="Afzender">
                           <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
+                        <p class="muted-note"><nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzender per kanaal aanpassen"></nldd-link></p>
 
                         <nldd-tab-bar id="tb-langtabs" accessible-label="Taal">
                           <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
@@ -1700,45 +1714,232 @@
               <!-- ====================== INSTELLINGEN ORGANISATIE ====================== -->
               <section class="view" data-view="organisatie">
                 <div class="stack">
-                  <nldd-title size="4"><h2>Organisatiegegevens</h2></nldd-title>
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <nldd-form-field label="Organisatie">
-                        <nldd-text-field id="f-org"></nldd-text-field>
-                      </nldd-form-field>
-                      <nldd-form-field label="Afdeling">
-                        <nldd-text-field id="f-afd"></nldd-text-field>
-                      </nldd-form-field>
-                      <nldd-form-field label="Contact-e-mail voor storingen">
-                        <nldd-text-field id="f-mail"></nldd-text-field>
-                      </nldd-form-field>
-                    </nldd-container>
-                  </nldd-card>
+                  <nldd-title size="4"><h2>Instellingen</h2></nldd-title>
+                  <nldd-tab-bar id="inst-tabs" accessible-label="Instellingen">
+                    <nldd-tab-bar-item selected text="Organisatie" icon="person-badge-gear" data-panel="org"></nldd-tab-bar-item>
+                    <nldd-tab-bar-item text="Mijn profiel" icon="person" data-panel="profiel"></nldd-tab-bar-item>
+                  </nldd-tab-bar>
 
-                  <nldd-title size="4"><h2>Notificatie-instellingen</h2></nldd-title>
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <nldd-form-field label="Kanaal Berichtenbox actief">
-                        <nldd-switch checked></nldd-switch>
-                      </nldd-form-field>
-                      <nldd-form-field label="Kanaal e-mail actief">
-                        <nldd-switch checked></nldd-switch>
-                      </nldd-form-field>
-                      <nldd-form-field label="Kanaal SMS actief">
-                        <nldd-switch></nldd-switch>
-                      </nldd-form-field>
-                      <nldd-form-field label="Contactherstel centraal delen met aangesloten organisaties">
-                        <nldd-switch checked></nldd-switch>
-                      </nldd-form-field>
-                      <nldd-form-field label="E-mailwaarschuwing bij mislukte levering">
-                        <nldd-switch checked></nldd-switch>
-                      </nldd-form-field>
-                      <div class="row-actions">
-                        <nldd-button variant="primary" text="Opslaan"></nldd-button>
-                        <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                      </div>
-                    </nldd-container>
-                  </nldd-card>
+                  <nldd-banner id="inst-melding" variant="success" text="" hidden></nldd-banner>
+
+                  <!-- ===== Tab: Organisatie ===== -->
+                  <div class="stack" data-inst-panel="org">
+                    <nldd-title size="5"><h3>Organisatiegegevens</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="Organisatie">
+                          <nldd-text-field id="f-org"></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Afdeling">
+                          <nldd-text-field id="f-afd"></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Contact-e-mail voor storingen">
+                          <nldd-text-field id="f-mail"></nldd-text-field>
+                        </nldd-form-field>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <nldd-title size="5"><h3>Gegevensbeheer</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="Bewaartermijn gegevens">
+                          <nldd-dropdown>
+                            <select id="f-bewaartermijn" aria-label="Bewaartermijn gegevens">
+                              <option value="7" selected>7 dagen</option>
+                              <option value="14">14 dagen</option>
+                              <option value="30">30 dagen</option>
+                              <option value="90">90 dagen</option>
+                              <option value="365">1 jaar</option>
+                            </select>
+                          </nldd-dropdown>
+                        </nldd-form-field>
+                        <p class="muted-note">Hoelang verzend- en notificatiegegevens (logboekregels, afleverstatus en contactherstelgegevens) bewaard blijven voordat ze automatisch worden verwijderd. Standaard 7 dagen.</p>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <nldd-title size="5"><h3>Notificatie-instellingen</h3></nldd-title>
+                    <p class="muted-note">De standaard afzender per kanaal wordt gebruikt voor notificaties, tenzij een template een eigen afzender heeft.</p>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="0">
+                        <div id="inst-notif">
+
+                          <!-- Berichtenbox -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Berichtenbox (MijnOverheid)</div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Berichtenbox-berichten verzenden</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
+                              <div class="inst-rij-label">Standaard afzender</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-bbox"></span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                          </div>
+
+                          <!-- E-mail -->
+                          <div class="inst-groep" id="inst-groep-email">
+                            <div class="inst-groep-kop">E-mailinstellingen</div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">E-mails verzenden</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Naam afzender|E-mailadres afzender">
+                              <div class="inst-rij-label">Standaard afzender</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-email-naam"></span><span class="inst-sub js-afz-email-adres"></span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Antwoord-e-mailadressen</div>
+                              <div class="inst-rij-waarde">Niet ingesteld</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Beheren"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">E-mailhuisstijl</div>
+                              <div class="inst-rij-waarde">Rijkshuisstijl</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Bestanden per e-mail verzenden</div>
+                              <div class="inst-rij-waarde">Niet ingesteld</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Beheren"></nldd-link></div>
+                            </div>
+                          </div>
+
+                          <!-- SMS -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Sms-instellingen</div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Sms-berichten verzenden</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Sms-afzender-ID">
+                              <div class="inst-rij-label">Standaard afzender (sms-afzender-ID)</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Sms-berichten starten met servicenaam</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Internationale sms-berichten verzenden</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Limiet internationale sms-berichten</div>
+                              <div class="inst-rij-waarde">100 per dag<span class="inst-sub">0 vandaag verzonden</span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                          </div>
+
+                          <!-- Brief (post) -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Briefinstellingen</div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Brieven versturen</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Internationale brieven versturen</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
+                              <div class="inst-rij-label">Standaard afzenderadres</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-brief"></span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Briefopmaak</div>
+                              <div class="inst-rij-waarde">Niet ingesteld</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                          </div>
+
+                          <!-- Push -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Push (MijnOverheid-app)</div>
+                            <div class="inst-rij" data-inst="toggle">
+                              <div class="inst-rij-label">Pushberichten verzenden</div>
+                              <div class="inst-rij-waarde">Aan</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
+                              <div class="inst-rij-label">Standaard afzender</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <nldd-title size="5"><h3>Overige</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="Contactherstel centraal delen met aangesloten organisaties">
+                          <nldd-switch checked></nldd-switch>
+                        </nldd-form-field>
+                        <nldd-form-field label="E-mailwaarschuwing bij mislukte levering">
+                          <nldd-switch checked></nldd-switch>
+                        </nldd-form-field>
+                        <div class="row-actions">
+                          <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
+                          <nldd-button variant="secondary" text="Annuleren"></nldd-button>
+                        </div>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+
+                  <!-- ===== Tab: Mijn profiel ===== -->
+                  <div class="stack" data-inst-panel="profiel" hidden>
+                    <nldd-title size="5"><h3>Persoonsgegevens</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="Naam">
+                          <nldd-text-field id="pf-naam"></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="E-mailadres">
+                          <nldd-text-field id="pf-email"></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Rol">
+                          <nldd-text-field id="pf-rol" readonly></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Voorkeurstaal">
+                          <nldd-dropdown>
+                            <select id="pf-taal" aria-label="Voorkeurstaal">
+                              <option value="nl" selected>Nederlands</option>
+                              <option value="en">Engels</option>
+                            </select>
+                          </nldd-dropdown>
+                        </nldd-form-field>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <nldd-title size="5"><h3>Mijn meldingen</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="E-mail bij mislukte notificaties die actie nodig hebben">
+                          <nldd-switch checked></nldd-switch>
+                        </nldd-form-field>
+                        <nldd-form-field label="Wekelijkse samenvatting per e-mail">
+                          <nldd-switch></nldd-switch>
+                        </nldd-form-field>
+                        <div class="row-actions">
+                          <nldd-button id="inst-profiel-opslaan" variant="primary" text="Opslaan"></nldd-button>
+                          <nldd-button variant="secondary" text="Annuleren"></nldd-button>
+                        </div>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
                 </div>
               </section>
 
@@ -1965,9 +2166,11 @@
     const openNav = document.querySelector('[data-open-nav]');
     if (openNav && sbsec) openNav.addEventListener('click', () => sbsec.show && sbsec.show());
 
-    // "Instellingen organisatie" opent vanuit het gegroepeerde account-menu in de header.
+    // Instellingen openen vanuit het account-menu: organisatie- en profieltab op dezelfde pagina.
     const goOrg = document.getElementById('mi-organisatie');
-    if (goOrg) goOrg.addEventListener('click', () => showView('organisatie', 'Instellingen organisatie'));
+    if (goOrg) goOrg.addEventListener('click', () => { if (window.__mozaInstellingen) window.__mozaInstellingen.open('org'); else showView('organisatie', 'Instellingen'); });
+    const goProfiel = document.getElementById('mi-gebruiker');
+    if (goProfiel) goProfiel.addEventListener('click', () => { if (window.__mozaInstellingen) window.__mozaInstellingen.open('profiel'); else showView('organisatie', 'Instellingen'); });
 
     // Zoekveld in de topbalk: KvK/BSN → profieldienst; anders een menu-onderdeel openen.
     const topzoek = document.getElementById('topzoek');
@@ -2181,12 +2384,117 @@
         'f-org': u.org || 'Kamer van Koophandel',
         'f-afd': 'Notificatiebeheer',
         'f-mail': 'storingen@' + mailDomein,
+        'pf-naam': u.naam || 'Sanne de Boer',
+        'pf-email': u.email || 'sanne.deboer@kvk.nl',
+        'pf-rol': (typeof ROL_LABEL !== 'undefined' && ROL_LABEL[u.rol]) || 'Gebruiker',
       };
       Object.entries(vals).forEach(([id, v]) => {
         const el = document.getElementById(id);
         if (el) el.value = v;
       });
     });
+
+    // Standaard afzender per kanaal (getoond in de notificatie-instellingen).
+    (function () {
+      const u = window.__MOZA_USER || {};
+      const mailDomein = (u.email || 'notificaties@kvk.nl').split('@')[1] || 'kvk.nl';
+      const briefAdres = { kvk: 'Kamer van Koophandel, Postbus 48, 3500 GA Utrecht', bzk: 'Ministerie van BZK, Postbus 20011, 2500 EA Den Haag' };
+      const zet = (sel, v) => document.querySelectorAll(sel).forEach(el => el.textContent = v);
+      zet('.js-afz-bbox', u.org || 'Kamer van Koophandel');
+      zet('.js-afz-email-naam', u.org || 'Kamer van Koophandel');
+      zet('.js-afz-email-adres', 'notificaties@' + mailDomein);
+      zet('.js-afz-sms', (u.orgKort || 'KVK').toUpperCase());
+      zet('.js-afz-brief', briefAdres[u.orgKey] || briefAdres.kvk);
+      zet('.js-afz-push', u.org || 'Kamer van Koophandel');
+    })();
+
+    // ====================== Instellingen (Organisatie + Mijn profiel) ======================
+    (function () {
+      const root = document.querySelector('section[data-view="organisatie"]');
+      if (!root) return;
+      const tabs = root.querySelector('#inst-tabs');
+      const panels = root.querySelectorAll('[data-inst-panel]');
+      const melding = root.querySelector('#inst-melding');
+      const notif = root.querySelector('#inst-notif');
+
+      function toonTab(name) {
+        panels.forEach(p => p.toggleAttribute('hidden', p.dataset.instPanel !== name));
+        tabs.querySelectorAll('nldd-tab-bar-item').forEach(t => t.toggleAttribute('selected', t.dataset.panel === name));
+      }
+      tabs.addEventListener('click', e => { const t = e.target.closest('nldd-tab-bar-item'); if (t && t.dataset.panel) toonTab(t.dataset.panel); });
+      function meld(v, t) { melding.setAttribute('variant', v); melding.setAttribute('text', t); melding.removeAttribute('hidden'); }
+
+      // Inline-edit van de standaard afzender onder de betreffende rij.
+      function openEdit(rij) {
+        const bestaand = rij.nextElementSibling;
+        if (bestaand && bestaand.classList.contains('inst-edit')) { bestaand.remove(); return; } // toggle dicht
+        notif.querySelectorAll('.inst-edit').forEach(x => x.remove()); // maar 1 tegelijk
+        const veldLabels = (rij.dataset.veld || 'Waarde').split('|');
+        const waardeEl = rij.querySelector('.inst-waarde');
+        const subEl = rij.querySelector('.inst-sub');
+        const huidige = [waardeEl ? waardeEl.textContent : '', subEl ? subEl.textContent : ''];
+        const det = document.createElement('div');
+        det.className = 'inst-edit';
+        det.innerHTML = '<div class="inst-edit-form">' +
+          veldLabels.map((lbl, i) => '<nldd-form-field label="' + lbl + '"><nldd-text-field class="inst-edit-veld" data-idx="' + i + '"></nldd-text-field></nldd-form-field>').join('') +
+          '<div class="row-actions"><nldd-button class="inst-edit-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="inst-edit-annuleer" variant="secondary" text="Annuleren"></nldd-button></div>' +
+          '</div>';
+        rij.parentNode.insertBefore(det, rij.nextElementSibling);
+        const veldEls = det.querySelectorAll('.inst-edit-veld');
+        const vul = () => veldEls.forEach((v, i) => { v.value = huidige[i] || ''; });
+        vul(); customElements.whenDefined('nldd-text-field').then(vul);
+        det.querySelector('.inst-edit-annuleer').addEventListener('click', () => det.remove());
+        det.querySelector('.inst-edit-opslaan').addEventListener('click', () => {
+          const nw = Array.from(veldEls).map(v => ((v.value || '') + '').trim());
+          if (waardeEl && nw[0]) waardeEl.textContent = nw[0];
+          if (subEl && nw[1] !== undefined) subEl.textContent = nw[1];
+          det.remove();
+          meld('success', 'Standaard afzender bijgewerkt: ' + nw.filter(Boolean).join(' · ') + '. (demo)');
+        });
+      }
+
+      // Acties in de instellingenlijst: toggles (Aan/Uit), afzender bewerken of demo-melding.
+      notif.addEventListener('click', e => {
+        const link = e.target.closest('.inst-actie'); if (!link) return; e.preventDefault();
+        const rij = link.closest('.inst-rij'); if (!rij) return;
+        const soort = rij.dataset.inst;
+        const label = rij.querySelector('.inst-rij-label').textContent;
+        if (soort === 'toggle') {
+          const w = rij.querySelector('.inst-rij-waarde');
+          const aan = (w.textContent || '').trim().toLowerCase() === 'aan';
+          w.textContent = aan ? 'Uit' : 'Aan';
+          meld('success', '"' + label + '" gezet op ' + (aan ? 'Uit' : 'Aan') + '. (demo)');
+        } else if (soort === 'edit') {
+          openEdit(rij);
+        } else {
+          meld('success', '"' + label + '" aanpassen. (demo)');
+        }
+      });
+
+      const orgOpslaan = root.querySelector('#inst-org-opslaan');
+      if (orgOpslaan) orgOpslaan.addEventListener('click', () => meld('success', 'Organisatie-instellingen opgeslagen. (demo)'));
+      const profOpslaan = root.querySelector('#inst-profiel-opslaan');
+      if (profOpslaan) profOpslaan.addEventListener('click', () => meld('success', 'Profielinstellingen opgeslagen. (demo)'));
+      const bewaar = root.querySelector('#f-bewaartermijn');
+      if (bewaar) bewaar.addEventListener('change', () => meld('success', 'Bewaartermijn gegevens ingesteld op ' + bewaar.options[bewaar.selectedIndex].text + '. (demo)'));
+
+      // Navigatie-API: vanuit het account-menu en vanuit de template-editor.
+      window.__mozaInstellingen = {
+        open(tab) { showView('organisatie', 'Instellingen'); toonTab(tab || 'org'); },
+        openAfzender() {
+          showView('organisatie', 'Instellingen'); toonTab('org');
+          const groep = root.querySelector('#inst-groep-email');
+          if (groep) {
+            groep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            groep.classList.remove('inst-highlight'); void groep.offsetWidth; groep.classList.add('inst-highlight');
+          }
+        },
+      };
+
+      // Link in de template-editor: standaard afzender per kanaal aanpassen.
+      const tplLink = document.getElementById('tb-afz-instellingen');
+      if (tplLink) tplLink.addEventListener('click', e => { e.preventDefault(); window.__mozaInstellingen.openAfzender(); });
+    })();
 
     // ====================== Berichtenmodule ======================
     (function () {
