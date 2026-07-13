@@ -358,16 +358,16 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="books-vertical"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Templatebibliotheek"></nldd-text-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="apikeys-notificatiedienst" data-title="API keys" data-parent="notificatiedienst" hidden>
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="API keys"></nldd-text-cell>
+                </nldd-list-item>
                 <nldd-list-item button data-view="logboek" data-title="Logboek" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="bullet-list"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Logboek"></nldd-text-cell>
                   <nldd-cell slot="end"><nldd-badge id="log-badge" color="critical" number="0" hidden></nldd-badge></nldd-cell>
-                </nldd-list-item>
-                <nldd-list-item button data-view="apikeys-notificatiedienst" data-title="API keys" data-parent="notificatiedienst" hidden>
-                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
-                  <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
-                  <nldd-text-cell text="API keys"></nldd-text-cell>
                 </nldd-list-item>
                 <nldd-list-item button data-view="rapportage-notificatiedienst" data-title="Rapportages" data-parent="notificatiedienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
@@ -393,7 +393,7 @@
                 </nldd-list-item>
                 <!-- Documentatie en ondersteuning: menu-item aanwezig, onderliggende pagina volgt later -->
                 <nldd-list-item button id="nav-documentatie" data-title="Documentatie en ondersteuning">
-                  <nldd-icon-cell slot="start"><nldd-icon name="question-circle"></nldd-icon></nldd-icon-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="question-mark-circle"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Documentatie en ondersteuning"></nldd-text-cell>
                 </nldd-list-item>
               </nldd-list>
@@ -444,7 +444,7 @@
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
                         <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
-                        <nldd-tag color="accent" text="actie nodig"></nldd-tag>
+                        <nldd-tag color="critical" text="actie nodig"></nldd-tag>
                         <ul class="afl-lijst">
                           <li><strong class="js-afl-actie">2</strong> notificaties hebben actie nodig
                             <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
@@ -692,7 +692,7 @@
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
                         <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
-                        <nldd-tag color="accent" text="actie nodig"></nldd-tag>
+                        <nldd-tag color="critical" text="actie nodig"></nldd-tag>
                         <ul class="afl-lijst">
                           <li><strong class="js-afl-actie">2</strong> notificaties hebben actie nodig
                             <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
@@ -709,15 +709,6 @@
                         <nldd-title size="5"><h3>Berichten</h3></nldd-title>
                         <nldd-rich-text><p>Stel berichten samen en verstuur ze meertalig aan ondernemers - eenmalig, terugkerend of als reminder bij een zaak.</p></nldd-rich-text>
                         <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button></div>
-                      </nldd-container>
-                    </nldd-card>
-
-                    <!-- Logboek -->
-                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="logboek" data-nav-title="Logboek" data-periode="vandaag" aria-label="Naar Logboek">
-                      <nldd-container padding="16" gap="12">
-                        <nldd-title size="5"><h3>Logboek</h3><p slot="subtitle">Verzendingen en API-sleutels, met statusfilters</p></nldd-title>
-                        <nldd-rich-text><p>Bekijk per gebeurtenis de status van notificaties en API-keys. Mislukte verzendingen vragen om actie, zoals een onjuist BSN corrigeren en opnieuw versturen.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek" data-nav-title="Logboek" data-periode="vandaag"></nldd-button></div>
                       </nldd-container>
                     </nldd-card>
 
@@ -745,7 +736,7 @@
                     <nldd-container padding="24" gap="12">
                       <nldd-title size="4"><h3>Klaar om echt live te gaan?</h3></nldd-title>
                       <nldd-rich-text>
-                        <p>Je gebruikt de notificatiedienst nu in de <strong>demo-omgeving</strong> met fictieve gegevens. Zet de stap naar productie en bereik ondernemers écht op het juiste moment, op het juiste kanaal - betrouwbaar, gemonitord en conform de aansluitvoorwaarden. Onze beheerorganisatie helpt je bij elke stap.</p>
+                        <p>U gebruikt de notificatiedienst nu in de <strong>demo-omgeving</strong> met fictieve gegevens. Zet de stap naar productie en bereik ondernemers écht op het juiste moment, op het juiste kanaal - betrouwbaar, gemonitord en conform de aansluitvoorwaarden. Onze beheerorganisatie helpt u bij elke stap.</p>
                       </nldd-rich-text>
                       <div class="row-actions">
                         <nldd-button variant="primary" end-icon="arrow-right" text="Productieversie aanvragen" data-goto-marktplaats="notificatiedienst"></nldd-button>
@@ -976,7 +967,7 @@
                   <!-- ---------- Panel: Nieuw bericht (composer) ---------- -->
                   <div data-ber-panel="nieuw" hidden>
                     <div class="stack">
-                      <nldd-banner variant="neutral" text="Stel een bericht samen op basis van een template en kies het type. Vul de vertalingen in die je ondersteunt; elk contact ontvangt automatisch de versie in zijn of haar voorkeurstaal uit de profieldienst."></nldd-banner>
+                      <nldd-banner variant="neutral" text="Stel een bericht samen op basis van een template en kies het type. Vul de vertalingen in die u ondersteunt; elk contact ontvangt automatisch de versie in zijn of haar voorkeurstaal uit de profieldienst."></nldd-banner>
 
                       <!-- 1. Template -->
                       <nldd-card>
@@ -1096,7 +1087,7 @@
                       <!-- 3. Inhoud per taal en kanaal -->
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">Je schrijft in het Nederlands; de inhoud wordt automatisch vertaald naar de andere talen. Elk contact ontvangt zijn voorkeurstaal (profieldienst). De veldlabels blijven Nederlands - dit portaal is Nederlandstalig. Per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
+                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">U schrijft in het Nederlands; de inhoud wordt automatisch vertaald naar de andere talen. Elk contact ontvangt zijn voorkeurstaal (profieldienst). De veldlabels blijven Nederlands - dit portaal is Nederlandstalig. Per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
 
                           <nldd-form-field label="Afzender (e-mailadres)">
                             <nldd-text-field id="afz-email" placeholder="notificaties@kvk.nl"></nldd-text-field>
@@ -1294,10 +1285,10 @@
                 <!-- ---------- Overzicht: dienstentegels ---------- -->
                 <div data-mp-page="overzicht">
                   <div class="stack">
-                    <nldd-banner variant="neutral" text="Overheidsbrede diensten voor je organisatie. Open een afgenomen dienst voor de API-key en het beheer, of koppel een nieuwe dienst - in demovorm of voor productie."></nldd-banner>
+                    <nldd-banner variant="neutral" text="Overheidsbrede diensten voor uw organisatie. Open een afgenomen dienst voor de API-key en het beheer, of koppel een nieuwe dienst - in demovorm of voor productie."></nldd-banner>
 
                     <nldd-title size="5">
-                      <h3>Afgenomen door je organisatie</h3>
+                      <h3>Afgenomen door uw organisatie</h3>
                       <p slot="subtitle">Open een dienst voor de API-key en het beheer</p>
                     </nldd-title>
                     <div class="svc-grid">
@@ -1335,7 +1326,7 @@
                       <nldd-card class="mp-tile">
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5"><h2>DigiD</h2></nldd-title>
-                          <nldd-rich-text><p>Laat burgers veilig inloggen bij je digitale dienstverlening met hun DigiD.</p></nldd-rich-text>
+                          <nldd-rich-text><p>Laat burgers veilig inloggen bij uw digitale dienstverlening met hun DigiD.</p></nldd-rich-text>
                           <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
                           <div class="row-actions">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digid"></nldd-button>
@@ -1968,7 +1959,7 @@
                     <p>Het kan tot één werkdag duren om een service live te maken. We controleren namelijk of de service voldoet aan onze <nldd-link href="#" text="gebruiksvoorwaarden"></nldd-link>.</p>
                   </nldd-rich-text>
 
-                  <nldd-title size="5"><h3>Jouw service</h3></nldd-title>
+                  <nldd-title size="5"><h3>Uw service</h3></nldd-title>
                   <nldd-banner id="live-bevestig" variant="success" text="" hidden></nldd-banner>
                   <div class="live-taken" id="live-taken">
                     <div class="live-taak" data-taak="uniek" data-done="false">
@@ -1993,7 +1984,7 @@
                     </div>
                   </div>
 
-                  <nldd-title size="5"><h3>Jouw organisatie</h3></nldd-title>
+                  <nldd-title size="5"><h3>Uw organisatie</h3></nldd-title>
                   <nldd-rich-text>
                     <p>Wanneer u ons een verzoek stuurt om live te gaan, vragen we u de naam van de openbare-sectororganisatie die verantwoordelijk is voor uw service.</p>
                     <p>We kunnen u ook vragen om onze <nldd-link href="#" text="gegevensverwerkings- en financiële overeenkomst"></nldd-link> te accepteren.</p>
@@ -2064,7 +2055,7 @@
           <h2 class="slide-title">MijnOverheid - Dienstverlener Portaal</h2>
           <p class="slide-lead">Eén plek voor publieke dienstverleners om notificaties te beheren, te monitoren en te verbeteren.</p>
           <p class="slide-body">Publieke dienstverleners willen ondernemers proactief en betrouwbaar informeren: efficiënter, met minder fouten, en conform de Wet MEBV.</p>
-          <p class="slide-body">Maar zodra je notificaties op schaal verstuurt, verdwijnt het zicht. Komt het bericht wel aan? Klopt de template? Bereik ik de juiste ondernemer? Dat zicht - en die grip - geeft dit portaal terug.</p>
+          <p class="slide-body">Maar zodra u notificaties op schaal verstuurt, verdwijnt het zicht. Komt het bericht wel aan? Klopt de template? Bereik ik de juiste ondernemer? Dat zicht - en die grip - geeft dit portaal terug.</p>
         </div>
 
         <div class="present-slide" data-slide="2">
@@ -2095,7 +2086,7 @@
             </div>
             <div class="kt">
               <nldd-icon name="gear" size="32"></nldd-icon>
-              <p><strong>Configureren</strong> - beheer content-templates (inclusief meertalig) en de instellingen van je organisatie.</p>
+              <p><strong>Configureren</strong> - beheer content-templates (inclusief meertalig) en de instellingen van uw organisatie.</p>
             </div>
             <div class="kt">
               <nldd-icon name="key" size="32"></nldd-icon>
@@ -2112,7 +2103,7 @@
           <div class="eyebrow">05 · De waarde</div>
           <h2 class="slide-title">De opbrengst</h2>
           <p class="slide-lead">Meer grip, minder fouten, betere dienstverlening.</p>
-          <p class="slide-body">Je weet precies wat er met je notificaties gebeurt, lost problemen snel op, en bereikt ondernemers op het juiste moment - in zelfservice, zonder telkens techniek nodig te hebben.</p>
+          <p class="slide-body">U weet precies wat er met uw notificaties gebeurt, lost problemen snel op, en bereikt ondernemers op het juiste moment - in zelfservice, zonder telkens techniek nodig te hebben.</p>
         </div>
 
       </div>
@@ -2416,7 +2407,7 @@
             '<nldd-title size="6"><h3>Contactherstel via fysieke post</h3><p slot="subtitle">Digitale kanalen onbereikbaar - herstel via een brief naar het geregistreerde adres</p></nldd-title>' +
             '<nldd-form-field label="Postadres (Handelsregister)"><nldd-text-field class="ch-adres"></nldd-text-field></nldd-form-field>' +
             '<div class="inline"><nldd-button class="ch-check" variant="secondary" start-icon="seal-check-mark" text="Adres controleren"></nldd-button></div>' +
-            '<nldd-banner class="ch-melding" variant="warning" text="Adres nog niet gecontroleerd - controleer eerst voordat je verstuurt."></nldd-banner>' +
+            '<nldd-banner class="ch-melding" variant="warning" text="Adres nog niet gecontroleerd - controleer eerst voordat u verstuurt."></nldd-banner>' +
             '<div class="row-actions">' +
               '<nldd-button class="ch-post" variant="primary" start-icon="paper-plane" text="Fysieke post versturen" disabled></nldd-button>' +
               '<nldd-button class="ch-annuleer" variant="secondary" text="Annuleren"></nldd-button>' +
@@ -2435,7 +2426,7 @@
           gecontroleerd = false;
           postBtn.setAttribute('disabled', '');
           melding.setAttribute('variant', 'warning');
-          melding.setAttribute('text', 'Adres nog niet gecontroleerd - controleer eerst voordat je verstuurt.');
+          melding.setAttribute('text', 'Adres nog niet gecontroleerd - controleer eerst voordat u verstuurt.');
         }
         startBtn.addEventListener('click', () => {
           mainActions.setAttribute('hidden', '');
@@ -3098,7 +3089,7 @@
           const volgorde = prioVolgorde();
           if (!volgorde.length) {
             elBevestig.setAttribute('variant', 'warning');
-            elBevestig.setAttribute('text', 'Kies minstens één kanaal met een prioriteit voordat je opslaat.');
+            elBevestig.setAttribute('text', 'Kies minstens één kanaal met een prioriteit voordat u opslaat.');
             elBevestig.removeAttribute('hidden');
             return;
           }
@@ -3479,7 +3470,7 @@
           '</div>' +
           '<div class="tbp-test-links">' +
             '<nldd-link class="tbp-test-upload" href="#" start-icon="arrow-up-tray" text="Lijst uploaden"></nldd-link>' +
-            '<nldd-link class="tbp-test-help" href="#" start-icon="question-circle" text="Hoe werkt dit?"></nldd-link>' +
+            '<nldd-link class="tbp-test-help" href="#" start-icon="question-mark-circle" text="Hoe werkt dit?"></nldd-link>' +
             '<input type="file" class="tbp-test-file" accept=".csv,.xls,.xlsx" hidden>' +
           '</div>' +
           '<p class="tbp-test-uitleg" hidden>' + esc(cfg.help) + ' <nldd-link href="#" text="Bekijk de handleiding"></nldd-link></p>' +
@@ -3840,7 +3831,7 @@
         },
         digid: {
           naam: 'DigiD',
-          desc: 'Laat burgers veilig inloggen bij je digitale dienstverlening met hun DigiD.',
+          desc: 'Laat burgers veilig inloggen bij uw digitale dienstverlening met hun DigiD.',
           rvProd: {
             tech: ['PKIoverheid-certificaat en koppelvlak conform Logius-specificaties (SAML)', 'Jaarlijks ICT-beveiligingsassessment (DigiD-audit) door een RE-auditor', 'Ketentest in de preproductieomgeving afgerond'],
             proces: ['Aansluitproces bij Logius doorlopen (aanvraag t/m go-live)', 'Incident- en beheerproces ingericht met contactpunt voor Logius', 'Jaarlijkse hertoetsing geborgd in de planning'],
@@ -3956,7 +3947,7 @@
         tag.setAttribute('color', dienst.status === 'demo' ? 'accent' : 'success');
         tag.setAttribute('text', dienst.status);
         const verwijzing = root.querySelector('#dp-keys-verwijzing');
-        verwijzing.setAttribute('text', 'De API-keys van deze dienst beheer je via het menu: ' + dienst.naam + ' > API keys.');
+        verwijzing.setAttribute('text', 'De API-keys van deze dienst beheert u via het menu: ' + dienst.naam + ' > API keys.');
         verwijzing.removeAttribute('hidden');
         const prod = root.querySelector('#dp-prod');
         if (dienst.status === 'demo' && dienst.rvProd) {
@@ -4513,7 +4504,7 @@
               <div class="between">
                 <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title>
                 <div class="inline">
-                  ${jij ? '<nldd-tag color="success" text="jij"></nldd-tag>' : ''}
+                  ${jij ? '<nldd-tag color="success" text="u"></nldd-tag>' : ''}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
                 </div>
