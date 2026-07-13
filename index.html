@@ -87,6 +87,14 @@
     .log-periode-rij { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .log-periode-rij nldd-dropdown { min-width: 200px; }
     .log-periode-custom { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+    /* Geintegreerde filterbalk: periode + type + status naast elkaar */
+    .log-filterbalk-nieuw { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 10px; }
+    .log-filtergroep { display: flex; flex-direction: column; gap: 6px; }
+    .log-filtergroep--groei { flex: 1 1 320px; }
+    .log-filterlabel { font-size: 0.85rem; font-weight: 700; color: var(--context-muted-foreground-color, #5a5a5a); }
+    .log-filterrij { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; min-height: 40px; }
+    .log-substatus-inline { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding-inline-start: 16px; border-inline-start: 2px solid var(--context-border-color, #cfcfcf); }
+    .log-substatus-inline .muted-note { margin: 0; }
     .log-datum { padding: 8px 10px; border: 1px solid var(--context-border-color, #b3b3b3); border-radius: 8px; font: inherit; }
     /* Afleverstatus: uitgesplitst in succesvol / niet afgeleverd met concrete aantallen */
     .afl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
@@ -106,6 +114,14 @@
     .rol-verborgen { display: none !important; }
     /* E-mailpreview met huisstijl */
     .tb-preview-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 20px; max-width: 640px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+    /* BSN corrigeren popup */
+    .bsn-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 20px; max-width: 560px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+    .bsn-inhoud { display: flex; flex-direction: column; gap: 14px; }
+    .bsn-infoblok { border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .bsn-infoblok dt { font-size: 0.8rem; color: var(--context-muted-foreground-color, #5a5a5a); }
+    .bsn-infoblok dd { margin: 0 0 6px; font-weight: 600; }
+    .bsn-actiezone { display: flex; flex-direction: column; gap: 12px; }
+    .bsn-form { display: flex; flex-direction: column; gap: 12px; }
     .tb-mail { border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 8px; overflow: hidden; margin-top: 12px; background: #fff; color: #1a1a1a; }
     .tb-mail-header { padding: 16px 20px; color: #fff; font-weight: 700; font-size: 1.1rem; }
     .tb-mail-body { padding: 20px; }
@@ -116,6 +132,12 @@
     .tbp-kanalen { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
     .tbp-kanaal-label { font-size: 0.75rem; font-weight: 700; color: #5a5a5a; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
     .tbp-pre { white-space: pre-wrap; }
+    .tbp-bbox { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
+    .tbp-bbox-header { padding: 12px 18px; color: #fff; font-weight: 700; }
+    .tbp-bbox-body { padding: 16px 18px; }
+    .tbp-bbox-meta { font-size: .85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 10px; margin-bottom: 12px; }
+    .tbp-bbox-onderwerp { font-weight: 700; margin-bottom: 8px; }
+    .tbp-bbox-body .tbp-pre { line-height: 1.5; }
     .tbp-mail { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
     .tbp-mail-header { padding: 14px 18px; color: #fff; font-weight: 700; }
     .tbp-mail-body { padding: 16px 18px; }
@@ -146,13 +168,13 @@
     .tbp-test-links { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     .tbp-test-uitleg { font-size: 0.9rem; color: var(--context-muted-foreground-color, #5a5a5a); margin: 0; }
     /* Instellingen: notificatie-instellingen als lijst per kanaal */
-    .inst-groep-kop { font-weight: 700; font-size: 1rem; padding: 14px 0 4px; }
-    .inst-groep:first-child .inst-groep-kop { padding-top: 0; }
-    .inst-rij { display: grid; grid-template-columns: minmax(150px, 1.3fr) minmax(120px, 1.6fr) auto; gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--context-border-color, #ececec); }
+    .inst-groep + .inst-groep { margin-top: 28px; padding-top: 22px; border-top: 2px solid var(--context-border-color, #e3e3e3); }
+    .inst-groep-kop { font-weight: 700; font-size: 1.05rem; padding: 0 0 6px; }
+    .inst-rij { display: grid; grid-template-columns: minmax(150px, 1.3fr) minmax(120px, 1.6fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--context-border-color, #ececec); }
     .inst-rij-label { font-weight: 600; }
     .inst-rij-waarde { color: var(--context-muted-foreground-color, #5a5a5a); word-break: break-word; }
     .inst-rij-waarde .inst-sub { display: block; font-size: 0.9rem; }
-    .inst-rij-actie { white-space: nowrap; text-align: right; }
+    .inst-rij-actie { white-space: nowrap; text-align: right; display: flex; justify-content: flex-end; align-items: center; }
     .inst-edit { padding: 4px 0 14px; }
     .inst-edit-form { display: flex; flex-direction: column; gap: 10px; max-width: 460px; }
     .inst-highlight { animation: instPuls 1.6s ease; }
@@ -569,7 +591,7 @@
               <!-- ====================== KANAALVOORKEUR (onder Profieldienst) ====================== -->
               <section class="view" data-view="kanaalvoorkeur">
                 <div class="stack">
-                  <nldd-banner variant="neutral" text="Zoek een ondernemer op BSN en/of KvK-nummer, bekijk de kanaalvoorkeur (e-mail, SMS of post) en pas die aan. De ondernemer wordt automatisch via het gekozen kanaal geïnformeerd. Let op: fictieve gegevens."></nldd-banner>
+                  <nldd-banner variant="neutral" text="Zoek een ondernemer op BSN en/of KvK-nummer, bekijk de kanaalvoorkeur (Berichtenbox, e-mail, SMS of brief (post)) en pas die aan. De ondernemer wordt automatisch via het gekozen kanaal geïnformeerd. Let op: fictieve gegevens."></nldd-banner>
 
                   <nldd-card>
                     <nldd-container padding="16" gap="12">
@@ -600,6 +622,14 @@
 
                           <nldd-title size="6"><h3>Voorkeurskanalen</h3><p slot="subtitle">Geef per kanaal de prioriteit; er wordt via het hoogst geprioriteerde beschikbare kanaal genotificeerd</p></nldd-title>
                           <div class="prio-lijst" id="kanaal-prio">
+                            <div class="prio-rij">
+                              <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Berichtenbox (MijnOverheid)</span>
+                              <nldd-dropdown>
+                                <select class="prio-select" data-kanaal="berichtenbox" aria-label="Prioriteit Berichtenbox">
+                                  <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
+                                </select>
+                              </nldd-dropdown>
+                            </div>
                             <div class="prio-rij">
                               <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span>
                               <nldd-dropdown>
@@ -633,9 +663,9 @@
                               </nldd-dropdown>
                             </div>
                             <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Post</span>
+                              <span class="prio-kanaal"><nldd-icon name="mail" size="20"></nldd-icon> Brief (post)</span>
                               <nldd-dropdown>
-                                <select class="prio-select" data-kanaal="post" aria-label="Prioriteit post">
+                                <select class="prio-select" data-kanaal="post" aria-label="Prioriteit brief (post)">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
@@ -1099,7 +1129,7 @@
                       <!-- 3. Inhoud per taal en kanaal -->
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">U schrijft in het Nederlands; de inhoud wordt automatisch vertaald naar de andere talen. Elk contact ontvangt zijn voorkeurstaal (profieldienst). De veldlabels blijven Nederlands - dit portaal is Nederlandstalig. Per kanaal: lange tekst voor e-mail en post, korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
+                          <nldd-title size="5"><h2>3. Inhoud per taal en kanaal</h2><p slot="subtitle">U schrijft in het Nederlands; de inhoud wordt automatisch vertaald naar de andere talen. Elk contact ontvangt zijn voorkeurstaal (profieldienst). De veldlabels blijven Nederlands - dit portaal is Nederlandstalig. Per kanaal: lange tekst voor e-mail en brief (post), korte tekst voor push, SMS en WhatsApp/Signal</p></nldd-title>
 
                           <nldd-form-field label="Afzender (e-mailadres)">
                             <nldd-text-field id="afz-email" placeholder="notificaties@kvk.nl"></nldd-text-field>
@@ -1116,7 +1146,10 @@
                           <div data-langpane="nl">
                             <nldd-container gap="12">
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-nl"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <div class="log-check" id="brief-toggle-rij"><nldd-checkbox id="brief-toggle" accessible-label="Brief (post) heeft een aangepaste tekst"></nldd-checkbox><span>Brief (post) heeft een aangepaste tekst</span></div>
+                              <nldd-form-field id="brief-veld-field" label="Lange tekst brief (post)" hidden><nldd-multi-line-text-field id="body-brief-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
+                              <p class="muted-note" id="brief-uitleg" hidden>Deze aangepaste tekst wordt alleen voor de brief (post) gebruikt. Voor e-mail blijft de tekst hierboven gelden.</p>
                               <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                               <p class="muted-note">Kort en bondig - push en SMS tonen doorgaans maximaal ~160 tekens.</p>
                               <div class="inline">
@@ -1128,7 +1161,7 @@
                             <nldd-container gap="12">
                               <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-en" readonly></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-en" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-en" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
                               <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-en" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
@@ -1136,7 +1169,7 @@
                             <nldd-container gap="12">
                               <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-de" readonly></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-de" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-de" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
                               <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-de" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
@@ -1144,7 +1177,7 @@
                             <nldd-container gap="12">
                               <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-fr" readonly></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Lange tekst (e-mail, post)"><nldd-multi-line-text-field id="body-fr" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-fr" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
                               <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-fr" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
@@ -1216,7 +1249,7 @@
                         <nldd-form-field label="Onderwerp">
                           <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                         </nldd-form-field>
-                        <nldd-form-field label="Lange tekst (e-mail, post)">
+                        <nldd-form-field label="Lange tekst (e-mail en brief (post))">
                           <nldd-multi-line-text-field id="tb-d-body" rows="12" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
                         <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)">
@@ -1250,40 +1283,43 @@
 
                   <nldd-banner variant="neutral" text="Het logboek toont per gebeurtenis de status. Mislukte notificaties vragen om actie - bijvoorbeeld een onjuist BSN corrigeren en opnieuw versturen. Let op: fictieve gegevens."></nldd-banner>
 
-                  <nldd-form-field label="Periode">
-                    <div class="log-periode-rij">
-                      <nldd-dropdown>
-                        <select id="log-periode" aria-label="Periode">
-                          <option value="vandaag">Vandaag</option>
-                          <option value="gisteren">Gisteren</option>
-                          <option value="week">Deze week</option>
-                          <option value="jaar" selected>Dit jaar</option>
-                          <option value="custom">Zelf datum instellen</option>
-                        </select>
-                      </nldd-dropdown>
-                      <div class="log-periode-custom" id="log-periode-custom" hidden>
-                        <label class="log-datum-veld">Van<br><input type="date" class="log-datum" id="log-datum-van"></label>
-                        <label class="log-datum-veld">Tot en met<br><input type="date" class="log-datum" id="log-datum-tot"></label>
-                      </div>
-                    </div>
-                  </nldd-form-field>
-
-                  <nldd-form-field label="Filter">
-                    <div class="log-filterblok">
-                      <div class="log-checks" id="log-type-checks">
-                        <div class="log-check" data-val="notificatie"><nldd-checkbox accessible-label="Notificaties"></nldd-checkbox><span>Notificaties</span></div>
-                        <div class="log-check" data-val="apikey"><nldd-checkbox accessible-label="API keys"></nldd-checkbox><span>API keys</span></div>
-                      </div>
-                      <div id="log-status-wrap" class="log-substatus" hidden>
-                        <span class="muted-note">Binnen notificaties</span>
-                        <div class="log-checks" id="log-status-checks">
-                          <div class="log-check" data-val="succesvol"><nldd-checkbox accessible-label="Succesvol"></nldd-checkbox><span>Succesvol</span></div>
-                          <div class="log-check" data-val="errors"><nldd-checkbox accessible-label="Met errors"></nldd-checkbox><span>Met errors</span></div>
-                          <div class="log-check" data-val="mislukt"><nldd-checkbox accessible-label="Mislukt"></nldd-checkbox><span>Mislukt</span></div>
+                  <div class="log-filterbalk-nieuw">
+                    <div class="log-filtergroep">
+                      <span class="log-filterlabel">Periode</span>
+                      <div class="log-periode-rij">
+                        <nldd-dropdown>
+                          <select id="log-periode" aria-label="Periode">
+                            <option value="vandaag">Vandaag</option>
+                            <option value="gisteren">Gisteren</option>
+                            <option value="week">Deze week</option>
+                            <option value="jaar" selected>Dit jaar</option>
+                            <option value="custom">Zelf datum instellen</option>
+                          </select>
+                        </nldd-dropdown>
+                        <div class="log-periode-custom" id="log-periode-custom" hidden>
+                          <label class="log-datum-veld">Van<br><input type="date" class="log-datum" id="log-datum-van"></label>
+                          <label class="log-datum-veld">Tot en met<br><input type="date" class="log-datum" id="log-datum-tot"></label>
                         </div>
                       </div>
                     </div>
-                  </nldd-form-field>
+                    <div class="log-filtergroep log-filtergroep--groei">
+                      <span class="log-filterlabel">Tonen</span>
+                      <div class="log-filterrij">
+                        <div class="log-checks" id="log-type-checks">
+                          <div class="log-check" data-val="notificatie"><nldd-checkbox accessible-label="Notificaties"></nldd-checkbox><span>Notificaties</span></div>
+                          <div class="log-check" data-val="apikey"><nldd-checkbox accessible-label="API keys"></nldd-checkbox><span>API keys</span></div>
+                        </div>
+                        <div id="log-status-wrap" class="log-substatus-inline" hidden>
+                          <span class="muted-note">Status:</span>
+                          <div class="log-checks" id="log-status-checks">
+                            <div class="log-check" data-val="succesvol"><nldd-checkbox accessible-label="Succesvol"></nldd-checkbox><span>Succesvol</span></div>
+                            <div class="log-check" data-val="errors"><nldd-checkbox accessible-label="Met errors"></nldd-checkbox><span>Met errors</span></div>
+                            <div class="log-check" data-val="mislukt"><nldd-checkbox accessible-label="Mislukt"></nldd-checkbox><span>Mislukt</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
                   <nldd-banner id="log-actie-melding" variant="success" text="" hidden></nldd-banner>
                   <div class="stack" id="log-lijst"></div>
@@ -1754,9 +1790,9 @@
                     <nldd-title size="5"><h3>Gegevensbeheer</h3></nldd-title>
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
-                        <nldd-form-field label="Bewaartermijn gegevens">
+                        <nldd-form-field label="Bewaartermijn logboek">
                           <nldd-dropdown>
-                            <select id="f-bewaartermijn" aria-label="Bewaartermijn gegevens">
+                            <select id="f-bewaartermijn" aria-label="Bewaartermijn logboek">
                               <option value="7" selected>7 dagen</option>
                               <option value="14">14 dagen</option>
                               <option value="30">30 dagen</option>
@@ -1765,7 +1801,7 @@
                             </select>
                           </nldd-dropdown>
                         </nldd-form-field>
-                        <p class="muted-note">Hoelang verzend- en notificatiegegevens (logboekregels, afleverstatus en contactherstelgegevens) bewaard blijven voordat ze automatisch worden verwijderd. Standaard 7 dagen.</p>
+                        <p class="muted-note">Hoelang de logboekgegevens (verzendingen, afleverstatus en contactherstel per gebeurtenis) bewaard blijven voordat ze automatisch worden verwijderd. Standaard 7 dagen. De audit trail staat hier los van: die wordt altijd 10 jaar bewaard en is niet aanpasbaar.</p>
                       </nldd-container>
                     </nldd-card>
 
@@ -1778,10 +1814,10 @@
                           <!-- Berichtenbox -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Berichtenbox (MijnOverheid)</div>
-                            <div class="inst-rij" data-inst="toggle">
+                            <div class="inst-rij">
                               <div class="inst-rij-label">Berichtenbox-berichten verzenden</div>
-                              <div class="inst-rij-waarde">Aan</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Berichtenbox-berichten verzenden"></nldd-switch></div>
                             </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
                               <div class="inst-rij-label">Standaard afzender</div>
@@ -1793,10 +1829,10 @@
                           <!-- E-mail -->
                           <div class="inst-groep" id="inst-groep-email">
                             <div class="inst-groep-kop">E-mailinstellingen</div>
-                            <div class="inst-rij" data-inst="toggle">
+                            <div class="inst-rij">
                               <div class="inst-rij-label">E-mails verzenden</div>
-                              <div class="inst-rij-waarde">Aan</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="E-mails verzenden"></nldd-switch></div>
                             </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Naam afzender|E-mailadres afzender">
                               <div class="inst-rij-label">Standaard afzender</div>
@@ -1823,25 +1859,25 @@
                           <!-- SMS -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Sms-instellingen</div>
-                            <div class="inst-rij" data-inst="toggle">
+                            <div class="inst-rij">
                               <div class="inst-rij-label">Sms-berichten verzenden</div>
-                              <div class="inst-rij-waarde">Aan</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Sms-berichten verzenden"></nldd-switch></div>
                             </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Sms-afzender-ID">
                               <div class="inst-rij-label">Standaard afzender (sms-afzender-ID)</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
                             </div>
-                            <div class="inst-rij" data-inst="toggle">
+                            <div class="inst-rij">
                               <div class="inst-rij-label">Sms-berichten starten met servicenaam</div>
-                              <div class="inst-rij-waarde">Aan</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Sms-berichten starten met servicenaam"></nldd-switch></div>
                             </div>
-                            <div class="inst-rij" data-inst="toggle">
+                            <div class="inst-rij">
                               <div class="inst-rij-label">Internationale sms-berichten verzenden</div>
-                              <div class="inst-rij-waarde">Aan</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch accessible-label="Internationale sms-berichten verzenden"></nldd-switch></div>
                             </div>
                             <div class="inst-rij">
                               <div class="inst-rij-label">Limiet internationale sms-berichten</div>
@@ -1850,18 +1886,53 @@
                             </div>
                           </div>
 
-                          <!-- Brief (post) -->
+                          <!-- WhatsApp / Signal -->
                           <div class="inst-groep">
-                            <div class="inst-groep-kop">Briefinstellingen</div>
-                            <div class="inst-rij" data-inst="toggle">
-                              <div class="inst-rij-label">Brieven versturen</div>
-                              <div class="inst-rij-waarde">Aan</div>
+                            <div class="inst-groep-kop">WhatsApp / Signal-instellingen</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">WhatsApp/Signal-berichten verzenden</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="WhatsApp/Signal-berichten verzenden"></nldd-switch></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Weergavenaam afzender">
+                              <div class="inst-rij-label">Standaard afzender</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-whats"></span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
                             </div>
-                            <div class="inst-rij" data-inst="toggle">
-                              <div class="inst-rij-label">Internationale brieven versturen</div>
-                              <div class="inst-rij-waarde">Aan</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Geverifieerd bedrijfsprofiel</div>
+                              <div class="inst-rij-waarde">Actief</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Beheren"></nldd-link></div>
+                            </div>
+                          </div>
+
+                          <!-- Push -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Push (MijnOverheid-app)</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Pushberichten verzenden</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Pushberichten verzenden"></nldd-switch></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
+                              <div class="inst-rij-label">Standaard afzender</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                          </div>
+
+                          <!-- Brief (post) -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Brief (post)-instellingen</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Brieven versturen</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Brieven versturen"></nldd-switch></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Internationale brieven versturen</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Internationale brieven versturen"></nldd-switch></div>
                             </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
                               <div class="inst-rij-label">Standaard afzenderadres</div>
@@ -1871,21 +1942,6 @@
                             <div class="inst-rij">
                               <div class="inst-rij-label">Briefopmaak</div>
                               <div class="inst-rij-waarde">Niet ingesteld</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                          </div>
-
-                          <!-- Push -->
-                          <div class="inst-groep">
-                            <div class="inst-groep-kop">Push (MijnOverheid-app)</div>
-                            <div class="inst-rij" data-inst="toggle">
-                              <div class="inst-rij-label">Pushberichten verzenden</div>
-                              <div class="inst-rij-waarde">Aan</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
-                              <div class="inst-rij-label">Standaard afzender</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
                             </div>
                           </div>
@@ -2054,6 +2110,17 @@
         </div>
         <p class="muted-note">Voorbeeld van de notificatie per kanaal, met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld. Per kanaal kunt u een testnotificatie versturen - handmatig of naar een geuploade lijst.</p>
         <div id="tbp-kanalen" class="tbp-kanalen"></div>
+      </div>
+    </div>
+
+    <!-- ===== BSN corrigeren (popup): context binnen de profieldienst ===== -->
+    <div id="bsn-overlay" class="flags-overlay" hidden>
+      <div class="bsn-dialog" role="dialog" aria-modal="true" aria-labelledby="bsn-titel">
+        <div class="flags-head">
+          <nldd-title size="5"><h2 id="bsn-titel">BSN corrigeren</h2></nldd-title>
+          <nldd-button id="bsn-sluit" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
+        </div>
+        <div id="bsn-inhoud"></div>
       </div>
     </div>
 
@@ -2433,12 +2500,12 @@
         panel.setAttribute('hidden', '');
         panel.innerHTML =
           '<nldd-container gap="12">' +
-            '<nldd-title size="6"><h3>Contactherstel via fysieke post</h3><p slot="subtitle">Digitale kanalen onbereikbaar - herstel via een brief naar het geregistreerde adres</p></nldd-title>' +
+            '<nldd-title size="6"><h3>Contactherstel via brief (post)</h3><p slot="subtitle">Digitale kanalen onbereikbaar - herstel via een brief naar het geregistreerde adres</p></nldd-title>' +
             '<nldd-form-field label="Postadres (Handelsregister)"><nldd-text-field class="ch-adres"></nldd-text-field></nldd-form-field>' +
             '<div class="inline"><nldd-button class="ch-check" variant="secondary" start-icon="seal-check-mark" text="Adres controleren"></nldd-button></div>' +
             '<nldd-banner class="ch-melding" variant="warning" text="Adres nog niet gecontroleerd - controleer eerst voordat u verstuurt."></nldd-banner>' +
             '<div class="row-actions">' +
-              '<nldd-button class="ch-post" variant="primary" start-icon="paper-plane" text="Fysieke post versturen" disabled></nldd-button>' +
+              '<nldd-button class="ch-post" variant="primary" start-icon="paper-plane" text="Brief (post) versturen" disabled></nldd-button>' +
               '<nldd-button class="ch-annuleer" variant="secondary" text="Annuleren"></nldd-button>' +
             '</div>' +
           '</nldd-container>';
@@ -2485,7 +2552,7 @@
           const kopTags = card.querySelectorAll('.between nldd-tag');
           const statusTag = kopTags[kopTags.length - 1];
           if (statusTag) { statusTag.setAttribute('color', 'success'); statusTag.setAttribute('text', 'post verstuurd'); }
-          panel.innerHTML = '<nldd-banner variant="success" text="Fysieke post verstuurd naar ' + waarde + '. Zodra de ondernemer reageert, worden de contactgegevens centraal bijgewerkt en gedeeld met alle aangesloten organisaties."></nldd-banner>';
+          panel.innerHTML = '<nldd-banner variant="success" text="Brief (post) verstuurd naar ' + waarde + '. Zodra de ondernemer reageert, worden de contactgegevens centraal bijgewerkt en gedeeld met alle aangesloten organisaties."></nldd-banner>';
         });
       });
     })();
@@ -2520,6 +2587,7 @@
       zet('.js-afz-sms', (u.orgKort || 'KVK').toUpperCase());
       zet('.js-afz-brief', briefAdres[u.orgKey] || briefAdres.kvk);
       zet('.js-afz-push', u.org || 'Kamer van Koophandel');
+      zet('.js-afz-whats', u.org || 'Kamer van Koophandel');
     })();
 
     // ====================== Instellingen (Organisatie + Mijn profiel) ======================
@@ -2567,22 +2635,21 @@
         });
       }
 
-      // Acties in de instellingenlijst: toggles (Aan/Uit), afzender bewerken of demo-melding.
+      // Acties in de instellingenlijst: afzender bewerken of demo-melding bij Wijzigen/Beheren.
       notif.addEventListener('click', e => {
         const link = e.target.closest('.inst-actie'); if (!link) return; e.preventDefault();
         const rij = link.closest('.inst-rij'); if (!rij) return;
-        const soort = rij.dataset.inst;
         const label = rij.querySelector('.inst-rij-label').textContent;
-        if (soort === 'toggle') {
-          const w = rij.querySelector('.inst-rij-waarde');
-          const aan = (w.textContent || '').trim().toLowerCase() === 'aan';
-          w.textContent = aan ? 'Uit' : 'Aan';
-          meld('success', '"' + label + '" gezet op ' + (aan ? 'Uit' : 'Aan') + '. (demo)');
-        } else if (soort === 'edit') {
-          openEdit(rij);
-        } else {
-          meld('success', '"' + label + '" aanpassen. (demo)');
-        }
+        if (rij.dataset.inst === 'edit') openEdit(rij);
+        else meld('success', '"' + label + '" aanpassen. (demo)');
+      });
+
+      // Aan/uit-instellingen zijn nu toggles (nldd-switch); toon een korte bevestiging.
+      notif.addEventListener('change', e => {
+        const sw = e.target.closest('nldd-switch'); if (!sw) return;
+        const rij = sw.closest('.inst-rij'); if (!rij) return;
+        const label = rij.querySelector('.inst-rij-label').textContent;
+        meld('success', '"' + label + '" ' + (sw.checked ? 'aangezet' : 'uitgezet') + '. (demo)');
       });
 
       const orgOpslaan = root.querySelector('#inst-org-opslaan');
@@ -2590,7 +2657,7 @@
       const profOpslaan = root.querySelector('#inst-profiel-opslaan');
       if (profOpslaan) profOpslaan.addEventListener('click', () => meld('success', 'Profielinstellingen opgeslagen. (demo)'));
       const bewaar = root.querySelector('#f-bewaartermijn');
-      if (bewaar) bewaar.addEventListener('change', () => meld('success', 'Bewaartermijn gegevens ingesteld op ' + bewaar.options[bewaar.selectedIndex].text + '. (demo)'));
+      if (bewaar) bewaar.addEventListener('change', () => meld('success', 'Bewaartermijn logboek ingesteld op ' + bewaar.options[bewaar.selectedIndex].text + '. (demo)'));
 
       // Navigatie-API: vanuit het account-menu en vanuit de template-editor.
       window.__mozaInstellingen = {
@@ -2852,6 +2919,26 @@
         if (t && t.dataset.lang) setLang(t.dataset.lang);
       });
 
+      // --- Aparte brieftekst: checkbox toont een los tekstveld voor de brief (post) ---
+      const briefRij = root.querySelector('#brief-toggle-rij');
+      const briefCb = root.querySelector('#brief-toggle');
+      const briefVeld = root.querySelector('#brief-veld-field');
+      const briefUitleg = root.querySelector('#brief-uitleg');
+      function briefToggle() {
+        const aan = briefCb && briefCb.checked;
+        if (briefVeld) briefVeld.toggleAttribute('hidden', !aan);
+        if (briefUitleg) briefUitleg.toggleAttribute('hidden', !aan);
+      }
+      if (briefRij && briefCb) {
+        briefRij.addEventListener('click', e => {
+          if (e.target.closest('nldd-checkbox')) return;
+          const input = briefCb.shadowRoot && briefCb.shadowRoot.querySelector('input');
+          if (input) input.click(); else briefCb.toggleAttribute('checked');
+        });
+        briefCb.addEventListener('change', briefToggle);
+        briefToggle();
+      }
+
       // --- Templatebibliotheek: vult onderwerp + bericht per taal ---
       const TEMPLATES = {
         regelgeving: {
@@ -3045,7 +3132,7 @@
         push: { label: 'push', veld: 'ct-push' },
         sms: { label: 'SMS', veld: 'ct-sms' },
         whatsapp: { label: 'WhatsApp/Signal', veld: 'ct-whatsapp' },
-        post: { label: 'post', veld: 'ct-post' },
+        post: { label: 'brief (post)', veld: 'ct-post' },
       };
       const KANAAL_VOLGORDE = ['email', 'push', 'sms', 'whatsapp', 'post'];
       // De kanaalvoorkeur-DOM staat sinds de verhuizing in een eigen sectie onder de
@@ -3483,6 +3570,7 @@
       const esc = s => ((s || '') + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       // Per kanaal een testverzending: handmatig een ontvanger invoeren of een lijst uploaden.
       const TEST_CFG = {
+        berichtenbox: { placeholder: 'test-BSN of KvK-nummer', ontvangers: 'profielen', help: 'Upload een CSV of Excel met per regel een BSN of KvK-nummer; het bericht komt in de Berichtenbox van het gekoppelde profiel.' },
         email: { placeholder: 'test-e-mailadres, bijv. naam@voorbeeld.nl', ontvangers: 'e-mailadressen', help: 'Upload een CSV of Excel met in de eerste kolom een e-mailadres per regel.' },
         post:  { placeholder: 'test-postadres, bijv. Straat 1, 1234 AB Plaats', ontvangers: 'adressen', help: 'Upload een CSV of Excel met per regel naam, straat, postcode en plaats.' },
         push:  { placeholder: 'test-BSN of KvK-nummer', ontvangers: 'profielen', help: 'Upload een CSV of Excel met per regel een BSN of KvK-nummer; de push gaat naar het gekoppelde profiel.' },
@@ -3519,6 +3607,15 @@
         const kort = resolveAfz(c.kort);
         const kanalen = document.getElementById('tbp-kanalen');
         kanalen.innerHTML =
+          kanaalBlok('Berichtenbox (MijnOverheid)',
+            '<div class="tbp-bbox">' +
+              '<div class="tbp-bbox-header" style="background:' + merk.kleur + '">MijnOverheid · Berichtenbox</div>' +
+              '<div class="tbp-bbox-body">' +
+                '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
+                '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
+                '<div class="tbp-pre">' + esc(body) + '</div>' +
+              '</div>' +
+            '</div>', 'berichtenbox') +
           kanaalBlok('E-mail',
             '<div class="tbp-mail">' +
               '<div class="tbp-mail-header" style="background:' + merk.kleur + '">' + esc(merk.naam) + '</div>' +
@@ -4745,7 +4842,7 @@
         const actieCel = tr.querySelector('.log-td-actie');
         if (it.status === 'mislukt' && it.actie === 'bsn') {
           actieCel.innerHTML = `<nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren"></nldd-button>`;
-          actieCel.querySelector('.lg-bsn-open').addEventListener('click', () => openBsnRij(tr, it));
+          actieCel.querySelector('.lg-bsn-open').addEventListener('click', () => openBsnModal(it));
         } else if (it.status === 'mislukt' && it.actie === 'retry') {
           actieCel.innerHTML = `<nldd-button class="lg-retry" variant="primary" start-icon="arrow-2-counter-clockwise" text="Opnieuw versturen"></nldd-button>`;
           actieCel.querySelector('.lg-retry').addEventListener('click', () => {
@@ -4763,40 +4860,78 @@
       }
 
       // Correctierij (BSN aanpassen en opnieuw versturen) onder een logboekregel.
-      function openBsnRij(tr, it) {
-        const volgende = tr.nextElementSibling;
-        if (volgende && volgende.classList.contains('log-rij-detail')) { volgende.remove(); return; } // toggle
-        const det = document.createElement('tr');
-        det.className = 'log-rij-detail';
-        det.innerHTML = `
-          <td colspan="4">
-            <div class="lg-bsn-form">
-              <nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="lg-bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>
-              <div class="row-actions">
-                <nldd-button class="lg-bsn-verstuur" variant="primary" start-icon="paper-plane" text="Versturen"></nldd-button>
-                <nldd-button class="lg-bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>
-              </div>
-              <nldd-banner class="lg-bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>
-            </div>
-          </td>`;
-        tr.parentNode.insertBefore(det, tr.nextElementSibling);
-        const veld = det.querySelector('.lg-bsn-veld');
-        const fout = det.querySelector('.lg-bsn-fout');
-        // Toon het huidige (onjuiste) BSN zodat je het kunt aanpassen.
-        const vulHuidig = () => { veld.value = it.huidigBsn || ''; };
-        vulHuidig();
-        customElements.whenDefined('nldd-text-field').then(vulHuidig);
-        det.querySelector('.lg-bsn-annuleer').addEventListener('click', () => det.remove());
-        det.querySelector('.lg-bsn-verstuur').addEventListener('click', () => {
-          const bsn = ((veld.value || '') + '').replace(/\s/g, '');
-          if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
-          it.status = 'errors';
-          it.actie = null;
-          it.detail = it.detail.split(' · onbekend')[0] + ' · BSN gecorrigeerd naar ' + bsn + ', opnieuw verzonden - geslaagd';
-          if (window.__mozaTellers) window.__mozaTellers.metErrors += 1; // nu succesvol met errors
-          render();
-          meld('success', 'BSN gecorrigeerd en notificatie opnieuw verzonden - geslaagd.');
-        });
+      // BSN corrigeren opent een popup met context: het BSN koppelt de notificatie aan het
+      // profiel van de ondernemer in de Profieldienst. Zonder profieldienst-toegang krijgt de
+      // gebruiker uitleg over wat er moet gebeuren.
+      const bsnOverlay = document.getElementById('bsn-overlay');
+      const bsnInhoud = document.getElementById('bsn-inhoud');
+      const bsnSluitBtn = document.getElementById('bsn-sluit');
+      function sluitBsn() { if (bsnOverlay) bsnOverlay.setAttribute('hidden', ''); }
+      if (bsnSluitBtn) bsnSluitBtn.addEventListener('click', sluitBsn);
+      if (bsnOverlay) bsnOverlay.addEventListener('click', e => { if (e.target === bsnOverlay) sluitBsn(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && bsnOverlay && !bsnOverlay.hasAttribute('hidden')) sluitBsn(); });
+
+      function heeftProfieldienstToegang() {
+        const u = window.__MOZA_USER;
+        if (!u) return true;
+        if (u.rol === 'organisatiebeheerder') return true; // ziet en beheert alle diensten
+        return u.dienst === 'profieldienst'; // dienstbeheerder/keyeigenaar: alleen de eigen dienst
+      }
+
+      function openBsnModal(it) {
+        if (!bsnOverlay || !bsnInhoud) return;
+        const ondernemer = ((it.titel || '').split(' - ')[1] || 'onbekende ondernemer').trim();
+        const onderwerp = ((it.detail || '').split(' · ')[0] || '').trim();
+        const toegang = heeftProfieldienstToegang();
+        bsnInhoud.className = 'bsn-inhoud';
+        bsnInhoud.innerHTML =
+          '<nldd-banner variant="neutral" text="Het BSN koppelt deze notificatie aan het profiel van de ondernemer in de Profieldienst. U past hiermee gegevens binnen de Profieldienst aan."></nldd-banner>' +
+          '<dl class="bsn-infoblok">' +
+            '<dt>Ondernemer</dt><dd class="bsn-ondernemer"></dd>' +
+            '<dt>Notificatie</dt><dd class="bsn-onderwerp"></dd>' +
+            '<dt>Dienst</dt><dd>Profieldienst - profielkoppeling op BSN</dd>' +
+            '<dt>Huidig (onjuist) BSN</dt><dd class="bsn-huidig"></dd>' +
+          '</dl>' +
+          '<div class="bsn-actiezone"></div>';
+        bsnInhoud.querySelector('.bsn-ondernemer').textContent = ondernemer;
+        bsnInhoud.querySelector('.bsn-onderwerp').textContent = onderwerp || (it.detail || '');
+        bsnInhoud.querySelector('.bsn-huidig').textContent = it.huidigBsn || 'onbekend';
+        const zone = bsnInhoud.querySelector('.bsn-actiezone');
+        if (toegang) {
+          zone.innerHTML =
+            '<div class="bsn-form">' +
+              '<nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>' +
+              '<nldd-banner class="bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>' +
+              '<div class="row-actions">' +
+                '<nldd-button class="bsn-verstuur" variant="primary" start-icon="paper-plane" text="Corrigeren en opnieuw versturen"></nldd-button>' +
+                '<nldd-button class="bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>' +
+              '</div>' +
+            '</div>';
+          const veld = zone.querySelector('.bsn-veld');
+          const fout = zone.querySelector('.bsn-fout');
+          const vul = () => { veld.value = it.huidigBsn || ''; };
+          vul();
+          customElements.whenDefined('nldd-text-field').then(vul);
+          zone.querySelector('.bsn-annuleer').addEventListener('click', sluitBsn);
+          zone.querySelector('.bsn-verstuur').addEventListener('click', () => {
+            const bsn = ((veld.value || '') + '').replace(/\s/g, '');
+            if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
+            it.status = 'errors';
+            it.actie = null;
+            it.detail = it.detail.split(' · onbekend')[0] + ' · BSN gecorrigeerd naar ' + bsn + ', opnieuw verzonden - geslaagd';
+            if (window.__mozaTellers) window.__mozaTellers.metErrors += 1; // nu succesvol met errors
+            render();
+            sluitBsn();
+            meld('success', 'BSN gecorrigeerd en notificatie opnieuw verzonden - geslaagd.');
+          });
+        } else {
+          zone.innerHTML =
+            '<nldd-banner variant="warning" text="BSN corrigeren gebeurt in de Profieldienst. U heeft geen toegang tot de Profieldienst, dus u kunt dit zelf niet aanpassen."></nldd-banner>' +
+            '<nldd-rich-text><p>Vraag een beheerder van de Profieldienst om het BSN te corrigeren. Neemt uw organisatie de Profieldienst niet af? Dan kan uw organisatiebeheerder de Profieldienst aanvragen via Dienstenaanbod.</p></nldd-rich-text>' +
+            '<div class="row-actions"><nldd-button class="bsn-annuleer" variant="secondary" text="Sluiten"></nldd-button></div>';
+          zone.querySelector('.bsn-annuleer').addEventListener('click', sluitBsn);
+        }
+        bsnOverlay.removeAttribute('hidden');
       }
 
       function render() {
