@@ -64,15 +64,22 @@
     .log-substatus { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-inline-start: 8px; display: flex; flex-direction: column; gap: 6px; }
     .log-checks { display: flex; gap: 20px; flex-wrap: wrap; }
     .log-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
-    /* Logboek als tabel (in werkelijkheid veel records) */
-    .log-tabel-wrap { overflow-x: auto; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 10px; }
-    .log-tabel { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-    .log-tabel th, .log-tabel td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--context-border-color, #ececec); vertical-align: top; }
-    .log-tabel thead th { font-weight: 700; color: var(--context-muted-foreground-color, #5a5a5a); border-bottom: 2px solid var(--context-border-color, #cfcfcf); white-space: nowrap; }
-    .log-tabel tbody tr:last-child td { border-bottom: none; }
-    .log-tabel .log-td-tijd { white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
-    .log-geb-titel { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
-    .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; }
+    /* Logboek als tabel - opmaak in lijn met de nldd-table van 'Audit en logboek' */
+    .log-tabel-wrap { overflow-x: auto; }
+    .log-tabel { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 1rem; table-layout: fixed; }
+    .log-tabel th, .log-tabel td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--context-border-color, #e3e3e3); vertical-align: middle; }
+    .log-tabel thead th { font-weight: 700; white-space: nowrap; }
+    .log-tabel .log-td-tijd, .log-tabel .log-th-tijd { width: 120px; white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
+    .log-tabel .log-th-tijd { color: inherit; }
+    .log-tabel .log-td-status, .log-tabel .log-th-status { width: 150px; }
+    .log-tabel .log-td-actie, .log-tabel .log-th-actie { width: 160px; }
+    .log-tabel .log-td-geb { overflow: hidden; }
+    /* Icoon met vaste afmeting: nooit bepalend voor de rijhoogte (de tekst bepaalt die). */
+    .log-geb-titel { display: flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; }
+    .log-geb-titel nldd-icon { flex: 0 0 auto; width: 18px; height: 18px; }
+    .log-geb-titel .lg-titel { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Titel en detail elk op 1 regel (ellipsis, volledige tekst via tooltip) - uniforme rijhoogte. */
+    .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .log-td-actie { white-space: nowrap; }
     .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
     .log-rij-detail > td { background: rgba(0,0,0,.03); }
@@ -4692,8 +4699,10 @@
           <td class="log-td-status"><nldd-tag class="lg-status"></nldd-tag></td>
           <td class="log-td-actie"></td>`;
         tr.querySelector('.log-td-tijd').textContent = it.tijd;
-        tr.querySelector('.lg-titel').textContent = it.titel;
-        tr.querySelector('.lg-detail').textContent = it.detail;
+        const titelEl = tr.querySelector('.lg-titel');
+        const detailEl = tr.querySelector('.lg-detail');
+        titelEl.textContent = it.titel; titelEl.title = it.titel;       // volledige tekst via tooltip
+        detailEl.textContent = it.detail; detailEl.title = it.detail;   // (titel/detail staan op 1 regel)
         tr.querySelector('.lg-icon').setAttribute('name', icoon(it));
         const tag = tr.querySelector('.lg-status');
         tag.setAttribute('color', st.color);
