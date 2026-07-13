@@ -177,11 +177,33 @@
     .lt-sublabel { font-weight: 600; margin: 10px 0 4px; }
     /* Rich-text editor: bewust een lichte 'papieren' bewerkomgeving met donkere tekst, ongeacht thema */
     .rte { border: 1px solid #b3b3b3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
-    .rte-toolbar { display: flex; gap: 4px; padding: 5px 6px; border-bottom: 1px solid #e3e3e3; background: #f4f5f7; }
-    .rte-btn { min-width: 30px; height: 28px; padding: 0 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: #1a1a1a; cursor: pointer; font-size: 0.9rem; line-height: 1; }
+    .rte-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 6px 8px; border-bottom: 1px solid #e3e3e3; background: #f4f5f7; }
+    .rte-select { height: 30px; border: 1px solid #d0d3d7; border-radius: 6px; background: #fff; color: #1a1a1a; font: inherit; font-size: 0.9rem; padding: 0 6px; cursor: pointer; }
+    .rte-btn { min-width: 30px; height: 30px; padding: 0 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: #1a1a1a; cursor: pointer; font-size: 0.95rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
     .rte-btn:hover { background: rgba(0,0,0,.08); }
-    .rte-area { min-height: 160px; padding: 10px 12px; outline: none; line-height: 1.5; white-space: pre-wrap; color: #1a1a1a; }
+    .rte-divider { width: 1px; height: 20px; background: #d0d3d7; margin: 0 5px; }
+    .rte-color { position: relative; overflow: hidden; }
+    .rte-color .rte-color-a { border-bottom: 3px solid #154273; line-height: 1; padding-bottom: 1px; font-weight: 600; }
+    .rte-color input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; padding: 0; }
+    .rte-spacer { flex: 1 1 auto; min-width: 8px; }
+    .rte-modes { display: inline-flex; border: 1px solid #d0d3d7; border-radius: 8px; overflow: hidden; background: #fff; }
+    .rte-mode { border: none; background: transparent; color: #5a5a5a; font: inherit; font-size: 0.85rem; padding: 5px 12px; cursor: pointer; }
+    .rte-mode.is-actief { background: #e7eef7; color: #154273; font-weight: 600; }
+    .rte-area { min-height: 160px; padding: 12px 14px; outline: none; line-height: 1.5; white-space: pre-wrap; color: #1a1a1a; }
     .rte-area:empty::before { content: attr(data-placeholder); color: var(--context-muted-foreground-color, #8a8a8a); }
+    .rte-area h2 { font-size: 1.4rem; margin: .5em 0 .3em; }
+    .rte-area h3 { font-size: 1.2rem; margin: .5em 0 .3em; }
+    .rte-area h4 { font-size: 1.05rem; margin: .5em 0 .3em; }
+    .rte-area blockquote { border-inline-start: 3px solid #c9ced4; margin: .5em 0; padding: .2em 0 .2em 12px; color: #444; }
+    .rte-area pre { background: #f3f5f7; border-radius: 6px; padding: 10px 12px; font-family: var(--font-mono); font-size: .9rem; white-space: pre-wrap; }
+    .rte-area code { background: #f0e7ef; border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); font-size: .9em; }
+    .rte-area ul, .rte-area ol { margin: .3em 0; padding-inline-start: 22px; }
+    /* Templatedetail: kanaal-tabbladen, taal per kanaal, ingeklapt voorbeeld per tab */
+    .tb-chpane[hidden] { display: none; }
+    .tb-langtabs { margin-bottom: 4px; }
+    .tb-pv-blok { margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--context-border-color, #e3e3e3); }
+    .tb-pv-inhoud { margin-top: 16px; }
+    .tb-pv-inhoud[hidden] { display: none; }
     /* Instellingen: notificatie-instellingen als lijst per kanaal */
     .inst-groep + .inst-groep { margin-top: 28px; padding-top: 22px; border-top: 2px solid var(--context-border-color, #e3e3e3); }
     .inst-groep-kop { font-weight: 700; font-size: 1.05rem; padding: 0 0 6px; }
@@ -1307,49 +1329,74 @@
                           <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
                         </nldd-form-field>
 
-                        <nldd-tab-bar id="tb-langtabs" accessible-label="Taal">
-                          <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
-                          <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
-                          <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
-                          <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
+                        <!-- Kanaal-tabbladen: elke sectie (e-mail/brief, korte kanalen) is een tabblad -->
+                        <nldd-tab-bar id="tb-kanaaltabs" accessible-label="Kanaal">
+                          <nldd-tab-bar-item selected text="E-mail en brief (post)" data-ch="email"></nldd-tab-bar-item>
+                          <nldd-tab-bar-item text="Push, SMS, WhatsApp, Signal" data-ch="kort"></nldd-tab-bar-item>
                         </nldd-tab-bar>
-                        <nldd-banner id="tb-d-leegtaal" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
 
-                        <!-- Sectie: E-mail en brief (post) -->
-                        <nldd-title size="5"><h3>E-mail en brief (post)</h3></nldd-title>
-                        <nldd-form-field label="Onderwerp">
-                          <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field>
-                          <div class="lt-kop">
-                            <span class="lt-label">Lange tekst</span>
-                            <div class="log-check" id="tb-d-samen-rij"><nldd-checkbox id="tb-d-samen-cb" checked accessible-label="E-mail en brief (post) hebben dezelfde tekst"></nldd-checkbox><span>E-mail en brief (post) hebben dezelfde tekst</span></div>
-                          </div>
-                          <p class="lt-sublabel" id="tb-d-label-email" hidden>E-mail</p>
-                          <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst"></div></div>
-                          <p class="lt-sublabel" id="tb-d-label-brief" hidden>Brief (post)</p>
-                          <div class="rte" id="tb-d-brief-wrap" hidden><div class="rte-area" id="tb-d-body-brief" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
-                        </nldd-form-field>
-                        <nldd-form-field label="Afzender (handtekening)">
-                          <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field label="Verzonden vanuit e-mailadres">
-                          <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
-                        </nldd-form-field>
+                        <!-- Tabblad: e-mail en brief (post) -->
+                        <div class="tb-chpane" data-chpane="email">
+                          <nldd-container gap="20">
+                            <nldd-tab-bar class="tb-langtabs" data-ch="email" accessible-label="Taal (e-mail en brief)">
+                              <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
+                              <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
+                              <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
+                              <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
+                            </nldd-tab-bar>
+                            <nldd-banner class="tb-leegtaal" data-ch="email" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
+                            <nldd-form-field label="Onderwerp">
+                              <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
+                            </nldd-form-field>
+                            <nldd-form-field>
+                              <div class="lt-kop">
+                                <span class="lt-label">Lange tekst</span>
+                                <div class="log-check" id="tb-d-samen-rij"><nldd-checkbox id="tb-d-samen-cb" checked accessible-label="E-mail en brief (post) hebben dezelfde tekst"></nldd-checkbox><span>E-mail en brief (post) hebben dezelfde tekst</span></div>
+                              </div>
+                              <p class="lt-sublabel" id="tb-d-label-email" hidden>E-mail</p>
+                              <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst"></div></div>
+                              <p class="lt-sublabel" id="tb-d-label-brief" hidden>Brief (post)</p>
+                              <div class="rte" id="tb-d-brief-wrap" hidden><div class="rte-area" id="tb-d-body-brief" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
+                            </nldd-form-field>
+                            <nldd-form-field label="Afzender (handtekening)">
+                              <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
+                            </nldd-form-field>
+                            <nldd-form-field label="Verzonden vanuit e-mailadres">
+                              <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
+                            </nldd-form-field>
+                            <div class="tb-pv-blok">
+                              <nldd-button class="tb-pv-toggle" data-ch="email" variant="secondary" start-icon="eye" text="Voorbeeld tonen"></nldd-button>
+                              <div class="tbp-kanalen tb-pv-inhoud" id="tb-pv-email" hidden></div>
+                            </div>
+                          </nldd-container>
+                        </div>
 
-                        <!-- Sectie: push notificatie, SMS, WhatsApp, Signal -->
-                        <nldd-title size="5"><h3>Push notificatie, SMS, WhatsApp, Signal</h3></nldd-title>
-                        <nldd-form-field label="Korte tekst">
-                          <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field label="Afzender">
-                          <nldd-text-field id="tb-d-kort-afz" readonly></nldd-text-field>
-                        </nldd-form-field>
+                        <!-- Tabblad: push, SMS, WhatsApp, Signal -->
+                        <div class="tb-chpane" data-chpane="kort" hidden>
+                          <nldd-container gap="20">
+                            <nldd-tab-bar class="tb-langtabs" data-ch="kort" accessible-label="Taal (korte kanalen)">
+                              <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
+                              <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
+                              <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
+                              <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
+                            </nldd-tab-bar>
+                            <nldd-banner class="tb-leegtaal" data-ch="kort" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
+                            <nldd-form-field label="Korte tekst">
+                              <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
+                            </nldd-form-field>
+                            <nldd-form-field label="Afzender">
+                              <nldd-text-field id="tb-d-kort-afz" readonly></nldd-text-field>
+                            </nldd-form-field>
+                            <div class="tb-pv-blok">
+                              <nldd-button class="tb-pv-toggle" data-ch="kort" variant="secondary" start-icon="eye" text="Voorbeeld tonen"></nldd-button>
+                              <div class="tbp-kanalen tb-pv-inhoud" id="tb-pv-kort" hidden></div>
+                            </div>
+                          </nldd-container>
+                        </div>
 
                         <p class="muted-note">Afzenders zijn vooraf ingevuld op basis van de standaard afzender van uw organisatie. <nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzenders aanpassen per kanaal"></nldd-link></p>
 
                         <div class="row-actions">
-                          <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Voorbeeld notificatie"></nldd-button>
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
                           <nldd-button id="tb-kopie" variant="secondary" start-icon="square-on-square" text="Kopie maken"></nldd-button>
@@ -2191,18 +2238,6 @@
       </div>
     </div>
 
-    <!-- ===== E-mailpreview van een template (met huisstijl van de organisatie) ===== -->
-    <div id="tb-preview-overlay" class="flags-overlay" hidden>
-      <div class="tb-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="tbp-titel">
-        <div class="flags-head">
-          <nldd-title size="5"><h2 id="tbp-titel">Voorbeeld per kanaal</h2></nldd-title>
-          <nldd-button id="tbp-sluit" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
-        </div>
-        <p class="muted-note">Voorbeeld van de notificatie per kanaal, met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld. Per kanaal kunt u een testnotificatie versturen - handmatig of naar een geuploade lijst.</p>
-        <div id="tbp-kanalen" class="tbp-kanalen"></div>
-      </div>
-    </div>
-
     <!-- ===== Presentatiemodus (full-screen slides, stijl Begane Grond) ===== -->
     <div class="present" id="present" aria-hidden="true">
       <div class="present-stage">
@@ -2298,6 +2333,76 @@
   </div>
 
   <script>
+    // Rich-text editor: bouwt een toolbar boven een .rte-area (contenteditable). Wordt door
+    // zowel de berichten-composer als de templatedetail gebruikt, zodat beide dezelfde editor
+    // krijgen. Kernopmaak werkt via document.execCommand; Visueel/Markdown is een weergavekeuze.
+    window.bouwRicheToolbar = function (wrap) {
+      if (!wrap || wrap.querySelector('.rte-toolbar')) return;
+      const area = wrap.querySelector('.rte-area');
+      if (!area) return;
+      let saved = null;
+      const saveRange = () => {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount && area.contains(sel.anchorNode)) saved = sel.getRangeAt(0).cloneRange();
+      };
+      area.addEventListener('keyup', saveRange);
+      area.addEventListener('mouseup', saveRange);
+      area.addEventListener('focus', saveRange);
+      const herstel = () => { area.focus(); if (saved) { const s = window.getSelection(); s.removeAllRanges(); s.addRange(saved); } };
+      const run = (cmd, val) => { herstel(); try { document.execCommand(cmd, false, val || null); } catch (e) {} saveRange(); };
+      const escHtml = s => ((s || '') + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      const tb = document.createElement('div');
+      tb.className = 'rte-toolbar';
+      tb.innerHTML =
+        '<select class="rte-select" title="Tekststijl" aria-label="Tekststijl">' +
+          '<option value="p">Normale tekst</option>' +
+          '<option value="h2">Kop 1</option>' +
+          '<option value="h3">Kop 2</option>' +
+          '<option value="h4">Kop 3</option>' +
+        '</select>' +
+        '<span class="rte-divider"></span>' +
+        '<button type="button" class="rte-btn" data-cmd="bold" title="Vet (Ctrl+B)"><strong>B</strong></button>' +
+        '<button type="button" class="rte-btn" data-cmd="italic" title="Cursief (Ctrl+I)"><em>I</em></button>' +
+        '<button type="button" class="rte-btn" data-cmd="strikeThrough" title="Doorhalen"><span style="text-decoration:line-through">S</span></button>' +
+        '<label class="rte-btn rte-color" title="Tekstkleur"><span class="rte-color-a">A</span><input type="color" value="#154273" aria-label="Tekstkleur"></label>' +
+        '<span class="rte-divider"></span>' +
+        '<button type="button" class="rte-btn" data-cmd="formatBlock" data-val="blockquote" title="Citaat">&#8220;</button>' +
+        '<button type="button" class="rte-btn rte-inline-code" title="Code">&lt;/&gt;</button>' +
+        '<button type="button" class="rte-btn" data-cmd="createLink" title="Link invoegen">&#128279;</button>' +
+        '<span class="rte-divider"></span>' +
+        '<button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Opsomming">&#8226;</button>' +
+        '<button type="button" class="rte-btn" data-cmd="insertOrderedList" title="Genummerde lijst">1.</button>' +
+        '<button type="button" class="rte-btn" data-cmd="formatBlock" data-val="pre" title="Codeblok">&#9636;</button>' +
+        '<span class="rte-spacer"></span>' +
+        '<div class="rte-modes" role="group" aria-label="Weergave">' +
+          '<button type="button" class="rte-mode is-actief" data-mode="visual">Visueel</button>' +
+          '<button type="button" class="rte-mode" data-mode="markdown">Markdown</button>' +
+        '</div>';
+      wrap.insertBefore(tb, area);
+
+      // Selectie behouden voor de opmaakknoppen; select en kleurkiezer moeten normaal openen.
+      tb.addEventListener('mousedown', e => { if (e.target.closest('.rte-btn') && !e.target.closest('.rte-color')) e.preventDefault(); });
+      tb.addEventListener('click', e => {
+        const modeBtn = e.target.closest('.rte-mode');
+        if (modeBtn) { tb.querySelectorAll('.rte-mode').forEach(m => m.classList.toggle('is-actief', m === modeBtn)); return; }
+        const b = e.target.closest('.rte-btn'); if (!b) return;
+        if (b.classList.contains('rte-inline-code')) {
+          herstel(); const sel = window.getSelection(); const tekst = sel ? sel.toString() : '';
+          if (tekst) { try { document.execCommand('insertHTML', false, '<code>' + escHtml(tekst) + '</code>'); } catch (e2) {} }
+          saveRange(); return;
+        }
+        if (b.dataset.cmd === 'createLink') { const url = prompt('Link-URL:', 'https://'); if (url) run('createLink', url); return; }
+        if (b.dataset.cmd === 'formatBlock') { run('formatBlock', '<' + b.dataset.val + '>'); return; }
+        if (b.dataset.cmd) run(b.dataset.cmd);
+      });
+      const keuze = tb.querySelector('.rte-select');
+      keuze.addEventListener('mousedown', saveRange);
+      keuze.addEventListener('change', () => { run('formatBlock', '<' + keuze.value + '>'); keuze.selectedIndex = 0; });
+      const kleur = tb.querySelector('.rte-color input');
+      kleur.addEventListener('input', () => run('foreColor', kleur.value));
+    };
+
     // Sectienavigatie: toon de gekozen view, markeer het actieve menu-item, werk de titelbalk bij.
     const navwrap = document.getElementById('navwrap');
     const titlebar = document.getElementById('titlebar');
@@ -3047,25 +3152,8 @@
         if (t && t.dataset.lang) setLang(t.dataset.lang);
       });
 
-      // --- Rich-text editor: injecteer een toolbar boven elke .rte-area (altijd een editor) ---
-      root.querySelectorAll('.rte').forEach(wrap => {
-        if (wrap.querySelector('.rte-toolbar')) return;
-        const area = wrap.querySelector('.rte-area');
-        if (!area) return;
-        const tb = document.createElement('div');
-        tb.className = 'rte-toolbar';
-        tb.innerHTML =
-          '<button type="button" class="rte-btn" data-cmd="bold" title="Vet"><strong>B</strong></button>' +
-          '<button type="button" class="rte-btn" data-cmd="italic" title="Cursief"><em>I</em></button>' +
-          '<button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Opsomming">&#8226; Lijst</button>';
-        wrap.insertBefore(tb, area);
-        tb.addEventListener('mousedown', e => e.preventDefault()); // behoud selectie en focus
-        tb.addEventListener('click', e => {
-          const b = e.target.closest('.rte-btn'); if (!b) return;
-          area.focus();
-          try { document.execCommand(b.dataset.cmd, false, null); } catch (err) {}
-        });
-      });
+      // --- Rich-text editor: injecteer de gedeelde toolbar boven elke .rte-area ---
+      root.querySelectorAll('.rte').forEach(wrap => window.bouwRicheToolbar(wrap));
 
       // Lees/schrijf een lange-tekstveld: werkt op zowel de RTE als een gewoon tekstveld.
       function veldGet(id) { const el = root.querySelector('#' + id); if (!el) return ''; return el.classList.contains('rte-area') ? el.innerText : (el.value || ''); }
@@ -3582,32 +3670,25 @@
       function bodySet(v) { rteWrite(velden.body, v); }
       function briefGet() { return rteRead(velden.bodyBrief); }
       function briefSet(v) { rteWrite(velden.bodyBrief, v); }
-      // Toolbar boven de rich-text editor injecteren.
-      root.querySelectorAll('.rte').forEach(wrap => {
-        if (wrap.querySelector('.rte-toolbar')) return;
-        const area = wrap.querySelector('.rte-area'); if (!area) return;
-        const tb = document.createElement('div');
-        tb.className = 'rte-toolbar';
-        tb.innerHTML = '<button type="button" class="rte-btn" data-cmd="bold" title="Vet"><strong>B</strong></button><button type="button" class="rte-btn" data-cmd="italic" title="Cursief"><em>I</em></button><button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Opsomming">&#8226; Lijst</button>';
-        wrap.insertBefore(tb, area);
-        tb.addEventListener('mousedown', e => e.preventDefault());
-        tb.addEventListener('click', e => { const b = e.target.closest('.rte-btn'); if (!b) return; area.focus(); try { document.execCommand(b.dataset.cmd, false, null); } catch (err) {} });
-      });
+      // Gedeelde rich-text toolbar boven elke editor injecteren.
+      root.querySelectorAll('.rte').forEach(wrap => window.bouwRicheToolbar(wrap));
       const dTitel = root.querySelector('#tb-d-titel');
       const dTag = root.querySelector('#tb-d-tag');
       const dCat = root.querySelector('#tb-d-cat');
-      const leegBanner = root.querySelector('#tb-d-leegtaal');
       const melding = root.querySelector('#tb-d-melding');
       const lijstMelding = root.querySelector('#tb-lijstmelding');
-      const langTabs = root.querySelector('#tb-langtabs');
+      const kanaalTabs = root.querySelector('#tb-kanaaltabs');
+      const langBars = { email: root.querySelector('.tb-langtabs[data-ch="email"]'), kort: root.querySelector('.tb-langtabs[data-ch="kort"]') };
+      const leegBanners = { email: root.querySelector('.tb-leegtaal[data-ch="email"]'), kort: root.querySelector('.tb-leegtaal[data-ch="kort"]') };
       const btnBewerk = root.querySelector('#tb-bewerk');
       const btnOpslaan = root.querySelector('#tb-opslaan');
       const btnVerwijder = root.querySelector('#tb-verwijder');
       const btnTerug = root.querySelector('#tb-terug');
-      const btnPreview = root.querySelector('#tb-preview');
       const btnKopie = root.querySelector('#tb-kopie');
 
-      let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0;
+      // Taal wordt per kanaal onthouden, zodat u per kanaal een taal kunt zien/bewerken.
+      let huidigId = null, bewerken = false, werk = null, teller = 0;
+      const taal = { email: 'nl', kort: 'nl' };
       const kloon = t => JSON.parse(JSON.stringify(t));
 
       // --- 'E-mail en brief (post) hebben dezelfde tekst': uit = aparte brieftekst ---
@@ -3667,24 +3748,48 @@
         });
       }
 
-      function laadTaal(lang) {
+      function toonLeeg(ch, c, lang) {
+        // 'Nog geen vertaling'-melding per kanaal: e-mail kijkt naar onderwerp/lange tekst, de korte kanalen naar de korte tekst.
+        const isLeeg = ch === 'email' ? !(c.subject || c.body) : !c.kort;
+        if (leegBanners[ch]) leegBanners[ch].toggleAttribute('hidden', !(isLeeg && lang !== 'nl'));
+      }
+      function laadEmail(lang) {
         const c = (werk.content && werk.content[lang]) || leeg();
         velden.subj.value = c.subject || '';
         bodySet(c.body || '');
         briefSet(c.briefBody || c.body || '');
+        taal.email = lang;
+        toonLeeg('email', c, lang);
+      }
+      function laadKort(lang) {
+        const c = (werk.content && werk.content[lang]) || leeg();
         velden.kort.value = c.kort || '';
-        const isLeeg = !(c.subject || c.body || c.kort);
-        leegBanner.toggleAttribute('hidden', !(isLeeg && lang !== 'nl'));
-        taalNu = lang;
+        taal.kort = lang;
+        toonLeeg('kort', c, lang);
+      }
+      // Alleen de velden van het betreffende kanaal opslaan, in de taal die dat kanaal toont.
+      function bewaarEmail() {
+        if (!bewerken || !werk) return;
+        const c = werk.content[taal.email] || (werk.content[taal.email] = leeg());
+        const apart = !samenAan();
+        werk.briefApart = apart;
+        c.subject = velden.subj.value;
+        c.body = bodyGet();
+        c.briefBody = apart ? briefGet() : undefined;
+      }
+      function bewaarKort() {
+        if (!bewerken || !werk) return;
+        const c = werk.content[taal.kort] || (werk.content[taal.kort] = leeg());
+        c.kort = velden.kort.value;
       }
       function bewaarHuidigeTaal() {
         if (!bewerken || !werk) return;
         werk.titel = velden.titel.value;
         werk.afzender = velden.afz.value;
         werk.afzendertekst = velden.afzenderTekst.value;
-        const apart = !samenAan();
-        werk.briefApart = apart;
-        werk.content[taalNu] = { subject: velden.subj.value, body: bodyGet(), briefBody: apart ? briefGet() : undefined, kort: velden.kort.value };
+        if (velden.kortAfz) werk.kortAfzender = velden.kortAfz.value;
+        bewaarEmail();
+        bewaarKort();
       }
       function setBewerken(on) {
         bewerken = on;
@@ -3697,6 +3802,14 @@
         if (samenCb) samenCb.toggleAttribute('disabled', !on); // checkbox alleen aanpasbaar tijdens bewerken
         btnBewerk.toggleAttribute('hidden', on);
         btnOpslaan.toggleAttribute('hidden', !on);
+      }
+      function kiesKanaal(ch) {
+        kanaalTabs.querySelectorAll('nldd-tab-bar-item').forEach(t2 => t2.toggleAttribute('selected', t2.dataset.ch === ch));
+        root.querySelectorAll('.tb-chpane').forEach(p => p.toggleAttribute('hidden', p.dataset.chpane !== ch));
+      }
+      function sluitVoorbeelden() {
+        root.querySelectorAll('.tb-pv-inhoud').forEach(el => el.setAttribute('hidden', ''));
+        root.querySelectorAll('.tb-pv-toggle').forEach(b => b.setAttribute('text', 'Voorbeeld tonen'));
       }
       function openDetail(id, edit) {
         const t = BIB.find(x => x.id === id);
@@ -3725,21 +3838,39 @@
           if (input) input.checked = !apart; else samenCb.toggleAttribute('checked', !apart);
           samenCb.toggleAttribute('checked', !apart);
         }
-        langTabs.querySelectorAll('nldd-tab-bar-item').forEach(tab => tab.toggleAttribute('selected', tab.dataset.tl === 'nl'));
-        laadTaal('nl');
+        // Beide kanalen starten op NL; taal wordt per kanaal onthouden.
+        ['email', 'kort'].forEach(ch => {
+          taal[ch] = 'nl';
+          if (langBars[ch]) langBars[ch].querySelectorAll('nldd-tab-bar-item').forEach(tab => tab.toggleAttribute('selected', tab.dataset.tl === 'nl'));
+        });
+        laadEmail('nl');
+        laadKort('nl');
         samenToggle();
+        sluitVoorbeelden();
+        kiesKanaal('email');
         setBewerken(edit);
         melding.setAttribute('hidden', '');
         lijstMelding.setAttribute('hidden', '');
         toonDetail();
       }
 
-      langTabs.addEventListener('click', e => {
+      // Kanaal-tabbladen: wissel tussen 'e-mail en brief' en de korte kanalen.
+      kanaalTabs.addEventListener('click', e => {
         const tab = e.target.closest('nldd-tab-bar-item');
-        if (!tab || !tab.dataset.tl) return;
-        bewaarHuidigeTaal();
-        langTabs.querySelectorAll('nldd-tab-bar-item').forEach(t2 => t2.toggleAttribute('selected', t2 === tab));
-        laadTaal(tab.dataset.tl);
+        if (!tab || !tab.dataset.ch) return;
+        kiesKanaal(tab.dataset.ch);
+      });
+      // Taalbalk per kanaal: bewaar de huidige taal van dat kanaal en laad de gekozen taal.
+      Object.keys(langBars).forEach(ch => {
+        const bar = langBars[ch];
+        if (!bar) return;
+        bar.addEventListener('click', e => {
+          const tab = e.target.closest('nldd-tab-bar-item');
+          if (!tab || !tab.dataset.tl) return;
+          if (ch === 'email') bewaarEmail(); else bewaarKort();
+          bar.querySelectorAll('nldd-tab-bar-item').forEach(t2 => t2.toggleAttribute('selected', t2 === tab));
+          if (ch === 'email') laadEmail(tab.dataset.tl); else laadKort(tab.dataset.tl);
+        });
       });
       btnBewerk.addEventListener('click', () => setBewerken(true));
       btnTerug.addEventListener('click', toonLijst);
@@ -3750,6 +3881,7 @@
         t.titel = werk.titel || 'Naamloze template';
         t.afzender = werk.afzender;
         t.afzendertekst = werk.afzendertekst;
+        t.kortAfzender = werk.kortAfzender;
         t.briefApart = werk.briefApart;
         t.content = werk.content;
         dTitel.textContent = t.titel;
@@ -3802,8 +3934,7 @@
         melding.removeAttribute('hidden');
       });
 
-      // E-mailpreview met de huisstijl van de afzender (per merk).
-      const pvOverlay = document.getElementById('tb-preview-overlay');
+      // Voorbeeld per kanaal, met de huisstijl van de afzender - opgeknipt en per tabblad in te zien.
       function resolveAfz(tekst) {
         const naam = eersteRegel(velden.afzenderTekst.value || (werk && werk.afzendertekst) || 'MijnOverheid');
         return ((tekst || '') + '').replace(/\{afzender\}/g, naam);
@@ -3836,67 +3967,88 @@
         '</div>';
       };
       const kanaalBlok = (label, inner, key) => '<div class="tbp-kanaal"><div class="tbp-kanaal-label">' + label + '</div>' + inner + testBlok(key, label) + '</div>';
-      btnPreview.addEventListener('click', () => {
-        if (bewerken) bewaarHuidigeTaal();
+
+      // Bouwt het voorbeeld voor één kanaalgroep, in de taal die dat kanaal toont.
+      function bouwKanaalVoorbeeld(container, groep) {
+        if (bewerken) { if (groep === 'email') bewaarEmail(); else bewaarKort(); }
         const merk = MERK[(werk && werk.huisstijl) || 'mijnoverheid'] || MERK.mijnoverheid;
-        const c = (werk && werk.content && werk.content[taalNu]) || leeg();
+        const c = (werk && werk.content && werk.content[taal[groep]]) || leeg();
         const handtekening = velden.afzenderTekst.value || '';
         const naam = eersteRegel(handtekening) || 'MijnOverheid';
         const email = velden.afz.value || '';
         const subject = resolveAfz(c.subject);
         const body = resolveAfz(c.body);
         const kort = resolveAfz(c.kort);
-        const kanalen = document.getElementById('tbp-kanalen');
-        kanalen.innerHTML =
-          kanaalBlok('Berichtenbox (MijnOverheid)',
-            '<div class="tbp-bbox">' +
-              '<div class="tbp-bbox-header" style="background:' + merk.kleur + '">MijnOverheid · Berichtenbox</div>' +
-              '<div class="tbp-bbox-body">' +
-                '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
-                '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
-                '<div class="tbp-pre">' + esc(body) + '</div>' +
-              '</div>' +
-            '</div>', 'berichtenbox') +
-          kanaalBlok('E-mail',
-            '<div class="tbp-mail">' +
-              '<div class="tbp-mail-header" style="background:' + merk.kleur + '">' + esc(merk.naam) + '</div>' +
-              '<div class="tbp-mail-body">' +
-                '<div class="tbp-mail-meta">' +
-                  '<div><strong>Van:</strong> ' + esc(naam) + ' &lt;' + esc(email) + '&gt;</div>' +
-                  '<div><strong>Aan:</strong> [voorletter(s)] [achternaam]</div>' +
-                  '<div><strong>Onderwerp:</strong> ' + esc(subject) + '</div>' +
+        if (groep === 'email') {
+          container.innerHTML =
+            kanaalBlok('Berichtenbox (MijnOverheid)',
+              '<div class="tbp-bbox">' +
+                '<div class="tbp-bbox-header" style="background:' + merk.kleur + '">MijnOverheid · Berichtenbox</div>' +
+                '<div class="tbp-bbox-body">' +
+                  '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
+                  '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
+                  '<div class="tbp-pre">' + esc(body) + '</div>' +
                 '</div>' +
-                '<div class="tbp-pre">' + esc(body) + '</div>' +
-                (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
-              '</div>' +
-            '</div>', 'email') +
-          kanaalBlok('Brief (post)',
-            '<div class="tbp-brief">' +
-              '<div class="tbp-brief-band" style="background:' + merk.kleur + '"></div>' +
-              '<div class="tbp-brief-body">' +
-                '<div class="tbp-brief-afz tbp-pre">' + esc(handtekening || naam) + '</div>' +
-                '<div class="tbp-brief-aan">[voorletter(s)] [achternaam]<br>[straat en huisnummer]<br>[postcode en plaats]</div>' +
-                '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
-                '<div class="tbp-pre">' + esc(body) + '</div>' +
-              '</div>' +
-            '</div>', 'post') +
-          kanaalBlok('Push (MijnOverheid-app)',
-            '<div class="tbp-push">' +
-              '<div class="tbp-push-app"><span class="tbp-push-icon" style="background:' + merk.kleur + '">M</span> MijnOverheid <span class="tbp-push-nu">nu</span></div>' +
-              '<div class="tbp-push-titel">' + esc(subject) + '</div>' +
-              '<div class="tbp-push-tekst">' + esc(kort) + '</div>' +
-            '</div>', 'push') +
-          kanaalBlok('SMS',
-            '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms') +
-          kanaalBlok('WhatsApp / Signal',
-            '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'whats');
-        pvOverlay.removeAttribute('hidden');
+              '</div>', 'berichtenbox') +
+            kanaalBlok('E-mail',
+              '<div class="tbp-mail">' +
+                '<div class="tbp-mail-header" style="background:' + merk.kleur + '">' + esc(merk.naam) + '</div>' +
+                '<div class="tbp-mail-body">' +
+                  '<div class="tbp-mail-meta">' +
+                    '<div><strong>Van:</strong> ' + esc(naam) + ' &lt;' + esc(email) + '&gt;</div>' +
+                    '<div><strong>Aan:</strong> [voorletter(s)] [achternaam]</div>' +
+                    '<div><strong>Onderwerp:</strong> ' + esc(subject) + '</div>' +
+                  '</div>' +
+                  '<div class="tbp-pre">' + esc(body) + '</div>' +
+                  (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
+                '</div>' +
+              '</div>', 'email') +
+            kanaalBlok('Brief (post)',
+              '<div class="tbp-brief">' +
+                '<div class="tbp-brief-band" style="background:' + merk.kleur + '"></div>' +
+                '<div class="tbp-brief-body">' +
+                  '<div class="tbp-brief-afz tbp-pre">' + esc(handtekening || naam) + '</div>' +
+                  '<div class="tbp-brief-aan">[voorletter(s)] [achternaam]<br>[straat en huisnummer]<br>[postcode en plaats]</div>' +
+                  '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
+                  '<div class="tbp-pre">' + esc(body) + '</div>' +
+                '</div>' +
+              '</div>', 'post');
+        } else {
+          container.innerHTML =
+            kanaalBlok('Push (MijnOverheid-app)',
+              '<div class="tbp-push">' +
+                '<div class="tbp-push-app"><span class="tbp-push-icon" style="background:' + merk.kleur + '">M</span> MijnOverheid <span class="tbp-push-nu">nu</span></div>' +
+                '<div class="tbp-push-titel">' + esc(subject) + '</div>' +
+                '<div class="tbp-push-tekst">' + esc(kort) + '</div>' +
+              '</div>', 'push') +
+            kanaalBlok('SMS',
+              '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms') +
+            kanaalBlok('WhatsApp / Signal',
+              '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'whats');
+        }
+      }
+
+      // 'Voorbeeld tonen/verbergen' per tabblad; het voorbeeld wordt bij openen opnieuw opgebouwd.
+      root.querySelectorAll('.tb-pv-toggle').forEach(btn => {
+        const groep = btn.dataset.ch;
+        const inhoud = root.querySelector('#tb-pv-' + groep);
+        if (!inhoud) return;
+        btn.addEventListener('click', () => {
+          if (inhoud.hasAttribute('hidden')) {
+            bouwKanaalVoorbeeld(inhoud, groep);
+            inhoud.removeAttribute('hidden');
+            btn.setAttribute('text', 'Voorbeeld verbergen');
+          } else {
+            inhoud.setAttribute('hidden', '');
+            btn.setAttribute('text', 'Voorbeeld tonen');
+          }
+        });
       });
 
       // Testverzending per kanaal: handmatig versturen, lijst uploaden of uitleg tonen.
-      const kanalenEl = document.getElementById('tbp-kanalen');
-      if (kanalenEl) {
-        kanalenEl.addEventListener('click', e => {
+      // Gedelegeerd op de sectie-root, zodat het voor beide inline voorbeelden werkt.
+      {
+        root.addEventListener('click', e => {
           const blok = e.target.closest('.tbp-test');
           if (!blok) return;
           if (e.target.closest('.tbp-test-help')) {
@@ -3924,7 +4076,7 @@
             melding.removeAttribute('hidden');
           }
         });
-        kanalenEl.addEventListener('change', e => {
+        root.addEventListener('change', e => {
           const file = e.target.closest('.tbp-test-file');
           if (!file) return;
           const blok = e.target.closest('.tbp-test');
@@ -3937,10 +4089,6 @@
           melding.removeAttribute('hidden');
         });
       }
-      const pvSluit = document.getElementById('tbp-sluit');
-      if (pvSluit) pvSluit.addEventListener('click', () => pvOverlay.setAttribute('hidden', ''));
-      if (pvOverlay) pvOverlay.addEventListener('click', e => { if (e.target === pvOverlay) pvOverlay.setAttribute('hidden', ''); });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape' && pvOverlay && !pvOverlay.hasAttribute('hidden')) pvOverlay.setAttribute('hidden', ''); });
 
       // Niet-beheerders: alleen bekijken en preview. Geen aanmaken/bewerken/kopie/verwijderen.
       if (!magBeheren) {
