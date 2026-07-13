@@ -72,7 +72,7 @@
     .log-tabel .log-td-tijd, .log-tabel .log-th-tijd { width: 120px; white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
     .log-tabel .log-th-tijd { color: inherit; }
     .log-tabel .log-td-status, .log-tabel .log-th-status { width: 150px; }
-    .log-tabel .log-td-actie, .log-tabel .log-th-actie { width: 160px; }
+    .log-tabel .log-td-actie, .log-tabel .log-th-actie { width: 220px; }
     .log-tabel .log-td-geb { overflow: hidden; }
     /* Icoon met vaste afmeting: nooit bepalend voor de rijhoogte (de tekst bepaalt die). */
     .log-geb-titel { display: flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; }
@@ -80,7 +80,7 @@
     .log-geb-titel .lg-titel { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     /* Titel en detail elk op 1 regel (ellipsis, volledige tekst via tooltip) - uniforme rijhoogte. */
     .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .log-td-actie { white-space: nowrap; }
+    .log-td-actie { white-space: normal; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.92rem; line-height: 1.35; }
     .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
     .log-rij-detail > td { background: rgba(0,0,0,.03); }
     .log-rij-detail .lg-bsn-form { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
@@ -98,6 +98,7 @@
     .log-datum { padding: 8px 10px; border: 1px solid var(--context-border-color, #b3b3b3); border-radius: 8px; font: inherit; }
     /* Afleverstatus: uitgesplitst in succesvol / niet afgeleverd met concrete aantallen */
     .afl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .afl-kop { margin-top: -4px; } /* percentage en zin dicht op elkaar, beide heading-opmaak */
     .afl-lijst { margin: 4px 0 0; padding-inline-start: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.95rem; line-height: 1.45; }
     .afl-lijst strong { color: var(--context-base-foreground-color, #1a1a1a); }
     .afl-link { display: inline-block; margin-top: 4px; }
@@ -275,6 +276,10 @@
     .rol-kaart-naam { font-size: 0.92rem; color: rgba(255,255,255,0.75); }
     .rol-kaart-desc { font-size: 0.92rem; color: rgba(255,255,255,0.88); line-height: 1.45; }
     @media (max-width: 720px) { .rollen-grid { grid-template-columns: 1fr; } }
+    .rollen-kvk-kop { margin: 22px 0 8px; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .rollen-kvk { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+    .rol-link { color: #8fb8e0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 0.98rem; }
+    .rol-link:hover, .rol-link:focus-visible { color: #b9d3ee; outline: none; }
     /* Navigatiebalk onderaan */
     .present-bar { display: flex; align-items: center; gap: 18px; padding: 20px clamp(40px, 8vw, 140px); flex-wrap: wrap; }
     .pv-counter { font-family: ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: 0.15em; color: rgba(255,255,255,0.85); font-size: 0.95rem; }
@@ -461,11 +466,11 @@
                   <!-- Afleverstatus hoort bij de notificatiedienst: verborgen voor gebruikers die
                        alleen tot een andere dienst toegang hebben. -->
                   <div class="stack" data-dienst="notificatiedienst">
-                    <nldd-title size="4"><h2>Afleverstatus vandaag</h2></nldd-title>
+                    <nldd-title size="4"><h2>Aflevering notificaties vandaag</h2></nldd-title>
                     <div class="afl-grid">
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
-                          <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2><p slot="subtitle">Succesvol afgeleverd</p></nldd-title>
+                          <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Succesvol afgeleverd</h3></nldd-title>
                           <nldd-tag color="success" text="binnen norm"></nldd-tag>
                           <ul class="afl-lijst">
                             <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
@@ -477,10 +482,11 @@
                       </nldd-card>
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
-                          <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
-                          <nldd-tag color="critical" text="actie nodig"></nldd-tag>
+                          <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Niet afgeleverd</h3></nldd-title>
+                          <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                           <ul class="afl-lijst">
-                            <li><strong class="js-afl-actie">2</strong> notificaties hebben actie nodig
+                            <li>Voor <strong class="js-afl-bsn">1</strong> notificaties is een correctieverzoek van het BSN-nummer ingediend</li>
+                            <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd
                               <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
                             </li>
                           </ul>
@@ -792,11 +798,11 @@
                     <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
                   </nldd-rich-text>
 
-                  <nldd-title size="5"><h3>Afleverstatus vandaag</h3></nldd-title>
+                  <nldd-title size="5"><h3>Aflevering notificaties vandaag</h3></nldd-title>
                   <div class="afl-grid">
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2><p slot="subtitle">Succesvol afgeleverd</p></nldd-title>
+                        <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Succesvol afgeleverd</h3></nldd-title>
                         <nldd-tag color="success" text="binnen norm"></nldd-tag>
                         <ul class="afl-lijst">
                           <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
@@ -808,10 +814,11 @@
                     </nldd-card>
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
-                        <nldd-tag color="critical" text="actie nodig"></nldd-tag>
+                        <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Niet afgeleverd</h3></nldd-title>
+                        <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                         <ul class="afl-lijst">
-                          <li><strong class="js-afl-actie">2</strong> notificaties hebben actie nodig
+                          <li>Voor <strong class="js-afl-bsn">1</strong> notificaties is een correctieverzoek van het BSN-nummer ingediend</li>
+                          <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd
                             <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
                           </li>
                         </ul>
@@ -2214,7 +2221,7 @@
           <h2 class="slide-title">MijnOverheid - Dienstverlener Portaal</h2>
           <p class="slide-lead">Eén plek voor publieke dienstverleners voor beheer en monitoring van al hun digitale diensten van MijnOverheid Zakelijk.</p>
           <p class="slide-body">Publieke dienstverleners willen ondernemers op een digitale wijze proactief en betrouwbaar hun diensten aanbieden: efficiënter, met minder fouten.</p>
-          <p class="slide-body">Wat gaat er goed, wat heeft aandacht nodig? Komt het bericht wel aan? Klopt de template? Bereik ik de juiste ondernemer? Dat zicht - en die grip - geeft dit portaal terug.</p>
+          <p class="slide-body">Wat gaat er goed, wat heeft aandacht nodig? Komt het bericht wel aan? Bereik ik de ondernemer? Klopt de template? Dat inzicht - en die grip - geeft dit portaal terug.</p>
         </div>
 
         <div class="present-slide" data-slide="2">
@@ -2234,7 +2241,7 @@
             </div>
             <div class="kt">
               <nldd-icon name="gear" size="32"></nldd-icon>
-              <p><strong>Configureren</strong> - zet uw organisatie in het portaal op, met verschillende rollen en rechten voor beheerders, specifieke diensteigenaren en developers.</p>
+              <p><strong>Configureren</strong> - zet de organisatie in het portaal op, met verschillende rollen en rechten voor beheerders, specifieke diensteigenaren en developers.</p>
             </div>
             <div class="kt">
               <nldd-icon name="key" size="32"></nldd-icon>
@@ -2242,7 +2249,7 @@
             </div>
             <div class="kt">
               <nldd-icon name="chart-x-y-axis-line" size="32"></nldd-icon>
-              <p><strong>Monitoren</strong> - volg alle events in het logboek, met alerting om fouten op te sporen en op te lossen. Plus de mogelijkheid om data te exporteren voor audits, en rapportages &amp; analytics in te zien over het gebruik.</p>
+              <p><strong>Monitoren</strong> - volg alle events in het logboek, en spoor fouten op om ze op te lossen. Plus de mogelijkheid om data te exporteren voor audits, en rapportages &amp; analytics in te zien over het gebruik.</p>
             </div>
             <div class="kt">
               <nldd-icon name="lock-closed" size="32"></nldd-icon>
@@ -2256,26 +2263,33 @@
           <h2 class="slide-title">Log in als een rol</h2>
           <p class="slide-lead">Kies een rol om direct als die gebruiker in het portaal te stappen. Elke rol ziet en kan iets anders.</p>
           <div class="rollen-grid">
-            <button class="rol-kaart" type="button" data-login-user="sanne">
+            <button class="rol-kaart" type="button" data-login-user="robbert">
               <span class="rol-kaart-rol">Organisatiebeheerder</span>
-              <span class="rol-kaart-naam">Sanne de Boer · KvK</span>
+              <span class="rol-kaart-naam">Robbert Bos · BZK</span>
               <span class="rol-kaart-desc">Ziet en beheert alles: alle diensten, gebruikers en rollen, dienstenaanbod, audit en analytics.</span>
             </button>
-            <button class="rol-kaart" type="button" data-login-user="aicha">
+            <button class="rol-kaart" type="button" data-login-user="fatima">
               <span class="rol-kaart-rol">Dienstbeheerder - Notificatiedienst</span>
-              <span class="rol-kaart-naam">Aïcha El Idrissi · KvK</span>
+              <span class="rol-kaart-naam">Fatima Ouahabi · BZK</span>
               <span class="rol-kaart-desc">Volledig beheer binnen de notificatiedienst: berichten, templates, logboek en API-keys.</span>
             </button>
-            <button class="rol-kaart" type="button" data-login-user="lin">
+            <button class="rol-kaart" type="button" data-login-user="naomi">
               <span class="rol-kaart-rol">Dienstbeheerder - Profieldienst</span>
-              <span class="rol-kaart-naam">Lin Zhao · KvK</span>
+              <span class="rol-kaart-naam">Naomi Sedney · BZK</span>
               <span class="rol-kaart-desc">Volledig beheer binnen de profieldienst: kanaalvoorkeuren, rapportages en API-keys. Ziet geen notificatie-onderdelen.</span>
             </button>
-            <button class="rol-kaart" type="button" data-login-user="deniz">
+            <button class="rol-kaart" type="button" data-login-user="semih">
               <span class="rol-kaart-rol">API-key-eigenaar</span>
-              <span class="rol-kaart-naam">Deniz Öztürk · KvK</span>
+              <span class="rol-kaart-naam">Semih Aydın · BZK</span>
               <span class="rol-kaart-desc">Alleen de eigen API-keys en het logboek voor die keys. Geen breder beheer.</span>
             </button>
+          </div>
+          <p class="rollen-kvk-kop">Of log in als Kamer van Koophandel:</p>
+          <div class="rollen-kvk">
+            <a class="rol-link" href="#" data-login-user="sanne">Sanne de Boer - Organisatiebeheerder</a>
+            <a class="rol-link" href="#" data-login-user="aicha">Aïcha El Idrissi - Dienstbeheerder Notificatiedienst</a>
+            <a class="rol-link" href="#" data-login-user="lin">Lin Zhao - Dienstbeheerder Profieldienst</a>
+            <a class="rol-link" href="#" data-login-user="deniz">Deniz Öztürk - API-key-eigenaar</a>
           </div>
         </div>
 
@@ -2491,7 +2505,9 @@
     // zowel het dashboard als de notificatiedienst-hoofdpagina; het logboek werkt ze bij.
     window.__mozaTellers = {
       verzonden: 1248,       // totaal verzonden vandaag
-      actieNodig: 2,         // mislukt en actie nodig (loopt mee met het logboek)
+      actieNodig: 2,         // niet afgeleverd, herstelactie loopt (loopt mee met het logboek)
+      bsnNodig: 1,           // waarvan een BSN-correctieverzoek is ingediend
+      retryNodig: 1,         // waarvan een contactherstel-brief wordt verstuurd
       metErrors: 17,         // succesvol afgeleverd, maar pas na een of meer fouten/herverzendingen
       nietAfgeleverdBasis: 18, // niet afgeleverd zonder mogelijke actie (definitieve bounces e.d.)
       render() {
@@ -2511,6 +2527,8 @@
         zet('.js-afl-fail-pct', pct(failPct) + '%');
         zet('.js-afl-err', nf.format(this.metErrors));
         zet('.js-afl-actie', String(this.actieNodig));
+        zet('.js-afl-bsn', String(this.bsnNodig));
+        zet('.js-afl-retry', String(this.retryNodig));
       },
     };
     window.__mozaTellers.render();
@@ -4688,12 +4706,18 @@
         prevBtn.toggleAttribute('disabled', cur === 1);
         nextBtn.toggleAttribute('disabled', cur === total);
         syncUrl(true);
+        try { localStorage.setItem('moza-present-slide', String(cur)); } catch (e) {} // onthoud de laatste slide
+      }
+      function laatsteSlide() {
+        let n = 1;
+        try { n = parseInt(localStorage.getItem('moza-present-slide'), 10) || 1; } catch (e) {}
+        return Math.min(total, Math.max(1, n));
       }
       function go(n) { cur = Math.min(total, Math.max(1, n)); render(); }
       function open(slide) {
         present.classList.add('open');
         present.setAttribute('aria-hidden', 'false');
-        go(slide || 1);
+        go(slide || laatsteSlide());
       }
       function close() {
         present.classList.remove('open');
@@ -4701,15 +4725,16 @@
         syncUrl(false);
       }
 
-      document.getElementById('open-present').addEventListener('click', e => { e.preventDefault(); open(1); });
+      document.getElementById('open-present').addEventListener('click', e => { e.preventDefault(); open(); });
       prevBtn.addEventListener('click', () => go(cur - 1));
       nextBtn.addEventListener('click', () => go(cur + 1));
       document.getElementById('pv-close').addEventListener('click', close);
 
-      // Rol-inlogkaarten (laatste slide): stap direct als die rol het portaal in.
-      present.querySelectorAll('.rol-kaart[data-login-user]').forEach(kaart => {
-        kaart.addEventListener('click', () => {
-          try { localStorage.setItem('moza-user', kaart.dataset.loginUser); } catch (e) {}
+      // Rol-inloggen (laatste slide): tiles en hyperlinks stappen direct als die rol het portaal in.
+      present.querySelectorAll('[data-login-user]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          try { localStorage.setItem('moza-user', el.dataset.loginUser); } catch (e2) {}
           window.location.href = 'index.html';
         });
       });
@@ -4722,7 +4747,7 @@
           const tag = t && t.tagName ? t.tagName.toLowerCase() : '';
           if (tag === 'input' || tag === 'textarea' || (t && t.isContentEditable) || (tag && tag.indexOf('nldd-') === 0 && /field|control|dropdown/.test(tag))) return;
           e.preventDefault();
-          open(1);
+          open();
         }
       });
 
@@ -4942,8 +4967,8 @@
       const LOG = [
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '234567890', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Vandaag 08:15' },
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Vandaag 08:40' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · greylisting bij ontvanger, na vertraging afgeleverd', tijd: 'Vandaag 08:05' },
+        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
+        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · greylisting bij ontvanger, na vertraging afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatiebatch afgeleverd - Jaarlijkse opgave Handelsregister', detail: '1.180 van 1.180 ondernemers afgeleverd', tijd: 'Vandaag 09:05' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Bakkerij De Korenbloem', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:03' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Café De Brug', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:02' },
@@ -5016,23 +5041,14 @@
         tag.setAttribute('color', st.color);
         tag.setAttribute('text', st.label);
 
-        const actieCel = tr.querySelector('.log-td-actie');
-        if (it.status === 'mislukt' && it.actie === 'bsn') {
-          actieCel.innerHTML = `<nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren"></nldd-button>`;
-          actieCel.querySelector('.lg-bsn-open').addEventListener('click', () => openBsnModal(it));
-        } else if (it.status === 'mislukt' && it.actie === 'retry') {
-          actieCel.innerHTML = `<nldd-button class="lg-retry" variant="primary" start-icon="arrow-2-counter-clockwise" text="Opnieuw versturen"></nldd-button>`;
-          actieCel.querySelector('.lg-retry').addEventListener('click', () => {
-            it.status = 'errors';
-            it.actie = null;
-            it.detail = it.detail + ' · opnieuw verzonden - geslaagd';
-            if (window.__mozaTellers) window.__mozaTellers.metErrors += 1; // nu succesvol met errors
-            render();
-            meld('success', 'Notificatie opnieuw verzonden - geslaagd.');
-          });
-        } else {
-          actieCel.innerHTML = `<span class="log-geen-actie">-</span>`;
-        }
+        // Opmerking i.p.v. actieknop: wat wordt er (automatisch) gedaan / is hersteld.
+        const opmCel = tr.querySelector('.log-td-actie');
+        let opm = '';
+        if (it.status === 'mislukt' && it.actie === 'bsn') opm = 'Correctieverzoek BSN-nummer aangevraagd';
+        else if (it.status === 'mislukt' && it.actie === 'retry') opm = 'E-mailadres incorrect - contactherstel-brief wordt verstuurd om het e-mailadres te corrigeren';
+        else if (it.opmerking) opm = it.opmerking;
+        if (opm) { opmCel.textContent = opm; opmCel.title = opm; }
+        else opmCel.innerHTML = `<span class="log-geen-actie">-</span>`;
         return tr;
       }
 
@@ -5127,7 +5143,7 @@
               <th class="log-th-tijd">Tijd</th>
               <th>Gebeurtenis</th>
               <th class="log-th-status">Status</th>
-              <th class="log-th-actie">Actie</th>
+              <th class="log-th-actie">Opmerking</th>
             </tr></thead>
             <tbody></tbody>`;
           const tbody = tabel.querySelector('tbody');
@@ -5135,10 +5151,17 @@
           wrap.appendChild(tabel);
           lijst.appendChild(wrap);
         }
-        const mislukt = LOG.filter(x => x.status === 'mislukt').length;
+        const misluktItems = LOG.filter(x => x.status === 'mislukt');
+        const mislukt = misluktItems.length;
         if (badge) { badge.setAttribute('number', String(mislukt)); badge.toggleAttribute('hidden', mislukt === 0); }
-        // Dashboard- en notificatiedienst-tellers meelaten lopen met het aantal mislukte notificaties.
-        if (window.__mozaTellers) { window.__mozaTellers.actieNodig = mislukt; window.__mozaTellers.render(); }
+        // Dashboard- en notificatiedienst-tellers meelaten lopen met het aantal niet-afgeleverde
+        // notificaties, uitgesplitst naar herstelactie (BSN-correctieverzoek vs contactherstel-brief).
+        if (window.__mozaTellers) {
+          window.__mozaTellers.actieNodig = mislukt;
+          window.__mozaTellers.bsnNodig = misluktItems.filter(x => x.actie === 'bsn').length;
+          window.__mozaTellers.retryNodig = misluktItems.filter(x => x.actie === 'retry').length;
+          window.__mozaTellers.render();
+        }
       }
 
       // Vanaf het dashboard / de afleverstatus: open het logboek voorgefilterd (periode = vandaag).
