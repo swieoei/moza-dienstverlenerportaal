@@ -411,22 +411,6 @@
               <!-- ====================== DASHBOARD ====================== -->
               <section class="view is-active" data-view="dashboard">
                 <div class="stack">
-                  <nldd-banner
-                    id="dash-welkom"
-                    variant="accent"
-                    text="Welkom terug."
-                    supporting-text="Vandaag zijn er 1.248 notificaties verzonden. Bekijk het logboek voor de mislukte verzendingen die om actie vragen.">
-                  </nldd-banner>
-
-                  <div class="kpi-grid">
-                    <nldd-card>
-                      <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2>6</h2><p slot="subtitle">Actieve koppelingen</p></nldd-title>
-                        <nldd-tag color="neutral" text="2 API-keys verlopen binnenkort"></nldd-tag>
-                      </nldd-container>
-                    </nldd-card>
-                  </div>
-
                   <!-- Afleverstatus hoort bij de notificatiedienst: verborgen voor gebruikers die
                        alleen tot een andere dienst toegang hebben. -->
                   <div class="stack" data-dienst="notificatiedienst">
@@ -503,6 +487,15 @@
                       <nldd-cell><nldd-tag color="accent" text="rapport"></nldd-tag></nldd-cell>
                     </nldd-table-row>
                   </nldd-table>
+
+                  <div class="kpi-grid">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>6</h2><p slot="subtitle">Actieve koppelingen</p></nldd-title>
+                        <nldd-tag color="neutral" text="2 API-keys verlopen binnenkort"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
                 </div>
               </section>
 
@@ -1979,8 +1972,8 @@
                   <nldd-title size="5"><h3>Uw service</h3></nldd-title>
                   <nldd-banner id="live-bevestig" variant="success" text="" hidden></nldd-banner>
                   <div class="live-taken" id="live-taken">
-                    <div class="live-taak" data-taak="uniek" data-done="false">
-                      <nldd-link class="live-taak-titel" href="#" text="Bevestig dat uw service uniek is"></nldd-link>
+                    <div class="live-taak" data-taak="overeenkomst" data-done="false">
+                      <nldd-link class="live-taak-titel" href="#" text="Upload de overeenkomst"></nldd-link>
                       <span class="live-status"></span>
                     </div>
                     <div class="live-taak" data-taak="volume" data-done="false">
@@ -1991,12 +1984,8 @@
                       <nldd-link class="live-taak-titel" href="#" text="Geef een ander teamlid de toestemming 'instellingen beheren'"></nldd-link>
                       <span class="live-status"></span>
                     </div>
-                    <div class="live-taak" data-taak="sjablonen" data-done="true">
-                      <nldd-link class="live-taak-titel" href="#" text="Voeg sjablonen toe met voorbeelden van uw inhoud"></nldd-link>
-                      <span class="live-status"></span>
-                    </div>
                     <div class="live-taak" data-taak="antwoordmail" data-done="false" data-naar="afzender">
-                      <nldd-link class="live-taak-titel" href="#" text="Voeg een antwoord-naar-e-mailadres toe"></nldd-link>
+                      <nldd-link class="live-taak-titel" href="#" text="Stel antwoordadressen in voor uw kanalen"></nldd-link>
                       <span class="live-status"></span>
                     </div>
                   </div>
@@ -2159,6 +2148,8 @@
         if (item.dataset.view === name) item.setAttribute('selected', '');
         else item.removeAttribute('selected');
       });
+      // Het dashboard toont 'Welkom terug, [naam]' als paginatitel.
+      if (name === 'dashboard' && window.__DASH_TITEL) title = window.__DASH_TITEL;
       if (title && titlebar) titlebar.textContent = title;
       // Houd de groep van de actieve subpagina uitgeklapt zodat het item zichtbaar is.
       const actief = navItems.find(i => i.dataset.view === name);
@@ -2191,16 +2182,12 @@
       if (am) am.setAttribute('text', MOZA_USER.naam + ' · ' + MOZA_USER.orgKort);
       if (org) org.setAttribute('text', '**' + MOZA_USER.org + '**');
       if (gb) { gb.setAttribute('text', MOZA_USER.naam); gb.setAttribute('details', ROL_LABEL[MOZA_USER.rol] || 'Gebruiker'); }
-      // Welkomsttekst op het dashboard met de voornaam van de ingelogde gebruiker.
-      // De ondersteunende tekst volgt de dienst: een beheerder die alleen de profiel-
-      // dienst mag zien, krijgt geen notificatie-gerichte tekst.
-      const welkom = document.getElementById('dash-welkom');
-      if (welkom) {
-        welkom.setAttribute('text', 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0] + '.');
-        const alleenProfiel = MOZA_USER.rol !== 'organisatiebeheerder' && MOZA_USER.dienst === 'profieldienst';
-        welkom.setAttribute('supporting-text', alleenProfiel
-          ? 'Bekijk de profieldienst voor bevragingen, kanaalvoorkeuren en rapportages.'
-          : 'Vandaag zijn er 1.248 notificaties verzonden. Bekijk het logboek voor de mislukte verzendingen die om actie vragen.');
+      // De welkomstgroet zit in de paginatitel van het dashboard (i.p.v. een aparte banner).
+      window.__DASH_TITEL = 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0];
+      const dashNav = document.querySelector('nldd-list-item[data-view="dashboard"]');
+      if (dashNav) dashNav.setAttribute('data-title', window.__DASH_TITEL);
+      if (titlebar && (document.querySelector('.view.is-active') || {}).dataset?.view === 'dashboard') {
+        titlebar.textContent = window.__DASH_TITEL;
       }
       // Plaatsen waar de eigen naam wordt getoond (bv. audit-acties door de beheerder).
       document.querySelectorAll('.js-huidige-gebruiker').forEach(el => el.setAttribute('text', MOZA_USER.naam));
