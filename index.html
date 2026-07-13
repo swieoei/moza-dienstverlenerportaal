@@ -170,11 +170,12 @@
     .lt-kop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-top: 4px; }
     .lt-label { font-weight: 600; }
     .lt-sublabel { font-weight: 600; margin: 10px 0 4px; }
-    .rte { border: 1px solid var(--context-border-color, #b3b3b3); border-radius: 8px; overflow: hidden; background: var(--context-base-background-color, #fff); }
-    .rte-toolbar { display: flex; gap: 4px; padding: 5px 6px; border-bottom: 1px solid var(--context-border-color, #e3e3e3); background: rgba(0,0,0,.03); }
-    .rte-btn { min-width: 30px; height: 28px; padding: 0 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; font-size: 0.9rem; line-height: 1; }
+    /* Rich-text editor: bewust een lichte 'papieren' bewerkomgeving met donkere tekst, ongeacht thema */
+    .rte { border: 1px solid #b3b3b3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
+    .rte-toolbar { display: flex; gap: 4px; padding: 5px 6px; border-bottom: 1px solid #e3e3e3; background: #f4f5f7; }
+    .rte-btn { min-width: 30px; height: 28px; padding: 0 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: #1a1a1a; cursor: pointer; font-size: 0.9rem; line-height: 1; }
     .rte-btn:hover { background: rgba(0,0,0,.08); }
-    .rte-area { min-height: 160px; padding: 10px 12px; outline: none; line-height: 1.5; white-space: pre-wrap; }
+    .rte-area { min-height: 160px; padding: 10px 12px; outline: none; line-height: 1.5; white-space: pre-wrap; color: #1a1a1a; }
     .rte-area:empty::before { content: attr(data-placeholder); color: var(--context-muted-foreground-color, #8a8a8a); }
     /* Instellingen: notificatie-instellingen als lijst per kanaal */
     .inst-groep + .inst-groep { margin-top: 28px; padding-top: 22px; border-top: 2px solid var(--context-border-color, #e3e3e3); }
@@ -1298,7 +1299,7 @@
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
                         <div class="between">
-                          <nldd-title size="4"><h2 id="tb-d-titel">-</h2><p slot="subtitle" id="tb-d-sub">-</p></nldd-title>
+                          <nldd-title size="4"><h2 id="tb-d-titel">-</h2></nldd-title>
                           <div class="inline">
                             <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
                             <nldd-tag id="tb-d-cat" color="success" text="-" hidden></nldd-tag>
@@ -1316,23 +1317,32 @@
                           <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
                         </nldd-tab-bar>
                         <nldd-banner id="tb-d-leegtaal" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
+
+                        <!-- Sectie: E-mail en brief (post) -->
+                        <nldd-title size="5"><h3>E-mail en brief (post)</h3></nldd-title>
                         <nldd-form-field label="Onderwerp">
                           <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                         </nldd-form-field>
-                        <nldd-form-field label="Lange tekst (e-mail en brief (post))">
-                          <nldd-multi-line-text-field id="tb-d-body" rows="12" readonly></nldd-multi-line-text-field>
+                        <nldd-form-field label="Lange tekst">
+                          <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst"></div></div>
                         </nldd-form-field>
-                        <!-- Afzender in de context van het e-mail-/briefkanaal, vooraf ingevuld uit de organisatie-instellingen -->
+                        <nldd-form-field label="Afzender (handtekening)">
+                          <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
+                        </nldd-form-field>
                         <nldd-form-field label="Verzonden vanuit e-mailadres">
                           <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
                         </nldd-form-field>
-                        <nldd-form-field label="Afzender (handtekening e-mail en brief)">
-                          <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
-                        </nldd-form-field>
-                        <p class="muted-note">Vooraf ingevuld op basis van de standaard afzender van uw organisatie. <nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzender per kanaal aanpassen"></nldd-link></p>
-                        <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)">
+
+                        <!-- Sectie: push notificatie, SMS, WhatsApp, Signal -->
+                        <nldd-title size="5"><h3>Push notificatie, SMS, WhatsApp, Signal</h3></nldd-title>
+                        <nldd-form-field label="Korte tekst">
                           <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
+                        <nldd-form-field label="Afzender">
+                          <nldd-text-field id="tb-d-kort-afz" readonly></nldd-text-field>
+                        </nldd-form-field>
+
+                        <p class="muted-note">Afzenders zijn vooraf ingevuld op basis van de standaard afzender van uw organisatie. <nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzenders aanpassen per kanaal"></nldd-link></p>
 
                         <div class="row-actions">
                           <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Voorbeeld notificatie"></nldd-button>
@@ -2310,12 +2320,20 @@
       });
       // Het dashboard toont 'Welkom terug, [naam]' als paginatitel.
       if (name === 'dashboard' && window.__DASH_TITEL) title = window.__DASH_TITEL;
+      // Subpagina's tonen '[naam van dienst] - [subfunctionaliteit]' als paginatitel.
+      const actiefItem = navItems.find(i => i.dataset.view === name);
+      const parentKey = actiefItem && actiefItem.dataset.parent;
+      if (parentKey && title) {
+        const parentItem = navItems.find(i => i.dataset.view === parentKey);
+        const parentNaam = (parentItem && parentItem.dataset.title) || parentKey;
+        if (title.indexOf(parentNaam + ' - ') !== 0) title = parentNaam + ' - ' + title;
+      }
       if (title && titlebar) titlebar.textContent = title;
-      // Statustag (demo/productie) van een dienst naast de paginatitel.
+      // Statustag (demo/productie) van de dienst naast de paginatitel - ook op subpagina's.
       const titleTag = document.getElementById('title-tag');
       if (titleTag) {
         const DIENST_STATUS = { notificatiedienst: { text: 'demo', color: 'accent' }, profieldienst: { text: 'productie', color: 'success' } };
-        const st = DIENST_STATUS[name];
+        const st = DIENST_STATUS[name] || DIENST_STATUS[parentKey];
         if (st) { titleTag.setAttribute('color', st.color); titleTag.setAttribute('text', st.text); titleTag.removeAttribute('hidden'); }
         else titleTag.setAttribute('hidden', '');
       }
@@ -3552,12 +3570,26 @@
         titel: root.querySelector('#tb-d-titelveld'),
         afz: root.querySelector('#tb-d-afz'),
         afzenderTekst: root.querySelector('#tb-d-afzender'),
+        kortAfz: root.querySelector('#tb-d-kort-afz'),
         subj: root.querySelector('#tb-d-subj'),
         body: root.querySelector('#tb-d-body'),
         kort: root.querySelector('#tb-d-kort'),
       };
+      // Lange tekst is een rich-text editor (contenteditable). Lezen/schrijven via helpers.
+      function bodyGet() { return velden.body && velden.body.classList.contains('rte-area') ? velden.body.innerText : ((velden.body && velden.body.value) || ''); }
+      function bodySet(v) { if (!velden.body) return; if (velden.body.classList.contains('rte-area')) velden.body.textContent = v || ''; else velden.body.value = v || ''; }
+      // Toolbar boven de rich-text editor injecteren.
+      root.querySelectorAll('.rte').forEach(wrap => {
+        if (wrap.querySelector('.rte-toolbar')) return;
+        const area = wrap.querySelector('.rte-area'); if (!area) return;
+        const tb = document.createElement('div');
+        tb.className = 'rte-toolbar';
+        tb.innerHTML = '<button type="button" class="rte-btn" data-cmd="bold" title="Vet"><strong>B</strong></button><button type="button" class="rte-btn" data-cmd="italic" title="Cursief"><em>I</em></button><button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Opsomming">&#8226; Lijst</button>';
+        wrap.insertBefore(tb, area);
+        tb.addEventListener('mousedown', e => e.preventDefault());
+        tb.addEventListener('click', e => { const b = e.target.closest('.rte-btn'); if (!b) return; area.focus(); try { document.execCommand(b.dataset.cmd, false, null); } catch (err) {} });
+      });
       const dTitel = root.querySelector('#tb-d-titel');
-      const dSub = root.querySelector('#tb-d-sub');
       const dTag = root.querySelector('#tb-d-tag');
       const dCat = root.querySelector('#tb-d-cat');
       const leegBanner = root.querySelector('#tb-d-leegtaal');
@@ -3608,7 +3640,7 @@
       function laadTaal(lang) {
         const c = (werk.content && werk.content[lang]) || leeg();
         velden.subj.value = c.subject || '';
-        velden.body.value = c.body || '';
+        bodySet(c.body || '');
         velden.kort.value = c.kort || '';
         const isLeeg = !(c.subject || c.body || c.kort);
         leegBanner.toggleAttribute('hidden', !(isLeeg && lang !== 'nl'));
@@ -3619,13 +3651,15 @@
         werk.titel = velden.titel.value;
         werk.afzender = velden.afz.value;
         werk.afzendertekst = velden.afzenderTekst.value;
-        werk.content[taalNu] = { subject: velden.subj.value, body: velden.body.value, kort: velden.kort.value };
+        werk.content[taalNu] = { subject: velden.subj.value, body: bodyGet(), kort: velden.kort.value };
       }
       function setBewerken(on) {
         bewerken = on;
-        [velden.titel, velden.afz, velden.afzenderTekst, velden.subj, velden.body, velden.kort].forEach(el => {
+        [velden.titel, velden.afz, velden.afzenderTekst, velden.kortAfz, velden.subj, velden.kort].forEach(el => {
+          if (!el) return;
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
+        if (velden.body) velden.body.setAttribute('contenteditable', on ? 'true' : 'false'); // rich-text editor
         btnBewerk.toggleAttribute('hidden', on);
         btnOpslaan.toggleAttribute('hidden', !on);
       }
@@ -3636,7 +3670,6 @@
         werk = kloon(t);
         const st = statusMeta(t);
         dTitel.textContent = werk.titel;
-        dSub.textContent = st.label + ' - meertalig (NL, EN, DE, FR)';
         dTag.setAttribute('color', st.color); dTag.setAttribute('text', st.label);
         const cm = t.cat && CAT[t.cat];
         if (cm) { dCat.setAttribute('color', cm.color); dCat.setAttribute('text', cm.label); dCat.removeAttribute('hidden'); }
@@ -3649,6 +3682,7 @@
         const _orgAfzTekst = (_mu.org || 'MijnOverheid') + '\nAfdeling Notificaties\nW https://mijn.overheid.nl';
         velden.afz.value = werk.afzender || ('notificaties@' + _orgDomein);
         velden.afzenderTekst.value = werk.afzendertekst || _orgAfzTekst;
+        if (velden.kortAfz) velden.kortAfz.value = werk.kortAfzender || (_mu.org || 'MijnOverheid'); // afzender push/SMS/WhatsApp/Signal
         langTabs.querySelectorAll('nldd-tab-bar-item').forEach(tab => tab.toggleAttribute('selected', tab.dataset.tl === 'nl'));
         laadTaal('nl');
         setBewerken(edit);
