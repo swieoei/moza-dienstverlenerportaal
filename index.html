@@ -64,6 +64,19 @@
     .log-substatus { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-inline-start: 8px; display: flex; flex-direction: column; gap: 6px; }
     .log-checks { display: flex; gap: 20px; flex-wrap: wrap; }
     .log-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    /* Logboek als tabel (in werkelijkheid veel records) */
+    .log-tabel-wrap { overflow-x: auto; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 10px; }
+    .log-tabel { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    .log-tabel th, .log-tabel td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--context-border-color, #ececec); vertical-align: top; }
+    .log-tabel thead th { font-weight: 700; color: var(--context-muted-foreground-color, #5a5a5a); border-bottom: 2px solid var(--context-border-color, #cfcfcf); white-space: nowrap; }
+    .log-tabel tbody tr:last-child td { border-bottom: none; }
+    .log-tabel .log-td-tijd { white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
+    .log-geb-titel { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+    .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; }
+    .log-td-actie { white-space: nowrap; }
+    .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
+    .log-rij-detail > td { background: rgba(0,0,0,.03); }
+    .log-rij-detail .lg-bsn-form { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
     .log-periode-rij { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .log-periode-rij nldd-dropdown { min-width: 200px; }
     .log-periode-custom { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
@@ -118,6 +131,13 @@
     .tbp-bubble { display: inline-block; padding: 10px 14px; border-radius: 16px; max-width: 85%; line-height: 1.4; color: #1a1a1a; }
     .tbp-bubble-sms { background: #e5e5ea; border-bottom-left-radius: 4px; }
     .tbp-bubble-whats { background: #dcf8c6; border-bottom-left-radius: 4px; }
+    /* Testnotificatie per kanaal (in de voorbeeld-popup) */
+    .tbp-test { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--context-border-color, #cfcfcf); display: flex; flex-direction: column; gap: 8px; }
+    .tbp-test-titel { font-weight: 700; font-size: 0.9rem; }
+    .tbp-test-rij { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+    .tbp-test-rij nldd-text-field { flex: 1 1 240px; }
+    .tbp-test-links { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .tbp-test-uitleg { font-size: 0.9rem; color: var(--context-muted-foreground-color, #5a5a5a); margin: 0; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
     .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
     .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
@@ -1178,7 +1198,7 @@
                         </nldd-form-field>
 
                         <div class="row-actions">
-                          <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Voorbeeld e-mail"></nldd-button>
+                          <nldd-button id="tb-preview" variant="secondary" start-icon="eye" text="Voorbeeld notificatie"></nldd-button>
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
                           <nldd-button id="tb-kopie" variant="secondary" start-icon="square-on-square" text="Kopie maken"></nldd-button>
@@ -1762,7 +1782,7 @@
           <nldd-title size="5"><h2 id="tbp-titel">Voorbeeld per kanaal</h2></nldd-title>
           <nldd-button id="tbp-sluit" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
         </div>
-        <p class="muted-note">Voorbeeld van het bericht per kanaal, met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld.</p>
+        <p class="muted-note">Voorbeeld van de notificatie per kanaal, met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld. Per kanaal kunt u een testnotificatie versturen - handmatig of naar een geuploade lijst.</p>
         <div id="tbp-kanalen" class="tbp-kanalen"></div>
       </div>
     </div>
@@ -3039,7 +3059,32 @@
         return ((tekst || '') + '').replace(/\{afzender\}/g, naam);
       }
       const esc = s => ((s || '') + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      const kanaalBlok = (label, inner) => '<div class="tbp-kanaal"><div class="tbp-kanaal-label">' + label + '</div>' + inner + '</div>';
+      // Per kanaal een testverzending: handmatig een ontvanger invoeren of een lijst uploaden.
+      const TEST_CFG = {
+        email: { placeholder: 'test-e-mailadres, bijv. naam@voorbeeld.nl', ontvangers: 'e-mailadressen', help: 'Upload een CSV of Excel met in de eerste kolom een e-mailadres per regel.' },
+        post:  { placeholder: 'test-postadres, bijv. Straat 1, 1234 AB Plaats', ontvangers: 'adressen', help: 'Upload een CSV of Excel met per regel naam, straat, postcode en plaats.' },
+        push:  { placeholder: 'test-BSN of KvK-nummer', ontvangers: 'profielen', help: 'Upload een CSV of Excel met per regel een BSN of KvK-nummer; de push gaat naar het gekoppelde profiel.' },
+        sms:   { placeholder: 'test-telefoonnummer, bijv. 06-12345678', ontvangers: 'telefoonnummers', help: 'Upload een CSV of Excel met een mobiel telefoonnummer per regel.' },
+        whats: { placeholder: 'test-telefoonnummer, bijv. 06-12345678', ontvangers: 'telefoonnummers', help: 'Upload een CSV of Excel met een mobiel telefoonnummer per regel.' },
+      };
+      const testBlok = (key, label) => {
+        const cfg = TEST_CFG[key];
+        return '<div class="tbp-test" data-kanaal="' + key + '" data-label="' + esc(label) + '">' +
+          '<div class="tbp-test-titel">Testnotificatie versturen</div>' +
+          '<div class="tbp-test-rij">' +
+            '<nldd-text-field class="tbp-test-veld" placeholder="' + esc(cfg.placeholder) + '"></nldd-text-field>' +
+            '<nldd-button class="tbp-test-knop" variant="secondary" start-icon="paper-plane" text="Verstuur test"></nldd-button>' +
+          '</div>' +
+          '<div class="tbp-test-links">' +
+            '<nldd-link class="tbp-test-upload" href="#" start-icon="arrow-up-tray" text="Lijst uploaden"></nldd-link>' +
+            '<nldd-link class="tbp-test-help" href="#" start-icon="question-circle" text="Hoe werkt dit?"></nldd-link>' +
+            '<input type="file" class="tbp-test-file" accept=".csv,.xls,.xlsx" hidden>' +
+          '</div>' +
+          '<p class="tbp-test-uitleg" hidden>' + esc(cfg.help) + ' <nldd-link href="#" text="Bekijk de handleiding"></nldd-link></p>' +
+          '<nldd-banner class="tbp-test-melding" variant="success" text="" hidden></nldd-banner>' +
+        '</div>';
+      };
+      const kanaalBlok = (label, inner, key) => '<div class="tbp-kanaal"><div class="tbp-kanaal-label">' + label + '</div>' + inner + testBlok(key, label) + '</div>';
       btnPreview.addEventListener('click', () => {
         if (bewerken) bewaarHuidigeTaal();
         const merk = MERK[(werk && werk.huisstijl) || 'mijnoverheid'] || MERK.mijnoverheid;
@@ -3064,7 +3109,7 @@
                 '<div class="tbp-pre">' + esc(body) + '</div>' +
                 (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
               '</div>' +
-            '</div>') +
+            '</div>', 'email') +
           kanaalBlok('Brief (post)',
             '<div class="tbp-brief">' +
               '<div class="tbp-brief-band" style="background:' + merk.kleur + '"></div>' +
@@ -3074,19 +3119,64 @@
                 '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
                 '<div class="tbp-pre">' + esc(body) + '</div>' +
               '</div>' +
-            '</div>') +
+            '</div>', 'post') +
           kanaalBlok('Push (MijnOverheid-app)',
             '<div class="tbp-push">' +
               '<div class="tbp-push-app"><span class="tbp-push-icon" style="background:' + merk.kleur + '">M</span> MijnOverheid <span class="tbp-push-nu">nu</span></div>' +
               '<div class="tbp-push-titel">' + esc(subject) + '</div>' +
               '<div class="tbp-push-tekst">' + esc(kort) + '</div>' +
-            '</div>') +
+            '</div>', 'push') +
           kanaalBlok('SMS',
-            '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>') +
+            '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms') +
           kanaalBlok('WhatsApp / Signal',
-            '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>');
+            '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(naam) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'whats');
         pvOverlay.removeAttribute('hidden');
       });
+
+      // Testverzending per kanaal: handmatig versturen, lijst uploaden of uitleg tonen.
+      const kanalenEl = document.getElementById('tbp-kanalen');
+      if (kanalenEl) {
+        kanalenEl.addEventListener('click', e => {
+          const blok = e.target.closest('.tbp-test');
+          if (!blok) return;
+          if (e.target.closest('.tbp-test-help')) {
+            e.preventDefault();
+            blok.querySelector('.tbp-test-uitleg').toggleAttribute('hidden');
+            return;
+          }
+          if (e.target.closest('.tbp-test-upload')) {
+            e.preventDefault();
+            blok.querySelector('.tbp-test-file').click();
+            return;
+          }
+          if (e.target.closest('.tbp-test-knop')) {
+            const veld = blok.querySelector('.tbp-test-veld');
+            const waarde = ((veld && veld.value) || '').trim();
+            const melding = blok.querySelector('.tbp-test-melding');
+            if (!waarde) {
+              melding.setAttribute('variant', 'warning');
+              melding.setAttribute('text', 'Vul eerst een testontvanger in, of upload een lijst.');
+              melding.removeAttribute('hidden');
+              return;
+            }
+            melding.setAttribute('variant', 'success');
+            melding.setAttribute('text', 'Testnotificatie verstuurd via ' + blok.dataset.label + ' naar ' + waarde + '.');
+            melding.removeAttribute('hidden');
+          }
+        });
+        kanalenEl.addEventListener('change', e => {
+          const file = e.target.closest('.tbp-test-file');
+          if (!file) return;
+          const blok = e.target.closest('.tbp-test');
+          const naam = file.files && file.files[0] ? file.files[0].name : '';
+          if (!naam) return;
+          const cfg = TEST_CFG[blok.dataset.kanaal] || { ontvangers: 'ontvangers' };
+          const melding = blok.querySelector('.tbp-test-melding');
+          melding.setAttribute('variant', 'success');
+          melding.setAttribute('text', 'Lijst "' + naam + '" geuploaded. Testnotificatie via ' + blok.dataset.label + ' wordt naar alle ' + cfg.ontvangers + ' in de lijst verstuurd.');
+          melding.removeAttribute('hidden');
+        });
+      }
       const pvSluit = document.getElementById('tbp-sluit');
       if (pvSluit) pvSluit.addEventListener('click', () => pvOverlay.setAttribute('hidden', ''));
       if (pvOverlay) pvOverlay.addEventListener('click', e => { if (e.target === pvOverlay) pvOverlay.setAttribute('hidden', ''); });
@@ -4133,75 +4223,35 @@
         return 'check-mark';
       }
 
-      function kaart(it) {
+      // Een logboekregel in de tabel. Mislukte notificaties krijgen een actieknop; die
+      // klapt zo nodig een correctie-/herverzendrij onder de regel uit.
+      function rij(it) {
         const st = STAT[it.status] || STAT.apikey;
-        const wrap = document.createElement('div');
-        wrap.innerHTML = `
-          <nldd-card>
-            <nldd-container padding="12" gap="8">
-              <div class="between">
-                <nldd-title size="6"><h3 class="lg-titel"></h3><p slot="subtitle" class="lg-detail"></p></nldd-title>
-                <div class="inline">
-                  <nldd-icon class="lg-icon" size="20"></nldd-icon>
-                  <nldd-tag class="lg-status"></nldd-tag>
-                </div>
-              </div>
-              <div class="lg-acties"></div>
-            </nldd-container>
-          </nldd-card>`;
-        const el = wrap.firstElementChild;
-        el.querySelector('.lg-titel').textContent = it.titel;
-        el.querySelector('.lg-detail').textContent = it.detail + ' · ' + it.tijd;
-        el.querySelector('.lg-icon').setAttribute('name', icoon(it));
-        const tag = el.querySelector('.lg-status');
+        const tr = document.createElement('tr');
+        tr.className = 'log-rij';
+        tr.innerHTML = `
+          <td class="log-td-tijd"></td>
+          <td class="log-td-geb">
+            <div class="log-geb-titel"><nldd-icon class="lg-icon" size="18"></nldd-icon><span class="lg-titel"></span></div>
+            <div class="log-geb-detail lg-detail"></div>
+          </td>
+          <td class="log-td-status"><nldd-tag class="lg-status"></nldd-tag></td>
+          <td class="log-td-actie"></td>`;
+        tr.querySelector('.log-td-tijd').textContent = it.tijd;
+        tr.querySelector('.lg-titel').textContent = it.titel;
+        tr.querySelector('.lg-detail').textContent = it.detail;
+        tr.querySelector('.lg-icon').setAttribute('name', icoon(it));
+        const tag = tr.querySelector('.lg-status');
         tag.setAttribute('color', st.color);
         tag.setAttribute('text', st.label);
 
-        const acties = el.querySelector('.lg-acties');
+        const actieCel = tr.querySelector('.log-td-actie');
         if (it.status === 'mislukt' && it.actie === 'bsn') {
-          acties.innerHTML = `
-            <div class="row-actions lg-bsn-openrow">
-              <nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren"></nldd-button>
-            </div>
-            <div class="lg-bsn-form" hidden>
-              <nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="lg-bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>
-              <div class="row-actions">
-                <nldd-button class="lg-bsn-verstuur" variant="primary" start-icon="paper-plane" text="Versturen"></nldd-button>
-                <nldd-button class="lg-bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>
-              </div>
-              <nldd-banner class="lg-bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>
-            </div>`;
-          const openRow = acties.querySelector('.lg-bsn-openrow');
-          const form = acties.querySelector('.lg-bsn-form');
-          const veld = acties.querySelector('.lg-bsn-veld');
-          const fout = acties.querySelector('.lg-bsn-fout');
-          // Toon het huidige (onjuiste) BSN zodat je het kunt aanpassen.
-          const vulHuidig = () => { veld.value = it.huidigBsn || ''; };
-          vulHuidig();
-          customElements.whenDefined('nldd-text-field').then(vulHuidig);
-          acties.querySelector('.lg-bsn-open').addEventListener('click', () => {
-            openRow.setAttribute('hidden', '');   // knop 'BSN corrigeren' verdwijnt
-            form.removeAttribute('hidden');
-            fout.setAttribute('hidden', '');
-            vulHuidig();
-          });
-          acties.querySelector('.lg-bsn-annuleer').addEventListener('click', () => {
-            form.setAttribute('hidden', '');
-            openRow.removeAttribute('hidden');
-          });
-          acties.querySelector('.lg-bsn-verstuur').addEventListener('click', () => {
-            const bsn = ((veld.value || '') + '').replace(/\s/g, '');
-            if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
-            it.status = 'errors';
-            it.actie = null;
-            it.detail = it.detail.split(' · onbekend')[0] + ' · BSN gecorrigeerd naar ' + bsn + ', opnieuw verzonden - geslaagd';
-            if (window.__mozaTellers) window.__mozaTellers.metErrors += 1; // nu succesvol met errors
-            render();
-            meld('success', 'BSN gecorrigeerd en notificatie opnieuw verzonden - geslaagd.');
-          });
+          actieCel.innerHTML = `<nldd-button class="lg-bsn-open" variant="primary" start-icon="pencil" text="BSN corrigeren"></nldd-button>`;
+          actieCel.querySelector('.lg-bsn-open').addEventListener('click', () => openBsnRij(tr, it));
         } else if (it.status === 'mislukt' && it.actie === 'retry') {
-          acties.innerHTML = `<div class="row-actions"><nldd-button class="lg-retry" variant="primary" start-icon="arrow-2-counter-clockwise" text="Opnieuw versturen"></nldd-button></div>`;
-          acties.querySelector('.lg-retry').addEventListener('click', () => {
+          actieCel.innerHTML = `<nldd-button class="lg-retry" variant="primary" start-icon="arrow-2-counter-clockwise" text="Opnieuw versturen"></nldd-button>`;
+          actieCel.querySelector('.lg-retry').addEventListener('click', () => {
             it.status = 'errors';
             it.actie = null;
             it.detail = it.detail + ' · opnieuw verzonden - geslaagd';
@@ -4210,9 +4260,46 @@
             meld('success', 'Notificatie opnieuw verzonden - geslaagd.');
           });
         } else {
-          acties.remove();
+          actieCel.innerHTML = `<span class="log-geen-actie">-</span>`;
         }
-        return el;
+        return tr;
+      }
+
+      // Correctierij (BSN aanpassen en opnieuw versturen) onder een logboekregel.
+      function openBsnRij(tr, it) {
+        const volgende = tr.nextElementSibling;
+        if (volgende && volgende.classList.contains('log-rij-detail')) { volgende.remove(); return; } // toggle
+        const det = document.createElement('tr');
+        det.className = 'log-rij-detail';
+        det.innerHTML = `
+          <td colspan="4">
+            <div class="lg-bsn-form">
+              <nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="lg-bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>
+              <div class="row-actions">
+                <nldd-button class="lg-bsn-verstuur" variant="primary" start-icon="paper-plane" text="Versturen"></nldd-button>
+                <nldd-button class="lg-bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>
+              </div>
+              <nldd-banner class="lg-bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>
+            </div>
+          </td>`;
+        tr.parentNode.insertBefore(det, tr.nextElementSibling);
+        const veld = det.querySelector('.lg-bsn-veld');
+        const fout = det.querySelector('.lg-bsn-fout');
+        // Toon het huidige (onjuiste) BSN zodat je het kunt aanpassen.
+        const vulHuidig = () => { veld.value = it.huidigBsn || ''; };
+        vulHuidig();
+        customElements.whenDefined('nldd-text-field').then(vulHuidig);
+        det.querySelector('.lg-bsn-annuleer').addEventListener('click', () => det.remove());
+        det.querySelector('.lg-bsn-verstuur').addEventListener('click', () => {
+          const bsn = ((veld.value || '') + '').replace(/\s/g, '');
+          if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
+          it.status = 'errors';
+          it.actie = null;
+          it.detail = it.detail.split(' · onbekend')[0] + ' · BSN gecorrigeerd naar ' + bsn + ', opnieuw verzonden - geslaagd';
+          if (window.__mozaTellers) window.__mozaTellers.metErrors += 1; // nu succesvol met errors
+          render();
+          meld('success', 'BSN gecorrigeerd en notificatie opnieuw verzonden - geslaagd.');
+        });
       }
 
       function render() {
@@ -4221,7 +4308,24 @@
         lijst.textContent = '';
         const items = LOG.filter(zichtbaar);
         leegP.toggleAttribute('hidden', items.length > 0);
-        items.forEach(it => lijst.appendChild(kaart(it)));
+        if (items.length) {
+          const wrap = document.createElement('div');
+          wrap.className = 'log-tabel-wrap';
+          const tabel = document.createElement('table');
+          tabel.className = 'log-tabel';
+          tabel.innerHTML = `
+            <thead><tr>
+              <th class="log-th-tijd">Tijd</th>
+              <th>Gebeurtenis</th>
+              <th class="log-th-status">Status</th>
+              <th class="log-th-actie">Actie</th>
+            </tr></thead>
+            <tbody></tbody>`;
+          const tbody = tabel.querySelector('tbody');
+          items.forEach(it => tbody.appendChild(rij(it)));
+          wrap.appendChild(tabel);
+          lijst.appendChild(wrap);
+        }
         const mislukt = LOG.filter(x => x.status === 'mislukt').length;
         if (badge) { badge.setAttribute('number', String(mislukt)); badge.toggleAttribute('hidden', mislukt === 0); }
         // Dashboard- en notificatiedienst-tellers meelaten lopen met het aantal mislukte notificaties.
