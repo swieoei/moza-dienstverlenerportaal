@@ -115,14 +115,6 @@
     .rol-verborgen { display: none !important; }
     /* E-mailpreview met huisstijl */
     .tb-preview-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 20px; max-width: 640px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
-    /* BSN corrigeren popup */
-    .bsn-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 20px; max-width: 560px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
-    .bsn-inhoud { display: flex; flex-direction: column; gap: 14px; }
-    .bsn-infoblok { border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-    .bsn-infoblok dt { font-size: 0.8rem; color: var(--context-muted-foreground-color, #5a5a5a); }
-    .bsn-infoblok dd { margin: 0 0 6px; font-weight: 600; }
-    .bsn-actiezone { display: flex; flex-direction: column; gap: 12px; }
-    .bsn-form { display: flex; flex-direction: column; gap: 12px; }
     .tb-mail { border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 8px; overflow: hidden; margin-top: 12px; background: #fff; color: #1a1a1a; }
     .tb-mail-header { padding: 16px 20px; color: #fff; font-weight: 700; font-size: 1.1rem; }
     .tb-mail-body { padding: 20px; }
@@ -2198,17 +2190,6 @@
         </div>
         <p class="muted-note">Voorbeeld van de notificatie per kanaal, met de huisstijl van de afzender. Placeholders zoals [datum_actie] worden per bericht ingevuld. Per kanaal kunt u een testnotificatie versturen - handmatig of naar een geuploade lijst.</p>
         <div id="tbp-kanalen" class="tbp-kanalen"></div>
-      </div>
-    </div>
-
-    <!-- ===== BSN corrigeren (popup): context binnen de profieldienst ===== -->
-    <div id="bsn-overlay" class="flags-overlay" hidden>
-      <div class="bsn-dialog" role="dialog" aria-modal="true" aria-labelledby="bsn-titel">
-        <div class="flags-head">
-          <nldd-title size="5"><h2 id="bsn-titel">BSN corrigeren</h2></nldd-title>
-          <nldd-button id="bsn-sluit" variant="secondary" start-icon="cross" text="Sluiten"></nldd-button>
-        </div>
-        <div id="bsn-inhoud"></div>
       </div>
     </div>
 
@@ -5050,81 +5031,6 @@
         if (opm) { opmCel.textContent = opm; opmCel.title = opm; }
         else opmCel.innerHTML = `<span class="log-geen-actie">-</span>`;
         return tr;
-      }
-
-      // Correctierij (BSN aanpassen en opnieuw versturen) onder een logboekregel.
-      // BSN corrigeren opent een popup met context: het BSN koppelt de notificatie aan het
-      // profiel van de ondernemer in de Profieldienst. Zonder profieldienst-toegang krijgt de
-      // gebruiker uitleg over wat er moet gebeuren.
-      const bsnOverlay = document.getElementById('bsn-overlay');
-      const bsnInhoud = document.getElementById('bsn-inhoud');
-      const bsnSluitBtn = document.getElementById('bsn-sluit');
-      function sluitBsn() { if (bsnOverlay) bsnOverlay.setAttribute('hidden', ''); }
-      if (bsnSluitBtn) bsnSluitBtn.addEventListener('click', sluitBsn);
-      if (bsnOverlay) bsnOverlay.addEventListener('click', e => { if (e.target === bsnOverlay) sluitBsn(); });
-      document.addEventListener('keydown', e => { if (e.key === 'Escape' && bsnOverlay && !bsnOverlay.hasAttribute('hidden')) sluitBsn(); });
-
-      function heeftProfieldienstToegang() {
-        const u = window.__MOZA_USER;
-        if (!u) return true;
-        if (u.rol === 'organisatiebeheerder') return true; // ziet en beheert alle diensten
-        return u.dienst === 'profieldienst'; // dienstbeheerder/keyeigenaar: alleen de eigen dienst
-      }
-
-      function openBsnModal(it) {
-        if (!bsnOverlay || !bsnInhoud) return;
-        const ondernemer = ((it.titel || '').split(' - ')[1] || 'onbekende ondernemer').trim();
-        const onderwerp = ((it.detail || '').split(' · ')[0] || '').trim();
-        const toegang = heeftProfieldienstToegang();
-        bsnInhoud.className = 'bsn-inhoud';
-        bsnInhoud.innerHTML =
-          '<nldd-banner variant="neutral" text="Het BSN koppelt deze notificatie aan het profiel van de ondernemer in de Profieldienst. U past hiermee gegevens binnen de Profieldienst aan."></nldd-banner>' +
-          '<dl class="bsn-infoblok">' +
-            '<dt>Ondernemer</dt><dd class="bsn-ondernemer"></dd>' +
-            '<dt>Notificatie</dt><dd class="bsn-onderwerp"></dd>' +
-            '<dt>Dienst</dt><dd>Profieldienst - profielkoppeling op BSN</dd>' +
-            '<dt>Huidig (onjuist) BSN</dt><dd class="bsn-huidig"></dd>' +
-          '</dl>' +
-          '<div class="bsn-actiezone"></div>';
-        bsnInhoud.querySelector('.bsn-ondernemer').textContent = ondernemer;
-        bsnInhoud.querySelector('.bsn-onderwerp').textContent = onderwerp || (it.detail || '');
-        bsnInhoud.querySelector('.bsn-huidig').textContent = it.huidigBsn || 'onbekend';
-        const zone = bsnInhoud.querySelector('.bsn-actiezone');
-        if (toegang) {
-          zone.innerHTML =
-            '<div class="bsn-form">' +
-              '<nldd-form-field label="Correct BSN (9 cijfers)"><nldd-text-field class="bsn-veld" placeholder="9 cijfers"></nldd-text-field></nldd-form-field>' +
-              '<nldd-banner class="bsn-fout" variant="critical" text="Vul een geldig BSN in (9 cijfers)." hidden></nldd-banner>' +
-              '<div class="row-actions">' +
-                '<nldd-button class="bsn-verstuur" variant="primary" start-icon="paper-plane" text="Corrigeren en opnieuw versturen"></nldd-button>' +
-                '<nldd-button class="bsn-annuleer" variant="secondary" text="Annuleren"></nldd-button>' +
-              '</div>' +
-            '</div>';
-          const veld = zone.querySelector('.bsn-veld');
-          const fout = zone.querySelector('.bsn-fout');
-          const vul = () => { veld.value = it.huidigBsn || ''; };
-          vul();
-          customElements.whenDefined('nldd-text-field').then(vul);
-          zone.querySelector('.bsn-annuleer').addEventListener('click', sluitBsn);
-          zone.querySelector('.bsn-verstuur').addEventListener('click', () => {
-            const bsn = ((veld.value || '') + '').replace(/\s/g, '');
-            if (!/^\d{9}$/.test(bsn)) { fout.removeAttribute('hidden'); return; }
-            it.status = 'errors';
-            it.actie = null;
-            it.detail = it.detail.split(' · onbekend')[0] + ' · BSN gecorrigeerd naar ' + bsn + ', opnieuw verzonden - geslaagd';
-            if (window.__mozaTellers) window.__mozaTellers.metErrors += 1; // nu succesvol met errors
-            render();
-            sluitBsn();
-            meld('success', 'BSN gecorrigeerd en notificatie opnieuw verzonden - geslaagd.');
-          });
-        } else {
-          zone.innerHTML =
-            '<nldd-banner variant="warning" text="BSN corrigeren gebeurt in de Profieldienst. U heeft geen toegang tot de Profieldienst, dus u kunt dit zelf niet aanpassen."></nldd-banner>' +
-            '<nldd-rich-text><p>Vraag een beheerder van de Profieldienst om het BSN te corrigeren. Neemt uw organisatie de Profieldienst niet af? Dan kan uw organisatiebeheerder de Profieldienst aanvragen via Dienstenaanbod.</p></nldd-rich-text>' +
-            '<div class="row-actions"><nldd-button class="bsn-annuleer" variant="secondary" text="Sluiten"></nldd-button></div>';
-          zone.querySelector('.bsn-annuleer').addEventListener('click', sluitBsn);
-        }
-        bsnOverlay.removeAttribute('hidden');
       }
 
       function render() {
