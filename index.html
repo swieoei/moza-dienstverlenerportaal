@@ -151,6 +151,14 @@
     .inst-highlight { animation: instPuls 1.6s ease; }
     @keyframes instPuls { 0%,100% { background: transparent; } 20%,50% { background: rgba(0,123,199,.12); } }
     @media (max-width: 640px) { .inst-rij { grid-template-columns: 1fr; gap: 4px; } .inst-rij-actie { text-align: left; } }
+    /* Maak uw service live: go-live-takenlijst */
+    .live-intro-lijst { margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; }
+    .live-taken { border-top: 1px solid var(--context-border-color, #ececec); }
+    .live-taak { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 2px; border-bottom: 1px solid var(--context-border-color, #ececec); }
+    .live-taak-titel { font-weight: 600; }
+    .live-status { white-space: nowrap; }
+    .live-done { display: inline-flex; align-items: center; gap: 8px; color: #39870c; font-weight: 700; }
+    .live-check { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #39870c; color: #fff; font-size: 0.8rem; line-height: 1; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
     .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
     .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
@@ -1939,6 +1947,61 @@
                         </div>
                       </nldd-container>
                     </nldd-card>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ====================== MAAK UW SERVICE LIVE (go-live checklist) ====================== -->
+              <section class="view" data-view="livegaan">
+                <div class="stack">
+                  <div class="inline">
+                    <nldd-button id="live-terug" variant="secondary" start-icon="arrow-left" text="Terug naar de dienst"></nldd-button>
+                  </div>
+                  <nldd-title size="4"><h2>Maak uw service live</h2></nldd-title>
+                  <nldd-rich-text>
+                    <p>Verwijder de beperkingen van de <nldd-link href="#" text="proefmodus"></nldd-link> en maak uw service live:</p>
+                    <ol class="live-intro-lijst">
+                      <li>Voltooi de taken op deze pagina.</li>
+                      <li>Selecteer 'Stuur een verzoek om live te gaan'.</li>
+                    </ol>
+                    <p>Het kan tot één werkdag duren om een service live te maken. We controleren namelijk of de service voldoet aan onze <nldd-link href="#" text="gebruiksvoorwaarden"></nldd-link>.</p>
+                  </nldd-rich-text>
+
+                  <nldd-title size="5"><h3>Jouw service</h3></nldd-title>
+                  <nldd-banner id="live-bevestig" variant="success" text="" hidden></nldd-banner>
+                  <div class="live-taken" id="live-taken">
+                    <div class="live-taak" data-taak="uniek" data-done="false">
+                      <nldd-link class="live-taak-titel" href="#" text="Bevestig dat uw service uniek is"></nldd-link>
+                      <span class="live-status"></span>
+                    </div>
+                    <div class="live-taak" data-taak="volume" data-done="false">
+                      <nldd-link class="live-taak-titel" href="#" text="Vertel ons hoeveel berichten u verwacht te verzenden"></nldd-link>
+                      <span class="live-status"></span>
+                    </div>
+                    <div class="live-taak" data-taak="teamlid" data-done="true">
+                      <nldd-link class="live-taak-titel" href="#" text="Geef een ander teamlid de toestemming 'instellingen beheren'"></nldd-link>
+                      <span class="live-status"></span>
+                    </div>
+                    <div class="live-taak" data-taak="sjablonen" data-done="true">
+                      <nldd-link class="live-taak-titel" href="#" text="Voeg sjablonen toe met voorbeelden van uw inhoud"></nldd-link>
+                      <span class="live-status"></span>
+                    </div>
+                    <div class="live-taak" data-taak="antwoordmail" data-done="false" data-naar="afzender">
+                      <nldd-link class="live-taak-titel" href="#" text="Voeg een antwoord-naar-e-mailadres toe"></nldd-link>
+                      <span class="live-status"></span>
+                    </div>
+                  </div>
+
+                  <nldd-title size="5"><h3>Jouw organisatie</h3></nldd-title>
+                  <nldd-rich-text>
+                    <p>Wanneer u ons een verzoek stuurt om live te gaan, vragen we u de naam van de openbare-sectororganisatie die verantwoordelijk is voor uw service.</p>
+                    <p>We kunnen u ook vragen om onze <nldd-link href="#" text="gegevensverwerkings- en financiële overeenkomst"></nldd-link> te accepteren.</p>
+                  </nldd-rich-text>
+
+                  <nldd-divider></nldd-divider>
+                  <p class="muted-note" id="live-note">U moet alle taken voltooien voordat u een verzoek kunt verzenden om live te gaan.</p>
+                  <div class="row-actions">
+                    <nldd-button id="live-send" variant="primary" start-icon="paper-plane" text="Stuur een verzoek om live te gaan" disabled></nldd-button>
                   </div>
                 </div>
               </section>
@@ -3878,11 +3941,66 @@
       }
       // Beschikbaar maken zodat een wervende CTA elders direct de dienstpagina kan openen.
       window.__mpOpenDienst = openDienst;
-      root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => {
-        const b = root.querySelector('#dp-prod-bevestig');
-        b.setAttribute('text', 'Aanvraag voor de productieversie verstuurd. De beheerorganisatie toetst de aansluitvoorwaarden en neemt contact op met ' + ((window.__MOZA_USER && (window.__MOZA_USER.naam + ' (' + window.__MOZA_USER.org + ')')) || 'de organisatiebeheerder') + '.');
-        b.removeAttribute('hidden');
+      // Naar de go-live-takenlijst: 'Maak uw service live'.
+      root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => showView('livegaan', 'Maak uw service live'));
+    })();
+
+    // ====================== Maak uw service live (go-live checklist) ======================
+    // Takenlijst voor de overstap naar productie. Voltooide criteria krijgen een groene
+    // check; het verzoek kan pas worden verstuurd als alle taken voltooid zijn.
+    (function () {
+      const root = document.querySelector('section[data-view="livegaan"]');
+      if (!root) return;
+      const taken = Array.from(root.querySelectorAll('.live-taak'));
+      const sendBtn = root.querySelector('#live-send');
+      const note = root.querySelector('#live-note');
+      const bevestig = root.querySelector('#live-bevestig');
+
+      function statusHTML(done) {
+        return done
+          ? '<span class="live-done"><span class="live-check" aria-hidden="true">&#10003;</span> Voltooid</span>'
+          : '<nldd-tag color="neutral" text="Niet voltooid"></nldd-tag>';
+      }
+      function renderStatus() {
+        let alle = true;
+        taken.forEach(t => {
+          const done = t.dataset.done === 'true';
+          if (!done) alle = false;
+          t.querySelector('.live-status').innerHTML = statusHTML(done);
+        });
+        if (sendBtn) sendBtn.toggleAttribute('disabled', !alle);
+        if (note) note.toggleAttribute('hidden', alle);
+      }
+
+      taken.forEach(t => {
+        const link = t.querySelector('.live-taak-titel');
+        if (link) link.addEventListener('click', e => {
+          e.preventDefault();
+          if (t.dataset.done === 'true') return; // al voltooid
+          t.dataset.done = 'true';
+          renderStatus();
+          if (bevestig) {
+            bevestig.setAttribute('variant', 'success');
+            bevestig.setAttribute('text', 'Taak voltooid: ' + (link.getAttribute('text') || '') + '.');
+            bevestig.removeAttribute('hidden');
+          }
+        });
       });
+
+      if (sendBtn) sendBtn.addEventListener('click', () => {
+        if (sendBtn.hasAttribute('disabled')) return;
+        bevestig.setAttribute('variant', 'success');
+        bevestig.setAttribute('text', 'Verzoek om live te gaan verstuurd. De beheerorganisatie controleert of de service voldoet aan de gebruiksvoorwaarden en neemt binnen één werkdag contact op.');
+        bevestig.removeAttribute('hidden');
+      });
+
+      const terug = root.querySelector('#live-terug');
+      if (terug) terug.addEventListener('click', () => {
+        if (window.__mpOpenDienst) window.__mpOpenDienst('notificatiedienst');
+        else showView('marktplaats', 'Dienstenaanbod');
+      });
+
+      renderStatus();
     })();
 
     // ====================== API-keys-beheer in de dienstviews ======================
