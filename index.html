@@ -4109,6 +4109,10 @@
         if (rol !== 'organisatiebeheerder') nieuw.dienst = root.querySelector('#gbf-dienst').value;
         if (rol === 'keyeigenaar') nieuw.key = 'nmp_demo_nieuw';
         org.users.push(nieuw);
+        // Filters terug naar 'alle', zodat de zojuist toegevoegde gebruiker altijd
+        // in de lijst verschijnt (ook als er een filter aanstond die hem zou verbergen).
+        if (filterRol) filterRol.value = 'alle';
+        if (filterDienst) filterDienst.value = 'alle';
         render();
         form.setAttribute('hidden', '');
         root.querySelector('#gbf-naam').value = '';
