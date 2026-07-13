@@ -167,6 +167,16 @@
     .tbp-test-rij nldd-text-field { flex: 1 1 240px; }
     .tbp-test-links { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     .tbp-test-uitleg { font-size: 0.9rem; color: var(--context-muted-foreground-color, #5a5a5a); margin: 0; }
+    /* Lange tekst: kop met 'zelfde tekst'-checkbox + rich-text editor */
+    .lt-kop { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-top: 4px; }
+    .lt-label { font-weight: 600; }
+    .lt-sublabel { font-weight: 600; margin: 10px 0 4px; }
+    .rte { border: 1px solid var(--context-border-color, #b3b3b3); border-radius: 8px; overflow: hidden; background: var(--context-base-background-color, #fff); }
+    .rte-toolbar { display: flex; gap: 4px; padding: 5px 6px; border-bottom: 1px solid var(--context-border-color, #e3e3e3); background: rgba(0,0,0,.03); }
+    .rte-btn { min-width: 30px; height: 28px; padding: 0 8px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; font-size: 0.9rem; line-height: 1; }
+    .rte-btn:hover { background: rgba(0,0,0,.08); }
+    .rte-area { min-height: 160px; padding: 10px 12px; outline: none; line-height: 1.5; white-space: pre-wrap; }
+    .rte-area:empty::before { content: attr(data-placeholder); color: var(--context-muted-foreground-color, #8a8a8a); }
     /* Instellingen: notificatie-instellingen als lijst per kanaal */
     .inst-groep + .inst-groep { margin-top: 28px; padding-top: 22px; border-top: 2px solid var(--context-border-color, #e3e3e3); }
     .inst-groep-kop { font-weight: 700; font-size: 1.05rem; padding: 0 0 6px; }
@@ -483,26 +493,26 @@
                       <nldd-text-cell text="**Status**"></nldd-text-cell>
                     </nldd-table-row>
                     <nldd-table-row data-dienst="notificatiedienst">
-                      <nldd-text-cell text="Notificatiebatch: wijziging Handelsregisterwet - afscherming woonadres per 1 jul 2026 (320)"></nldd-text-cell>
-                      <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
+                      <nldd-text-cell text="Notificatiebatch verzonden (320 ontvangers)"></nldd-text-cell>
+                      <nldd-text-cell class="js-org-cel" text="Kamer van Koophandel"></nldd-text-cell>
                       <nldd-text-cell text="09:42"></nldd-text-cell>
                       <nldd-cell><nldd-tag color="success" text="afgeleverd"></nldd-tag></nldd-cell>
                     </nldd-table-row>
                     <nldd-table-row data-dienst="notificatiedienst">
                       <nldd-text-cell text="Levering mislukt - endpoint timeout"></nldd-text-cell>
-                      <nldd-text-cell text="Gemeente Utrecht"></nldd-text-cell>
+                      <nldd-text-cell class="js-org-cel" text="Kamer van Koophandel"></nldd-text-cell>
                       <nldd-text-cell text="09:15"></nldd-text-cell>
                       <nldd-cell><nldd-tag color="critical" text="mislukt"></nldd-tag></nldd-cell>
                     </nldd-table-row>
                     <nldd-table-row data-dienst="profieldienst" hidden>
-                      <nldd-text-cell text="Profiel bevraagd (KvK 81234567) - contactgegevens opgehaald"></nldd-text-cell>
-                      <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
+                      <nldd-text-cell text="Profiel bevraagd - contactgegevens opgehaald"></nldd-text-cell>
+                      <nldd-text-cell class="js-org-cel" text="Kamer van Koophandel"></nldd-text-cell>
                       <nldd-text-cell text="09:40"></nldd-text-cell>
                       <nldd-cell><nldd-tag color="success" text="verwerkt"></nldd-tag></nldd-cell>
                     </nldd-table-row>
                     <nldd-table-row data-dienst="profieldienst" hidden>
                       <nldd-text-cell text="Voorkeurskanaal bijgewerkt (SMS naar e-mail)"></nldd-text-cell>
-                      <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
+                      <nldd-text-cell class="js-org-cel" text="Kamer van Koophandel"></nldd-text-cell>
                       <nldd-text-cell text="09:05"></nldd-text-cell>
                       <nldd-cell><nldd-tag color="neutral" text="beheer"></nldd-tag></nldd-cell>
                     </nldd-table-row>
@@ -716,7 +726,7 @@
                   <div class="between">
                     <nldd-title size="4">
                       <h2>Notificatiedienst</h2>
-                      <p slot="subtitle">Afgenomen door Kamer van Koophandel · demo-omgeving</p>
+                      <p slot="subtitle" class="js-org-afgenomen">Afgenomen door Kamer van Koophandel · demo-omgeving</p>
                     </nldd-title>
                     <nldd-tag color="accent" text="demo"></nldd-tag>
                   </div>
@@ -802,7 +812,7 @@
                   <div class="between">
                     <nldd-title size="4">
                       <h2>Profieldienst</h2>
-                      <p slot="subtitle">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
+                      <p slot="subtitle" class="js-org-systeem">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
                     </nldd-title>
                     <nldd-tag color="success" text="productie"></nldd-tag>
                   </div>
@@ -875,7 +885,7 @@
                   <div class="between">
                     <nldd-title size="4">
                       <h2>Notificatiedienst</h2>
-                      <p slot="subtitle">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
+                      <p slot="subtitle" class="js-org-systeem">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
                     </nldd-title>
                     <nldd-tag color="accent" text="demo"></nldd-tag>
                   </div>
@@ -1154,10 +1164,14 @@
                           <div data-langpane="nl">
                             <nldd-container gap="12">
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-nl"></nldd-text-field></nldd-form-field>
-                              <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
-                              <div class="log-check" id="brief-toggle-rij"><nldd-checkbox id="brief-toggle" accessible-label="Brief (post) heeft een aangepaste tekst"></nldd-checkbox><span>Brief (post) heeft een aangepaste tekst</span></div>
-                              <nldd-form-field id="brief-veld-field" label="Lange tekst brief (post)" hidden><nldd-multi-line-text-field id="body-brief-nl" rows="8"></nldd-multi-line-text-field></nldd-form-field>
-                              <p class="muted-note" id="brief-uitleg" hidden>Deze aangepaste tekst wordt alleen voor de brief (post) gebruikt. Voor e-mail blijft de tekst hierboven gelden.</p>
+                              <div class="lt-kop">
+                                <span class="lt-label">Lange tekst</span>
+                                <div class="log-check" id="lt-samen-rij"><nldd-checkbox id="lt-samen-cb" checked accessible-label="E-mail en brief (post) zijn hetzelfde"></nldd-checkbox><span>E-mail en brief (post) zijn hetzelfde</span></div>
+                              </div>
+                              <p class="lt-sublabel" id="lt-label-email" hidden>E-mail</p>
+                              <div class="rte"><div class="rte-area" id="body-nl" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Lange tekst e-mail en brief (post)" data-placeholder="Schrijf hier de lange tekst voor e-mail en brief (post)..."></div></div>
+                              <p class="lt-sublabel" id="lt-label-brief" hidden>Brief (post)</p>
+                              <div class="rte" id="rte-brief-wrap" hidden><div class="rte-area" id="body-brief-nl" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
                               <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                               <p class="muted-note">Kort en bondig - push en SMS tonen doorgaans maximaal ~160 tekens.</p>
                               <div class="inline">
@@ -2610,6 +2624,17 @@
       zet('.js-afz-brief', briefAdres[u.orgKey] || briefAdres.kvk);
       zet('.js-afz-push', u.org || 'Kamer van Koophandel');
       zet('.js-afz-whats', u.org || 'Kamer van Koophandel');
+
+      // Org-branding: statische KvK-labels aanpassen aan de organisatie van de gebruiker,
+      // zodat bv. BZK-gebruikers geen 'Kamer van Koophandel' zien.
+      const orgNaam = u.org || 'Kamer van Koophandel';
+      document.querySelectorAll('.js-org-afgenomen').forEach(el => {
+        el.textContent = 'Afgenomen door ' + orgNaam + ' · ' + (el.textContent.includes('productie') ? 'productie' : 'demo-omgeving');
+      });
+      document.querySelectorAll('.js-org-systeem').forEach(el => {
+        el.textContent = 'Keys voor de implementatie in het systeem van ' + orgNaam;
+      });
+      document.querySelectorAll('.js-org-cel').forEach(el => el.setAttribute('text', orgNaam));
     })();
 
     // ====================== Instellingen (Organisatie + Mijn profiel) ======================
@@ -2941,24 +2966,55 @@
         if (t && t.dataset.lang) setLang(t.dataset.lang);
       });
 
-      // --- Aparte brieftekst: checkbox toont een los tekstveld voor de brief (post) ---
-      const briefRij = root.querySelector('#brief-toggle-rij');
-      const briefCb = root.querySelector('#brief-toggle');
-      const briefVeld = root.querySelector('#brief-veld-field');
-      const briefUitleg = root.querySelector('#brief-uitleg');
-      function briefToggle() {
-        const aan = briefCb && briefCb.checked;
-        if (briefVeld) briefVeld.toggleAttribute('hidden', !aan);
-        if (briefUitleg) briefUitleg.toggleAttribute('hidden', !aan);
-      }
-      if (briefRij && briefCb) {
-        briefRij.addEventListener('click', e => {
-          if (e.target.closest('nldd-checkbox')) return;
-          const input = briefCb.shadowRoot && briefCb.shadowRoot.querySelector('input');
-          if (input) input.click(); else briefCb.toggleAttribute('checked');
+      // --- Rich-text editor: injecteer een toolbar boven elke .rte-area (altijd een editor) ---
+      root.querySelectorAll('.rte').forEach(wrap => {
+        if (wrap.querySelector('.rte-toolbar')) return;
+        const area = wrap.querySelector('.rte-area');
+        if (!area) return;
+        const tb = document.createElement('div');
+        tb.className = 'rte-toolbar';
+        tb.innerHTML =
+          '<button type="button" class="rte-btn" data-cmd="bold" title="Vet"><strong>B</strong></button>' +
+          '<button type="button" class="rte-btn" data-cmd="italic" title="Cursief"><em>I</em></button>' +
+          '<button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Opsomming">&#8226; Lijst</button>';
+        wrap.insertBefore(tb, area);
+        tb.addEventListener('mousedown', e => e.preventDefault()); // behoud selectie en focus
+        tb.addEventListener('click', e => {
+          const b = e.target.closest('.rte-btn'); if (!b) return;
+          area.focus();
+          try { document.execCommand(b.dataset.cmd, false, null); } catch (err) {}
         });
-        briefCb.addEventListener('change', briefToggle);
-        briefToggle();
+      });
+
+      // Lees/schrijf een lange-tekstveld: werkt op zowel de RTE als een gewoon tekstveld.
+      function veldGet(id) { const el = root.querySelector('#' + id); if (!el) return ''; return el.classList.contains('rte-area') ? el.innerText : (el.value || ''); }
+      function veldSet(id, v) { const el = root.querySelector('#' + id); if (!el) return; if (el.classList.contains('rte-area')) el.textContent = v || ''; else el.value = v || ''; }
+      root.__veldGet = veldGet; root.__veldSet = veldSet;
+
+      // --- 'E-mail en brief (post) zijn hetzelfde': uit = aparte e-mail- en briefeditor ---
+      const samenRij = root.querySelector('#lt-samen-rij');
+      const samenCb = root.querySelector('#lt-samen-cb');
+      const labelEmail = root.querySelector('#lt-label-email');
+      const labelBrief = root.querySelector('#lt-label-brief');
+      const rteBrief = root.querySelector('#rte-brief-wrap');
+      function samenToggle() {
+        // Vóór component-upgrade valt .checked terug op het 'checked'-attribuut.
+        const samen = samenCb ? (typeof samenCb.checked === 'boolean' ? samenCb.checked : samenCb.hasAttribute('checked')) : true;
+        if (labelEmail) labelEmail.toggleAttribute('hidden', samen);
+        if (labelBrief) labelBrief.toggleAttribute('hidden', samen);
+        if (rteBrief) rteBrief.toggleAttribute('hidden', samen);
+        // Bij splitsen: start de brieftekst gelijk aan de e-mailtekst als hij nog leeg is.
+        if (!samen && !veldGet('body-brief-nl')) veldSet('body-brief-nl', veldGet('body-nl'));
+      }
+      if (samenRij && samenCb) {
+        samenRij.addEventListener('click', e => {
+          if (e.target.closest('nldd-checkbox')) return;
+          const input = samenCb.shadowRoot && samenCb.shadowRoot.querySelector('input');
+          if (input) input.click(); else samenCb.toggleAttribute('checked');
+        });
+        samenCb.addEventListener('change', samenToggle);
+        samenToggle();
+        customElements.whenDefined('nldd-checkbox').then(samenToggle); // hersync na upgrade
       }
 
       // --- Templatebibliotheek: vult onderwerp + bericht per taal ---
@@ -3084,18 +3140,34 @@
 
       const tplSelect = root.querySelector('#tpl');
       const afzVeld = root.querySelector('#afz-email');
+      // Org-branding: voor niet-KvK-organisaties (bv. BZK) worden KvK-namen/domeinen in
+      // de template-inhoud vervangen door die van de eigen organisatie.
+      const _u = window.__MOZA_USER || {};
+      const orgNaam = _u.org || 'Kamer van Koophandel';
+      const orgKort = _u.orgKort || 'KvK';
+      const orgDomein = (_u.email && _u.email.split('@')[1]) || 'kvk.nl';
+      function brand(s) {
+        if (!s || _u.orgKey === 'kvk' || !_u.orgKey) return s || '';
+        return s
+          .replace(/Kamer van Koophandel/g, orgNaam)
+          .replace(/Netherlands Chamber of Commerce/g, orgNaam)
+          .replace(/Niederländische Handelskammer/g, orgNaam)
+          .replace(/Chambre de commerce des Pays-Bas/g, orgNaam)
+          .replace(/\bKvK\b/g, orgKort)
+          .replace(/kvk\.nl/g, orgDomein);
+      }
       function fillTemplate(key) {
         const t = TEMPLATES[key];
         if (!t) return;
-        if (afzVeld) afzVeld.value = t.afzender || 'notificaties@kvk.nl';
+        if (afzVeld) afzVeld.value = brand(t.afzender || ('notificaties@' + orgDomein));
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const s = root.querySelector('#subj-' + l);
-          const b = root.querySelector('#body-' + l);
           const k = root.querySelector('#short-' + l);
-          if (s) s.value = (t[l] && t[l].subject) || '';
-          if (b) b.value = (t[l] && t[l].body) || '';
-          if (k) k.value = (t[l] && t[l].kort) || '';
+          if (s) s.value = brand((t[l] && t[l].subject) || '');
+          veldSet('body-' + l, brand((t[l] && t[l].body) || ''));
+          if (k) k.value = brand((t[l] && t[l].kort) || '');
         });
+        veldSet('body-brief-nl', brand((t.nl && t.nl.body) || '')); // brief start gelijk aan e-mail
         if (t.type) {
           typeCtrl.setAttribute('value', t.type);
           typeCtrl.querySelectorAll('nldd-segmented-control-item').forEach(it =>
@@ -3127,10 +3199,10 @@
         const t = TEMPLATES[tplSelect.value];
         ['en', 'de', 'fr'].forEach(l => {
           const heeft = t && t[l] && (t[l].subject || t[l].body || t[l].kort);
-          const s = root.querySelector('#subj-' + l), b = root.querySelector('#body-' + l), k = root.querySelector('#short-' + l);
-          if (s) s.value = heeft ? (t[l].subject || '') : root.querySelector('#subj-nl').value;
-          if (b) b.value = heeft ? (t[l].body || '') : root.querySelector('#body-nl').value;
-          if (k) k.value = heeft ? (t[l].kort || '') : root.querySelector('#short-nl').value;
+          const s = root.querySelector('#subj-' + l), k = root.querySelector('#short-' + l);
+          if (s) s.value = heeft ? brand(t[l].subject || '') : root.querySelector('#subj-nl').value;
+          veldSet('body-' + l, heeft ? brand(t[l].body || '') : veldGet('body-nl'));
+          if (k) k.value = heeft ? brand(t[l].kort || '') : root.querySelector('#short-nl').value;
         });
         if (vertaalMelding) {
           vertaalMelding.setAttribute('text', 'Inhoud automatisch vertaald naar Engels, Duits en Frans. Elk contact ontvangt de versie in zijn voorkeurstaal.');
@@ -3253,7 +3325,7 @@
       Promise.all([
         customElements.whenDefined('nldd-multi-line-text-field'),
         customElements.whenDefined('nldd-segmented-control'),
-      ]).then(() => { applyType('eenmalig'); setLang('nl'); if (afzVeld && !afzVeld.value) afzVeld.value = 'notificaties@kvk.nl'; });
+      ]).then(() => { applyType('eenmalig'); setLang('nl'); if (afzVeld && !afzVeld.value) afzVeld.value = 'notificaties@' + orgDomein; });
     })();
   </script>
 
@@ -4089,7 +4161,7 @@
       function openDienst(id) {
         dienst = DIENSTEN[id];
         root.querySelector('#dp-titel').textContent = dienst.naam;
-        root.querySelector('#dp-sub').textContent = 'Afgenomen door Kamer van Koophandel · ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productie');
+        root.querySelector('#dp-sub').textContent = 'Afgenomen door ' + ((window.__MOZA_USER && window.__MOZA_USER.org) || 'Kamer van Koophandel') + ' · ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productie');
         root.querySelector('#dp-desc').textContent = dienst.desc;
         const tag = root.querySelector('#dp-status');
         tag.setAttribute('color', dienst.status === 'demo' ? 'accent' : 'success');
