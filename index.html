@@ -257,6 +257,14 @@
     .kt nldd-icon { color: #8fb8e0; flex: 0 0 auto; line-height: 1; }
     .kt p { margin: 0; font-size: clamp(1rem, 1.35vw, 1.15rem); line-height: 1.55; color: rgba(255,255,255,0.92); }
     .kt strong { color: #fff; }
+    /* Rol-inlogkaarten op de laatste slide */
+    .rollen-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 92ch; margin-top: 8px; }
+    .rol-kaart { text-align: left; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 16px 18px; color: #fff; cursor: pointer; display: flex; flex-direction: column; gap: 6px; font: inherit; transition: background .15s ease, border-color .15s ease, transform .1s ease; }
+    .rol-kaart:hover, .rol-kaart:focus-visible { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.45); outline: none; transform: translateY(-2px); }
+    .rol-kaart-rol { font-weight: 700; font-size: 1.1rem; }
+    .rol-kaart-naam { font-size: 0.92rem; color: rgba(255,255,255,0.75); }
+    .rol-kaart-desc { font-size: 0.92rem; color: rgba(255,255,255,0.88); line-height: 1.45; }
+    @media (max-width: 720px) { .rollen-grid { grid-template-columns: 1fr; } }
     /* Navigatiebalk onderaan */
     .present-bar { display: flex; align-items: center; gap: 18px; padding: 20px clamp(40px, 8vw, 140px); flex-wrap: wrap; }
     .pv-counter { font-family: ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: 0.15em; color: rgba(255,255,255,0.85); font-size: 0.95rem; }
@@ -2170,10 +2178,38 @@
           </div>
         </div>
 
+        <div class="present-slide" data-slide="4">
+          <div class="eyebrow">04 · Direct proberen</div>
+          <h2 class="slide-title">Log in als een rol</h2>
+          <p class="slide-lead">Kies een rol om direct als die gebruiker in het portaal te stappen. Elke rol ziet en kan iets anders.</p>
+          <div class="rollen-grid">
+            <button class="rol-kaart" type="button" data-login-user="sanne">
+              <span class="rol-kaart-rol">Organisatiebeheerder</span>
+              <span class="rol-kaart-naam">Sanne de Boer · KvK</span>
+              <span class="rol-kaart-desc">Ziet en beheert alles: alle diensten, gebruikers en rollen, dienstenaanbod, audit en analytics.</span>
+            </button>
+            <button class="rol-kaart" type="button" data-login-user="aicha">
+              <span class="rol-kaart-rol">Dienstbeheerder - Notificatiedienst</span>
+              <span class="rol-kaart-naam">Aïcha El Idrissi · KvK</span>
+              <span class="rol-kaart-desc">Volledig beheer binnen de notificatiedienst: berichten, templates, logboek en API-keys.</span>
+            </button>
+            <button class="rol-kaart" type="button" data-login-user="lin">
+              <span class="rol-kaart-rol">Dienstbeheerder - Profieldienst</span>
+              <span class="rol-kaart-naam">Lin Zhao · KvK</span>
+              <span class="rol-kaart-desc">Volledig beheer binnen de profieldienst: kanaalvoorkeuren, rapportages en API-keys. Ziet geen notificatie-onderdelen.</span>
+            </button>
+            <button class="rol-kaart" type="button" data-login-user="deniz">
+              <span class="rol-kaart-rol">API-key-eigenaar</span>
+              <span class="rol-kaart-naam">Deniz Öztürk · KvK</span>
+              <span class="rol-kaart-desc">Alleen de eigen API-keys en het logboek voor die keys. Geen breder beheer.</span>
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <div class="present-bar">
-        <span class="pv-counter" id="pv-counter">01 / 03</span>
+        <span class="pv-counter" id="pv-counter">01 / 04</span>
         <button class="pv-link" id="pv-close" type="button">← Naar het portaal</button>
         <span class="spacer"></span>
         <button class="pv-round" id="pv-prev" type="button" aria-label="Vorige slide"><nldd-icon name="chevron-left" size="24"></nldd-icon></button>
@@ -4533,6 +4569,14 @@
       prevBtn.addEventListener('click', () => go(cur - 1));
       nextBtn.addEventListener('click', () => go(cur + 1));
       document.getElementById('pv-close').addEventListener('click', close);
+
+      // Rol-inlogkaarten (laatste slide): stap direct als die rol het portaal in.
+      present.querySelectorAll('.rol-kaart[data-login-user]').forEach(kaart => {
+        kaart.addEventListener('click', () => {
+          try { localStorage.setItem('moza-user', kaart.dataset.loginUser); } catch (e) {}
+          window.location.href = 'index.html';
+        });
+      });
 
       // Sneltoets Shift+P start de presentatie (behalve tijdens typen in een veld).
       document.addEventListener('keydown', e => {
