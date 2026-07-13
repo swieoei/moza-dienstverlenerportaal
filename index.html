@@ -19,6 +19,8 @@
     #app { display: flex; flex-direction: column; height: 100vh; }
     nldd-app-view { flex: 1 1 auto; min-height: 0; }
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .js-kpi-actie-card { cursor: pointer; transition: box-shadow .15s ease; }
+    .js-kpi-actie-card:hover, .js-kpi-actie-card:focus-visible { box-shadow: 0 2px 12px rgba(0,0,0,.14); outline: none; }
     .view { display: none; }
     .view.is-active { display: block; }
     .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -354,7 +356,7 @@
                   <div class="kpi-grid">
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2>1.248</h2><p slot="subtitle">Verzonden vandaag</p></nldd-title>
+                        <nldd-title size="2"><h2 class="js-kpi-verzonden">1.248</h2><p slot="subtitle">Verzonden vandaag</p></nldd-title>
                         <nldd-tag color="accent" text="+8% t.o.v. gisteren"></nldd-tag>
                       </nldd-container>
                     </nldd-card>
@@ -364,9 +366,9 @@
                         <nldd-tag color="success" text="binnen norm"></nldd-tag>
                       </nldd-container>
                     </nldd-card>
-                    <nldd-card>
+                    <nldd-card class="js-kpi-actie-card" role="button" tabindex="0" aria-label="Naar logboek: notificaties met actie nodig">
                       <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2>4</h2><p slot="subtitle">Openstaand contactherstel</p></nldd-title>
+                        <nldd-title size="2"><h2 class="js-kpi-actie">2</h2><p slot="subtitle">Notificaties met actie nodig</p></nldd-title>
                         <nldd-tag color="accent" text="actie nodig"></nldd-tag>
                       </nldd-container>
                     </nldd-card>
@@ -599,24 +601,27 @@
                     <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
                   </nldd-rich-text>
 
-                  <nldd-card>
-                    <nldd-container padding="16" gap="12">
-                      <nldd-title size="5">
-                        <h3>Afleverstatus vandaag - 1.248 verzonden</h3>
-                        <p slot="subtitle">Automatisch herzonden bij niet-aflevering; mislukte verzendingen vragen om actie</p>
-                      </nldd-title>
-                      <div class="deliver-bar" role="img" aria-label="1.248 verzonden: 1.228 afgeleverd (98,4%), 16 niet afgeleverd (1,3%), 4 actie nodig (0,3%)">
-                        <span class="seg-ok" style="width:98.4%"></span>
-                        <span class="seg-warn" style="width:1.3%"></span>
-                        <span class="seg-attn" style="width:0.3%"></span>
-                      </div>
-                      <div class="deliver-legend">
-                        <span><i style="background:#39870c"></i> Afgeleverd - <strong>1.228</strong>&nbsp;(98,4%)</span>
-                        <span><i style="background:#e17000"></i> Niet afgeleverd - <strong>16</strong>&nbsp;(1,3%)</span>
-                        <span><i style="background:#d52b1e"></i> Actie nodig - <strong>4</strong>&nbsp;(0,3%)</span>
-                      </div>
-                    </nldd-container>
-                  </nldd-card>
+                  <nldd-title size="5"><h3>Afleverstatus vandaag</h3></nldd-title>
+                  <div class="kpi-grid">
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2 class="js-kpi-verzonden">1.248</h2><p slot="subtitle">Verzonden vandaag</p></nldd-title>
+                        <nldd-tag color="accent" text="+8% t.o.v. gisteren"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2>98,4%</h2><p slot="subtitle">Afgeleverd</p></nldd-title>
+                        <nldd-tag color="success" text="binnen norm"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                    <nldd-card class="js-kpi-actie-card" role="button" tabindex="0" aria-label="Naar logboek: notificaties met actie nodig">
+                      <nldd-container padding="16" gap="8">
+                        <nldd-title size="2"><h2 class="js-kpi-actie">2</h2><p slot="subtitle">Notificaties met actie nodig</p></nldd-title>
+                        <nldd-tag color="accent" text="actie nodig"></nldd-tag>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
 
                   <div class="svc-grid">
                     <!-- Berichten -->
@@ -1927,6 +1932,26 @@
         showView('marktplaats', 'Dienstenaanbod');
         if (window.__mpOpenDienst) window.__mpOpenDienst(b.dataset.gotoMarktplaats);
       }));
+
+    // Gedeelde dashboard-tellers (verzonden + notificaties met actie nodig). Getoond op
+    // zowel het dashboard als de notificatiedienst-hoofdpagina; het logboek werkt ze bij.
+    window.__mozaTellers = {
+      verzonden: 1248,
+      actieNodig: 2,
+      render() {
+        const nf = new Intl.NumberFormat('nl-NL');
+        document.querySelectorAll('.js-kpi-verzonden').forEach(el => el.textContent = nf.format(this.verzonden));
+        document.querySelectorAll('.js-kpi-actie').forEach(el => el.textContent = String(this.actieNodig));
+      },
+    };
+    window.__mozaTellers.render();
+
+    // Klik op de KPI-kaart 'Notificaties met actie nodig' -> logboek, gefilterd op mislukt.
+    document.querySelectorAll('.js-kpi-actie-card').forEach(card => {
+      const go = () => { showView('logboek', 'Logboek'); if (window.__mozaLogboek) window.__mozaLogboek.toonMislukt(); };
+      card.addEventListener('click', go);
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    });
 
     // Uitloggen → terug naar de inlogpagina.
     const logout = document.getElementById('mi-logout');
@@ -3948,6 +3973,8 @@
 
       let teller = 0;
       const LOG = [
+        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '234567890', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Vandaag 08:15' },
+        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key aangemaakt', detail: 'Backoffice KvK · rol Notificaties verzenden', tijd: 'Vandaag 09:12' },
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key ingetrokken', detail: 'Oude testkey · door ' + ((window.__MOZA_USER && window.__MOZA_USER.naam) || 'de beheerder'), tijd: 'Gisteren 14:30' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie verzonden - jaarlijkse opgave', detail: 'Handelsregister · 320 ondernemers', tijd: 'Gisteren 16:05' },
@@ -4073,7 +4100,24 @@
         items.forEach(it => lijst.appendChild(kaart(it)));
         const mislukt = LOG.filter(x => x.status === 'mislukt').length;
         if (badge) { badge.setAttribute('number', String(mislukt)); badge.toggleAttribute('hidden', mislukt === 0); }
+        // Dashboard- en notificatiedienst-tellers meelaten lopen met het aantal mislukte notificaties.
+        if (window.__mozaTellers) { window.__mozaTellers.actieNodig = mislukt; window.__mozaTellers.render(); }
       }
+
+      // Vanaf het dashboard: open het logboek gefilterd op mislukte notificaties.
+      window.__mozaLogboek = {
+        toonMislukt() {
+          const zet = (container, val, aan) => {
+            const cb = container.querySelector('.log-check[data-val="' + val + '"] nldd-checkbox');
+            if (cb) cb.toggleAttribute('checked', aan);
+          };
+          zet(typeChecks, 'notificatie', true);
+          zet(typeChecks, 'apikey', false);
+          ['succesvol', 'errors'].forEach(v => zet(statusChecks, v, false));
+          zet(statusChecks, 'mislukt', true);
+          render();
+        },
+      };
 
       // Checkbox-rijen bedienbaar maken (klik op de rij toggelt de checkbox) + herfilteren.
       function wireChecks(container) {
@@ -4101,6 +4145,7 @@
           { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
         LOG.unshift(...batch);
+        if (window.__mozaTellers) window.__mozaTellers.verzonden += 7; // 7 nieuwe verzendingen
         // Zet de weergave op Notificaties zodat de batch meteen zichtbaar is.
         const notifCb = typeChecks.querySelector('.log-check[data-val="notificatie"] nldd-checkbox');
         if (notifCb) notifCb.setAttribute('checked', '');
