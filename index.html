@@ -32,6 +32,8 @@
 
     /* Zijnavigatie: children springen in via nldd-spacer-cell in de start-slot */
     /* Paginatitel: prominente h1 bovenaan de content, uitgelijnd met de bovenkant van het menu */
+    .page-title-rij { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 0 0 20px; }
+    .page-title-rij .page-title { margin: 0; }
     .page-title { display: block; margin: 0 0 20px; }
     /* Menu-trigger alleen tonen wanneer de sidebar-section is ingeklapt tot een sheet */
     .sb-trigger { display: none; margin-bottom: 12px; }
@@ -451,9 +453,12 @@
           <!-- ---- Hoofdinhoud (main area) ---- -->
           <nldd-simple-section padding-top="0">
             <nldd-container padding="24" padding-top="0">
-              <nldd-title size="2" class="page-title">
-                <h1 id="titlebar">Dashboard</h1>
-              </nldd-title>
+              <div class="page-title-rij">
+                <nldd-title size="2" class="page-title">
+                  <h1 id="titlebar">Dashboard</h1>
+                </nldd-title>
+                <nldd-tag id="title-tag" color="accent" text="demo" hidden></nldd-tag>
+              </div>
 
 
               <!-- ====================== DASHBOARD ====================== -->
@@ -781,13 +786,6 @@
               <!-- ====================== NOTIFICATIEDIENST ====================== -->
               <section class="view" data-view="notificatiedienst">
                 <div class="stack">
-                  <div class="between">
-                    <nldd-title size="4">
-                      <h2>Notificatiedienst</h2>
-                      <p slot="subtitle" class="js-org-afgenomen">Afgenomen door Kamer van Koophandel · demo-omgeving</p>
-                    </nldd-title>
-                    <nldd-tag color="accent" text="demo"></nldd-tag>
-                  </div>
                   <nldd-rich-text>
                     <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
                   </nldd-rich-text>
@@ -2313,6 +2311,14 @@
       // Het dashboard toont 'Welkom terug, [naam]' als paginatitel.
       if (name === 'dashboard' && window.__DASH_TITEL) title = window.__DASH_TITEL;
       if (title && titlebar) titlebar.textContent = title;
+      // Statustag (demo/productie) van een dienst naast de paginatitel.
+      const titleTag = document.getElementById('title-tag');
+      if (titleTag) {
+        const DIENST_STATUS = { notificatiedienst: { text: 'demo', color: 'accent' }, profieldienst: { text: 'productie', color: 'success' } };
+        const st = DIENST_STATUS[name];
+        if (st) { titleTag.setAttribute('color', st.color); titleTag.setAttribute('text', st.text); titleTag.removeAttribute('hidden'); }
+        else titleTag.setAttribute('hidden', '');
+      }
       // Houd de groep van de actieve subpagina uitgeklapt zodat het item zichtbaar is.
       const actief = navItems.find(i => i.dataset.view === name);
       if (actief && actief.dataset.parent) setGroepUit(actief.dataset.parent, true);
