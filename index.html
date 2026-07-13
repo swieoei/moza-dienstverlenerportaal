@@ -15,7 +15,12 @@
   <style>
     /* Alleen layout-lijm; geen component-styling - die komt volledig uit het design system. */
     html, body { margin: 0; padding: 0; height: 100%; }
-    body { font-family: var(--typography-font-family-base, system-ui, sans-serif); background: var(--context-base-background-color, #fff); }
+    /* NLDD DS-lettertype: het design system laadt 'RijksSans' (tekst) en 'JetBrains Mono' (code).
+       De token --typography-font-family-base is niet globaal gedefinieerd, dus valt de body zonder
+       expliciete fallback terug op system-ui. Daarom RijksSans in de fallback, zodat alle
+       eigen-CSS-tekst hetzelfde lettertype gebruikt als de nldd-componenten. */
+    :root { --font-base: var(--typography-font-family-base, "RijksSans", system-ui, sans-serif); --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+    body { font-family: var(--font-base); background: var(--context-base-background-color, #fff); }
     #app { display: flex; flex-direction: column; height: 100vh; }
     nldd-app-view { flex: 1 1 auto; min-height: 0; }
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
@@ -48,7 +53,7 @@
     .svc-status { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; }
     .svc-status--on { color: #39870c; font-weight: 600; }
     .svc-status--off { color: #5a5a5a; }
-    .mp-key { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
+    .mp-key { font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted-note { color: #5a5a5a; font-size: 0.85rem; margin: 0; }
     /* API-key rollen: meervoudige keuze via checkboxes */
@@ -256,7 +261,7 @@
     .present-slide { display: none; flex-direction: column; justify-content: center; gap: 24px; width: 100%; max-width: 1180px; margin: 0 auto; padding: 48px clamp(40px, 8vw, 140px); box-sizing: border-box; }
     .present-slide.active { display: flex; }
     .present .eyebrow { color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.8rem; }
-    .slide-title { font-family: 'RijksoverheidSerif','Rijksoverheid Serif', Georgia, 'Times New Roman', serif; font-weight: 700; color: #fff; margin: 0; line-height: 1.05; font-size: clamp(2.4rem, 5.2vw, 4.6rem); }
+    .slide-title { font-family: var(--font-base); font-weight: 700; color: #fff; margin: 0; line-height: 1.05; font-size: clamp(2.4rem, 5.2vw, 4.6rem); }
     .slide-lead { font-size: clamp(1.25rem, 2.2vw, 1.9rem); line-height: 1.45; color: #fff; margin: 0; max-width: 60ch; font-weight: 600; }
     .slide-body { font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.6; color: rgba(255,255,255,0.92); margin: 0; max-width: 64ch; }
     .slide-list { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; max-width: 72ch; }
@@ -281,7 +286,7 @@
     .rol-link:hover, .rol-link:focus-visible { color: #b9d3ee; outline: none; }
     /* Navigatiebalk onderaan */
     .present-bar { display: flex; align-items: center; gap: 18px; padding: 20px clamp(40px, 8vw, 140px); flex-wrap: wrap; }
-    .pv-counter { font-family: ui-monospace, 'SF Mono', Menlo, monospace; letter-spacing: 0.15em; color: rgba(255,255,255,0.85); font-size: 0.95rem; }
+    .pv-counter { font-family: var(--font-mono); letter-spacing: 0.15em; color: rgba(255,255,255,0.85); font-size: 0.95rem; }
     .pv-link { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 0.95rem; padding: 0; }
     .pv-link:hover { color: #fff; }
     .pv-hints { width: 100%; color: rgba(255,255,255,0.5); font-size: 0.8rem; letter-spacing: 0.02em; margin: 0; }
@@ -304,7 +309,7 @@
       padding-inline: var(--primitives-space-24, 24px);
       background: var(--components-status-bar-warning-background-color, #e17000);
       color: var(--components-status-bar-warning-content-color, #fff);
-      font-family: var(--typography-font-family-base, system-ui, sans-serif);
+      font-family: var(--font-base);
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -867,9 +872,7 @@
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
-                      <h2>Profieldienst</h2>
-                      <p slot="subtitle" class="js-org-systeem">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
-                    </nldd-title>
+                      <h2>Profieldienst</h2>                    </nldd-title>
                     <nldd-tag color="success" text="productie"></nldd-tag>
                   </div>
                   <div class="api-keys-beheer" data-dienst="profieldienst">
@@ -940,9 +943,7 @@
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
-                      <h2>Notificatiedienst</h2>
-                      <p slot="subtitle" class="js-org-systeem">Keys voor de implementatie in het systeem van de Kamer van Koophandel</p>
-                    </nldd-title>
+                      <h2>Notificatiedienst</h2>                    </nldd-title>
                     <nldd-tag color="accent" text="demo"></nldd-tag>
                   </div>
                   <div class="api-keys-beheer" data-dienst="notificatiedienst">
@@ -1013,9 +1014,7 @@
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
-                      <h2>Profieldienst</h2>
-                      <p slot="subtitle">Rapportages over het gebruik van deze dienst</p>
-                    </nldd-title>
+                      <h2>Profieldienst</h2>                    </nldd-title>
                     <nldd-tag color="success" text="productie"></nldd-tag>
                   </div>
                   <div class="rapportage-beheer" data-dienst="profieldienst"></div>
@@ -1027,9 +1026,7 @@
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
-                      <h2>Notificatiedienst</h2>
-                      <p slot="subtitle">Rapportages over het gebruik van deze dienst</p>
-                    </nldd-title>
+                      <h2>Notificatiedienst</h2>                    </nldd-title>
                     <nldd-tag color="accent" text="demo"></nldd-tag>
                   </div>
                   <div class="rapportage-beheer" data-dienst="notificatiedienst"></div>
@@ -1370,9 +1367,7 @@
                 <div class="stack">
                   <div class="between">
                     <nldd-title size="4">
-                      <h2>Logboek</h2>
-                      <p slot="subtitle">Verzendingen en sleutelgebeurtenissen van de notificatiedienst</p>
-                    </nldd-title>
+                      <h2>Logboek</h2>                    </nldd-title>
                     <nldd-button id="log-demo" variant="secondary" start-icon="paper-plane" text="Demo: batch van 7 e-mails"></nldd-button>
                   </div>
 
@@ -2719,9 +2714,6 @@
       const orgNaam = u.org || 'Kamer van Koophandel';
       document.querySelectorAll('.js-org-afgenomen').forEach(el => {
         el.textContent = 'Afgenomen door ' + orgNaam + ' · ' + (el.textContent.includes('productie') ? 'productie' : 'demo-omgeving');
-      });
-      document.querySelectorAll('.js-org-systeem').forEach(el => {
-        el.textContent = 'Keys voor de implementatie in het systeem van ' + orgNaam;
       });
       document.querySelectorAll('.js-org-cel').forEach(el => el.setAttribute('text', orgNaam));
     })();
