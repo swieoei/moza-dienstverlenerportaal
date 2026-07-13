@@ -169,6 +169,8 @@
     .live-status { white-space: nowrap; }
     .live-done { display: inline-flex; align-items: center; gap: 8px; color: #39870c; font-weight: 700; }
     .live-check { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #39870c; color: #fff; font-size: 0.8rem; line-height: 1; }
+    .live-consent { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; line-height: 1.45; }
+    .live-consent nldd-checkbox { flex: none; margin-top: 1px; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
     .dienst-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
     .dienst-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
@@ -1993,11 +1995,14 @@
                   <nldd-title size="5"><h3>Uw organisatie</h3></nldd-title>
                   <nldd-rich-text>
                     <p>Wanneer u ons een verzoek stuurt om live te gaan, vragen we u de naam van de openbare-sectororganisatie die verantwoordelijk is voor uw service.</p>
-                    <p>We kunnen u ook vragen om onze <nldd-link href="#" text="gegevensverwerkings- en financiële overeenkomst"></nldd-link> te accepteren.</p>
                   </nldd-rich-text>
+                  <div class="live-consent" id="live-consent-rij">
+                    <nldd-checkbox id="live-consent-cb" accessible-label="Ik ga akkoord met de gegevensverwerkings- en financiële overeenkomst"></nldd-checkbox>
+                    <span>Ik ga akkoord met de <nldd-link href="#" text="gegevensverwerkings- en financiële overeenkomst"></nldd-link>.</span>
+                  </div>
 
                   <nldd-divider></nldd-divider>
-                  <p class="muted-note" id="live-note">U moet alle taken voltooien voordat u een verzoek kunt verzenden om live te gaan.</p>
+                  <p class="muted-note" id="live-note">U moet alle taken voltooien en de overeenkomst accepteren voordat u een verzoek kunt verzenden om live te gaan.</p>
                   <div class="row-actions">
                     <nldd-button id="live-send" variant="primary" start-icon="paper-plane" text="Stuur een verzoek om live te gaan" disabled></nldd-button>
                   </div>
@@ -4001,6 +4006,8 @@
       const sendBtn = root.querySelector('#live-send');
       const note = root.querySelector('#live-note');
       const bevestig = root.querySelector('#live-bevestig');
+      const consentRij = root.querySelector('#live-consent-rij');
+      const consentCb = root.querySelector('#live-consent-cb');
 
       function statusHTML(done) {
         return done
@@ -4014,8 +4021,20 @@
           if (!done) alle = false;
           t.querySelector('.live-status').innerHTML = statusHTML(done);
         });
+        if (consentCb && !consentCb.checked) alle = false; // overeenkomst accepteren is verplicht
         if (sendBtn) sendBtn.toggleAttribute('disabled', !alle);
         if (note) note.toggleAttribute('hidden', alle);
+      }
+
+      // Consent-checkbox: klik op de regel toggelt de checkbox; de link opent de overeenkomst.
+      if (consentRij && consentCb) {
+        consentRij.addEventListener('click', e => {
+          if (e.target.closest('nldd-link')) { e.preventDefault(); return; }
+          if (e.target.closest('nldd-checkbox')) return; // checkbox handelt zichzelf af
+          const input = consentCb.shadowRoot && consentCb.shadowRoot.querySelector('input');
+          if (input) input.click(); else consentCb.toggleAttribute('checked');
+        });
+        consentCb.addEventListener('change', renderStatus);
       }
 
       taken.forEach(t => {
