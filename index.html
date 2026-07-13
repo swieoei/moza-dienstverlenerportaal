@@ -706,11 +706,11 @@
                     </nldd-card>
 
                     <!-- Logboek -->
-                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="logboek" data-nav-title="Logboek" aria-label="Naar Logboek">
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="logboek" data-nav-title="Logboek" data-periode="vandaag" aria-label="Naar Logboek">
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Logboek</h3><p slot="subtitle">Verzendingen en API-sleutels, met statusfilters</p></nldd-title>
                         <nldd-rich-text><p>Bekijk per gebeurtenis de status van notificaties en API-keys. Mislukte verzendingen vragen om actie, zoals een onjuist BSN corrigeren en opnieuw versturen.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek" data-nav-title="Logboek"></nldd-button></div>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek" data-nav-title="Logboek" data-periode="vandaag"></nldd-button></div>
                       </nldd-container>
                     </nldd-card>
 
@@ -2271,13 +2271,22 @@
       if (hit) showView(hit.dataset.view, hit.dataset.title);
     });
 
+    // Navigeren naar een view; een optionele data-periode zet meteen het logboek-periodefilter
+    // (bv. vanuit het notificatiedienst-overzicht met de afleverstatus van vandaag).
+    function gaNaarView(view, titel, periode) {
+      showView(view, titel);
+      if (view === 'logboek' && periode && window.__mozaLogboek && window.__mozaLogboek.toonPeriode) {
+        window.__mozaLogboek.toonPeriode(periode);
+      }
+    }
+
     // Knoppen die naar een andere view springen (bv. vanuit de notificatiedienst-pagina).
     document.querySelectorAll('nldd-button[data-nav-view]').forEach(b =>
-      b.addEventListener('click', () => showView(b.dataset.navView, b.dataset.navTitle)));
+      b.addEventListener('click', () => gaNaarView(b.dataset.navView, b.dataset.navTitle, b.dataset.periode)));
 
     // Klikbare overzichtstegels naar een subpagina (knop erin handelt zichzelf af).
     document.querySelectorAll('.nav-tile[data-nav-view]').forEach(tile => {
-      const go = () => showView(tile.dataset.navView, tile.dataset.navTitle);
+      const go = () => gaNaarView(tile.dataset.navView, tile.dataset.navTitle, tile.dataset.periode);
       tile.addEventListener('click', e => { if (!e.target.closest('nldd-button')) go(); });
       tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
     });
@@ -4797,6 +4806,15 @@
           ['succesvol', 'mislukt'].forEach(v => zetCheck(statusChecks, v, false));
           zetCheck(statusChecks, 'errors', true);
           setPeriode('vandaag');
+          render();
+        },
+        // Alleen de periode zetten (alle types/statussen tonen). Gebruikt door de
+        // Logboek-tegel op het notificatiedienst-overzicht: dat toont de afleverstatus
+        // van vandaag, dus het logboek opent ook op periode = vandaag.
+        toonPeriode(p) {
+          ['notificatie', 'apikey'].forEach(v => zetCheck(typeChecks, v, false));
+          ['succesvol', 'errors', 'mislukt'].forEach(v => zetCheck(statusChecks, v, false));
+          setPeriode(p || 'vandaag');
           render();
         },
       };
