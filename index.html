@@ -98,10 +98,14 @@
     .log-datum { padding: 8px 10px; border: 1px solid var(--context-border-color, #b3b3b3); border-radius: 8px; font: inherit; }
     /* Afleverstatus: uitgesplitst in succesvol / niet afgeleverd met concrete aantallen */
     .afl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-    .afl-kop { margin-top: -4px; } /* percentage en zin dicht op elkaar, beide heading-opmaak */
-    .afl-lijst { margin: 4px 0 0; padding-inline-start: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.95rem; line-height: 1.45; }
-    .afl-lijst strong { color: var(--context-base-foreground-color, #1a1a1a); }
-    .afl-link { display: inline-block; margin-top: 4px; }
+    /* Tiletitel: percentage + omschrijving op 1 regel (kleur volgt het thema via inherit) */
+    .afl-titel { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; color: inherit; line-height: 1.15; }
+    .afl-titel .afl-pct { font-size: 1.5rem; font-weight: 800; }
+    .afl-titel .afl-desc { font-size: 1.1rem; font-weight: 700; }
+    .afl-lijst { margin: 4px 0 0; padding-inline-start: 18px; display: flex; flex-direction: column; gap: 6px; color: inherit; opacity: 0.82; font-size: 0.95rem; line-height: 1.45; }
+    .afl-lijst strong { font-weight: 700; }
+    .afl-actie { margin: 8px 0 0; }
+    .afl-link { display: inline-block; }
     /* Flags (feature-toggles) */
     .flags-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
     .flags-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
@@ -462,26 +466,24 @@
                     <div class="afl-grid">
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
-                          <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Succesvol afgeleverd</h3></nldd-title>
+                          <div class="afl-titel"><span class="afl-pct js-afl-ok-pct">98,4%</span><span class="afl-desc">Succesvol afgeleverd</span></div>
                           <nldd-tag color="success" text="binnen norm"></nldd-tag>
                           <ul class="afl-lijst">
                             <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
-                            <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors
-                              <nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
-                            </li>
+                            <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors</li>
                           </ul>
+                          <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                         </nldd-container>
                       </nldd-card>
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
-                          <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Niet afgeleverd</h3></nldd-title>
+                          <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                           <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                           <ul class="afl-lijst">
                             <li>Voor <strong class="js-afl-bsn">1</strong> notificaties is een correctieverzoek van het BSN-nummer ingediend</li>
-                            <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd
-                              <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
-                            </li>
+                            <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd</li>
                           </ul>
+                          <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                         </nldd-container>
                       </nldd-card>
                     </div>
@@ -794,26 +796,24 @@
                   <div class="afl-grid">
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Succesvol afgeleverd</h3></nldd-title>
+                        <div class="afl-titel"><span class="afl-pct js-afl-ok-pct">98,4%</span><span class="afl-desc">Succesvol afgeleverd</span></div>
                         <nldd-tag color="success" text="binnen norm"></nldd-tag>
                         <ul class="afl-lijst">
                           <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
-                          <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors
-                            <nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
-                          </li>
+                          <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors</li>
                         </ul>
+                        <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                       </nldd-container>
                     </nldd-card>
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2></nldd-title><nldd-title size="4" class="afl-kop"><h3>Niet afgeleverd</h3></nldd-title>
+                        <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                         <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                         <ul class="afl-lijst">
                           <li>Voor <strong class="js-afl-bsn">1</strong> notificaties is een correctieverzoek van het BSN-nummer ingediend</li>
-                          <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd
-                            <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
-                          </li>
+                          <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd</li>
                         </ul>
+                        <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                       </nldd-container>
                     </nldd-card>
                   </div>
