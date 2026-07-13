@@ -1973,11 +1973,6 @@
                           <!-- Berichtenbox -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Berichtenbox (MijnOverheid)</div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Berichtenbox-berichten verzenden</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Berichtenbox-berichten verzenden"></nldd-switch></div>
-                            </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
                               <div class="inst-rij-label">Standaard afzender</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-bbox"></span></div>
@@ -1988,11 +1983,6 @@
                           <!-- E-mail -->
                           <div class="inst-groep" id="inst-groep-email">
                             <div class="inst-groep-kop">E-mailinstellingen</div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">E-mails verzenden</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="E-mails verzenden"></nldd-switch></div>
-                            </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Naam afzender|E-mailadres afzender">
                               <div class="inst-rij-label">Standaard afzender</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-email-naam"></span><span class="inst-sub js-afz-email-adres"></span></div>
@@ -2018,16 +2008,6 @@
                           <!-- Brief (post): valt onder e-mail (zelfde lange tekst als e-mail) -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Brief (post)-instellingen</div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Brieven versturen</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Brieven versturen"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Internationale brieven versturen</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Internationale brieven versturen"></nldd-switch></div>
-                            </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
                               <div class="inst-rij-label">Standaard afzenderadres</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-brief"></span></div>
@@ -2043,14 +2023,9 @@
                           <!-- SMS -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Sms-instellingen</div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Sms-berichten verzenden</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Sms-berichten verzenden"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Sms-afzender-ID">
-                              <div class="inst-rij-label">Standaard afzender (sms-afzender-ID)</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span></div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Standaard afzender" data-shared-afz="1">
+                              <div class="inst-rij-label">Standaard afzender</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span><span class="inst-sub">Geldt ook voor WhatsApp/Signal en push - hier aanpassen wijzigt de afzender voor alle drie de kanalen.</span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
                             </div>
                             <div class="inst-rij">
@@ -2074,14 +2049,9 @@
                           <div class="inst-groep">
                             <div class="inst-groep-kop">WhatsApp / Signal-instellingen</div>
                             <div class="inst-rij">
-                              <div class="inst-rij-label">WhatsApp/Signal-berichten verzenden</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="WhatsApp/Signal-berichten verzenden"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Weergavenaam afzender">
                               <div class="inst-rij-label">Standaard afzender</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-whats"></span></div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-whats"></span><span class="inst-sub">Wordt ingesteld bij Sms-instellingen.</span></div>
+                              <div class="inst-rij-actie"></div>
                             </div>
                             <div class="inst-rij">
                               <div class="inst-rij-label">Geverifieerd bedrijfsprofiel</div>
@@ -2094,14 +2064,9 @@
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Push (MijnOverheid-app)</div>
                             <div class="inst-rij">
-                              <div class="inst-rij-label">Pushberichten verzenden</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Pushberichten verzenden"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
                               <div class="inst-rij-label">Standaard afzender</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span></div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span><span class="inst-sub">Wordt ingesteld bij Sms-instellingen.</span></div>
+                              <div class="inst-rij-actie"></div>
                             </div>
                           </div>
 
@@ -2826,8 +2791,8 @@
       zet('.js-afz-bbox', u.org || 'Kamer van Koophandel');
       zet('.js-afz-email-naam', u.org || 'Kamer van Koophandel');
       zet('.js-afz-email-adres', 'notificaties@' + mailDomein);
-      // De sms-afzender-ID is de standaard afzender die ook voor WhatsApp/Signal en push wordt gebruikt.
-      const smsAfz = (u.orgKort || 'KVK').toUpperCase();
+      // De standaard afzender bij Sms geldt ook voor WhatsApp/Signal en push (zelfde naam).
+      const smsAfz = u.org || 'Kamer van Koophandel';
       zet('.js-afz-sms', smsAfz);
       zet('.js-afz-brief', briefAdres[u.orgKey] || briefAdres.kvk);
       zet('.js-afz-push', smsAfz);
@@ -2883,6 +2848,12 @@
           if (waardeEl && nw[0]) waardeEl.textContent = nw[0];
           if (subEl && nw[1] !== undefined) subEl.textContent = nw[1];
           det.remove();
+          // Gedeelde afzender (Sms): ook doorvoeren naar WhatsApp/Signal en push.
+          if (rij.dataset.sharedAfz && nw[0]) {
+            root.querySelectorAll('.js-afz-whats, .js-afz-push').forEach(el => el.textContent = nw[0]);
+            meld('success', 'Standaard afzender bijgewerkt naar "' + nw[0] + '" voor Sms, WhatsApp/Signal en push. (demo)');
+            return;
+          }
           meld('success', 'Standaard afzender bijgewerkt: ' + nw.filter(Boolean).join(' · ') + '. (demo)');
         });
       }
