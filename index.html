@@ -151,6 +151,9 @@
     .inst-highlight { animation: instPuls 1.6s ease; }
     @keyframes instPuls { 0%,100% { background: transparent; } 20%,50% { background: rgba(0,123,199,.12); } }
     @media (max-width: 640px) { .inst-rij { grid-template-columns: 1fr; gap: 4px; } .inst-rij-actie { text-align: left; } }
+    /* Eenvoudige toast (bv. voor 'binnenkort beschikbaar') */
+    .app-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(8px); z-index: 1200; max-width: 90vw; background: #1a1a1a; color: #fff; padding: 12px 18px; border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.28); font-size: 0.95rem; opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
+    .app-toast.is-open { opacity: 1; transform: translateX(-50%) translateY(0); }
     /* Maak uw service live: go-live-takenlijst */
     .live-intro-lijst { margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; }
     .live-taken { border-top: 1px solid var(--context-border-color, #ececec); }
@@ -380,6 +383,11 @@
                 <nldd-list-item button data-view="gebruikersbeheer" data-title="Gebruikersbeheer">
                   <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Gebruikersbeheer"></nldd-text-cell>
+                </nldd-list-item>
+                <!-- Documentatie en ondersteuning: menu-item aanwezig, onderliggende pagina volgt later -->
+                <nldd-list-item button id="nav-documentatie" data-title="Documentatie en ondersteuning">
+                  <nldd-icon-cell slot="start"><nldd-icon name="question-circle"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Documentatie en ondersteuning"></nldd-text-cell>
                 </nldd-list-item>
               </nldd-list>
             </div>
@@ -2027,6 +2035,9 @@
       </nldd-page>
     </nldd-app-view>
 
+    <!-- ===== Toast voor korte meldingen (bv. 'binnenkort beschikbaar') ===== -->
+    <div id="app-toast" class="app-toast" role="status" aria-live="polite"></div>
+
     <!-- ===== Flags (feature-toggles, bewaard in deze browser) ===== -->
     <div id="flags-overlay" class="flags-overlay" hidden>
       <div class="flags-dialog" role="dialog" aria-modal="true" aria-labelledby="flags-titel">
@@ -2211,6 +2222,24 @@
         if (actief && toegestaan.indexOf(actief.dataset.view) < 0) showView('dashboard', 'Dashboard');
       }
     })();
+
+    // Eenvoudige toast met automatisch verbergen.
+    let toastTimer = null;
+    function toonToast(tekst) {
+      const t = document.getElementById('app-toast');
+      if (!t) return;
+      t.textContent = tekst;
+      t.classList.add('is-open');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('is-open'), 3200);
+    }
+
+    // Documentatie en ondersteuning: pagina volgt later. Sluit ook de nav-sheet op smal scherm.
+    const navDoc = document.getElementById('nav-documentatie');
+    if (navDoc) navDoc.addEventListener('click', () => {
+      toonToast('Documentatie en ondersteuning wordt binnenkort toegevoegd.');
+      if (sbsec && sbsec.collapsed && sbsec.hide) sbsec.hide();
+    });
 
     navwrap.addEventListener('click', (e) => {
       const item = e.target.closest('nldd-list-item');
