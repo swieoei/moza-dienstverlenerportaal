@@ -1413,8 +1413,7 @@
               <section class="view" data-view="logboek">
                 <div class="stack">
                   <div class="between">
-                    <nldd-title size="4">
-                      <h2>Logboek</h2>                    </nldd-title>
+                    <span></span>
                     <nldd-button id="log-demo" variant="secondary" start-icon="paper-plane" text="Demo: batch van 7 e-mails"></nldd-button>
                   </div>
 
@@ -1993,6 +1992,31 @@
                             </div>
                           </div>
 
+                          <!-- Brief (post): valt onder e-mail (zelfde lange tekst als e-mail) -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Brief (post)-instellingen</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Brieven versturen</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Brieven versturen"></nldd-switch></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Internationale brieven versturen</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Internationale brieven versturen"></nldd-switch></div>
+                            </div>
+                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
+                              <div class="inst-rij-label">Standaard afzenderadres</div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-brief"></span></div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Briefopmaak</div>
+                              <div class="inst-rij-waarde">Niet ingesteld</div>
+                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
+                            </div>
+                          </div>
+
                           <!-- SMS -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Sms-instellingen</div>
@@ -2054,31 +2078,6 @@
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
                               <div class="inst-rij-label">Standaard afzender</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span></div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                          </div>
-
-                          <!-- Brief (post) -->
-                          <div class="inst-groep">
-                            <div class="inst-groep-kop">Brief (post)-instellingen</div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Brieven versturen</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Brieven versturen"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Internationale brieven versturen</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch checked accessible-label="Internationale brieven versturen"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
-                              <div class="inst-rij-label">Standaard afzenderadres</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-brief"></span></div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Briefopmaak</div>
-                              <div class="inst-rij-waarde">Niet ingesteld</div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
                             </div>
                           </div>
@@ -2427,14 +2426,9 @@
       });
       // Het dashboard toont 'Welkom terug, [naam]' als paginatitel.
       if (name === 'dashboard' && window.__DASH_TITEL) title = window.__DASH_TITEL;
-      // Subpagina's tonen '[naam van dienst] - [subfunctionaliteit]' als paginatitel.
+      // Paginatitel toont alleen de naam van de pagina zelf (niet de dienst ervoor).
       const actiefItem = navItems.find(i => i.dataset.view === name);
       const parentKey = actiefItem && actiefItem.dataset.parent;
-      if (parentKey && title) {
-        const parentItem = navItems.find(i => i.dataset.view === parentKey);
-        const parentNaam = (parentItem && parentItem.dataset.title) || parentKey;
-        if (title.indexOf(parentNaam + ' - ') !== 0) title = parentNaam + ' - ' + title;
-      }
       if (title && titlebar) titlebar.textContent = title;
       // Statustag (demo/productie) van de dienst naast de paginatitel - ook op subpagina's.
       const titleTag = document.getElementById('title-tag');
@@ -2809,10 +2803,12 @@
       zet('.js-afz-bbox', u.org || 'Kamer van Koophandel');
       zet('.js-afz-email-naam', u.org || 'Kamer van Koophandel');
       zet('.js-afz-email-adres', 'notificaties@' + mailDomein);
-      zet('.js-afz-sms', (u.orgKort || 'KVK').toUpperCase());
+      // De sms-afzender-ID is de standaard afzender die ook voor WhatsApp/Signal en push wordt gebruikt.
+      const smsAfz = (u.orgKort || 'KVK').toUpperCase();
+      zet('.js-afz-sms', smsAfz);
       zet('.js-afz-brief', briefAdres[u.orgKey] || briefAdres.kvk);
-      zet('.js-afz-push', u.org || 'Kamer van Koophandel');
-      zet('.js-afz-whats', u.org || 'Kamer van Koophandel');
+      zet('.js-afz-push', smsAfz);
+      zet('.js-afz-whats', smsAfz);
 
       // Org-branding: statische KvK-labels aanpassen aan de organisatie van de gebruiker,
       // zodat bv. BZK-gebruikers geen 'Kamer van Koophandel' zien.
@@ -5180,8 +5176,11 @@
       const LOG = [
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '234567890', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Vandaag 08:15' },
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · greylisting bij ontvanger, na vertraging afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd na contactherstel', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
+        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - Loodgietersbedrijf De Kraan', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via e-mail', opmerking: 'Push notificatie niet aangekomen, e-mail wel', tijd: 'Vandaag 08:38' },
+        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - IJssalon Bella', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via push', opmerking: 'SMS en e-mail niet aangekomen, push notificatie wel', tijd: 'Vandaag 08:22' },
+        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - Drukkerij De Pers', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via SMS', opmerking: 'WhatsApp notificatie niet aangekomen, SMS wel', tijd: 'Vandaag 08:12' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatiebatch afgeleverd - Jaarlijkse opgave Handelsregister', detail: '1.180 van 1.180 ondernemers afgeleverd', tijd: 'Vandaag 09:05' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Bakkerij De Korenbloem', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:03' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Café De Brug', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:02' },
