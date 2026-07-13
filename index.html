@@ -373,6 +373,11 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="message-rectangle-text"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Kanaalvoorkeur"></nldd-text-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="logboek-profieldienst" data-title="Logboek" data-parent="profieldienst" hidden>
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="bullet-list"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Logboek"></nldd-text-cell>
+                </nldd-list-item>
                 <nldd-list-item button data-view="apikeys-profieldienst" data-title="API keys" data-parent="profieldienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="key"></nldd-icon></nldd-icon-cell>
@@ -577,6 +582,15 @@
                         <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar kanaalvoorkeur" data-nav-view="kanaalvoorkeur" data-nav-title="Kanaalvoorkeur"></nldd-button></div>
                       </nldd-container>
                     </nldd-card>
+
+                    <!-- Logboek -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="logboek-profieldienst" data-nav-title="Logboek" data-periode="vandaag" aria-label="Naar Logboek">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>Logboek</h3><p slot="subtitle">Bevragingen, verificaties en voorkeurwijzigingen</p></nldd-title>
+                        <nldd-rich-text><p>Bekijk per gebeurtenis wat er in de profieldienst is verwerkt: profielbevragingen, contactgegeven-verificaties en wijzigingen van de kanaalvoorkeur.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek-profieldienst" data-nav-title="Logboek" data-periode="vandaag"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
                   </div>
 
                   <nldd-title size="4"><h2>Wat de profieldienst doet</h2></nldd-title>
@@ -603,6 +617,50 @@
                     </nldd-list-item>
                   </nldd-list>
 
+                </div>
+              </section>
+
+              <!-- ====================== LOGBOEK - PROFIELDIENST ====================== -->
+              <section class="view" data-view="logboek-profieldienst">
+                <div class="stack">
+                  <nldd-title size="4">
+                    <h2>Logboek</h2>
+                    <p slot="subtitle">Verwerkingen in de profieldienst</p>
+                  </nldd-title>
+
+                  <nldd-banner variant="neutral" text="Het logboek toont per gebeurtenis welke gegevens in de profieldienst zijn verwerkt (AVG): profielbevragingen, verificaties van contactgegevens en wijzigingen van de kanaalvoorkeur. Let op: fictieve gegevens."></nldd-banner>
+
+                  <div class="log-filterbalk-nieuw">
+                    <div class="log-filtergroep">
+                      <span class="log-filterlabel">Periode</span>
+                      <div class="log-periode-rij">
+                        <nldd-dropdown>
+                          <select id="pfl-periode" aria-label="Periode">
+                            <option value="vandaag" selected>Vandaag</option>
+                            <option value="gisteren">Gisteren</option>
+                            <option value="week">Deze week</option>
+                            <option value="jaar">Dit jaar</option>
+                            <option value="custom">Zelf datum instellen</option>
+                          </select>
+                        </nldd-dropdown>
+                        <div class="log-periode-custom" id="pfl-periode-custom" hidden>
+                          <label class="log-datum-veld">Van<br><input type="date" class="log-datum" id="pfl-datum-van"></label>
+                          <label class="log-datum-veld">Tot en met<br><input type="date" class="log-datum" id="pfl-datum-tot"></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="log-filtergroep log-filtergroep--groei">
+                      <span class="log-filterlabel">Tonen</span>
+                      <div class="log-filterrij" id="pfl-type-checks">
+                        <div class="log-check" data-val="bevraging"><nldd-checkbox accessible-label="Bevragingen"></nldd-checkbox><span>Bevragingen</span></div>
+                        <div class="log-check" data-val="verificatie"><nldd-checkbox accessible-label="Verificaties"></nldd-checkbox><span>Verificaties</span></div>
+                        <div class="log-check" data-val="voorkeur"><nldd-checkbox accessible-label="Voorkeurwijzigingen"></nldd-checkbox><span>Voorkeurwijzigingen</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="stack" id="pfl-lijst"></div>
+                  <p class="muted-note" id="pfl-leeg" hidden>Geen logboekitems voor dit filter.</p>
                 </div>
               </section>
 
@@ -1253,13 +1311,6 @@
                         <nldd-form-field label="Titel">
                           <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
                         </nldd-form-field>
-                        <nldd-form-field label="Verzonden vanuit e-mailadres">
-                          <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field label="Afzender">
-                          <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
-                        </nldd-form-field>
-                        <p class="muted-note"><nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzender per kanaal aanpassen"></nldd-link></p>
 
                         <nldd-tab-bar id="tb-langtabs" accessible-label="Taal">
                           <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
@@ -1274,6 +1325,14 @@
                         <nldd-form-field label="Lange tekst (e-mail en brief (post))">
                           <nldd-multi-line-text-field id="tb-d-body" rows="12" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
+                        <!-- Afzender in de context van het e-mail-/briefkanaal, vooraf ingevuld uit de organisatie-instellingen -->
+                        <nldd-form-field label="Verzonden vanuit e-mailadres">
+                          <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Afzender (handtekening e-mail en brief)">
+                          <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
+                        </nldd-form-field>
+                        <p class="muted-note">Vooraf ingevuld op basis van de standaard afzender van uw organisatie. <nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzender per kanaal aanpassen"></nldd-link></p>
                         <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)">
                           <nldd-multi-line-text-field id="tb-d-kort" rows="2" readonly></nldd-multi-line-text-field>
                         </nldd-form-field>
@@ -1311,10 +1370,10 @@
                       <div class="log-periode-rij">
                         <nldd-dropdown>
                           <select id="log-periode" aria-label="Periode">
-                            <option value="vandaag">Vandaag</option>
+                            <option value="vandaag" selected>Vandaag</option>
                             <option value="gisteren">Gisteren</option>
                             <option value="week">Deze week</option>
-                            <option value="jaar" selected>Dit jaar</option>
+                            <option value="jaar">Dit jaar</option>
                             <option value="custom">Zelf datum instellen</option>
                           </select>
                         </nldd-dropdown>
@@ -2307,7 +2366,7 @@
         const TOEGANG = {
           dienstbeheerder: {
             notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'analytics'],
-            profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'apikeys-profieldienst', 'rapportage-profieldienst', 'analytics'],
+            profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'logboek-profieldienst', 'apikeys-profieldienst', 'rapportage-profieldienst', 'analytics'],
           },
           keyeigenaar: {
             notificatiedienst: ['dashboard', 'notificatiedienst', 'apikeys-notificatiedienst', 'logboek'],
@@ -3578,8 +3637,13 @@
         if (cm) { dCat.setAttribute('color', cm.color); dCat.setAttribute('text', cm.label); dCat.removeAttribute('hidden'); }
         else dCat.setAttribute('hidden', '');
         velden.titel.value = werk.titel;
-        velden.afz.value = werk.afzender || '';
-        velden.afzenderTekst.value = werk.afzendertekst || '';
+        // Vooraf ingevuld op basis van de standaard afzender van de organisatie (uit de
+        // notificatie-instellingen); de template kan dit overschrijven.
+        const _mu = window.__MOZA_USER || {};
+        const _orgDomein = (_mu.email && _mu.email.split('@')[1]) || 'kvk.nl';
+        const _orgAfzTekst = (_mu.org || 'MijnOverheid') + '\nAfdeling Notificaties\nW https://mijn.overheid.nl';
+        velden.afz.value = werk.afzender || ('notificaties@' + _orgDomein);
+        velden.afzenderTekst.value = werk.afzendertekst || _orgAfzTekst;
         langTabs.querySelectorAll('nldd-tab-bar-item').forEach(tab => tab.toggleAttribute('selected', tab.dataset.tl === 'nl'));
         laadTaal('nl');
         setBewerken(edit);
@@ -4493,6 +4557,8 @@
         beheer.innerHTML = `
           <div class="stack">
             <nldd-banner variant="neutral" text="Genereer en download rapportages over het gebruik van deze dienst."></nldd-banner>
+            <nldd-list variant="box" data-rp-lijst></nldd-list>
+            <nldd-banner data-rp-melding variant="success" text="" hidden></nldd-banner>
             <div class="inline">
               <nldd-button data-rp-open variant="primary" start-icon="plus" text="Nieuwe rapportage samenstellen"></nldd-button>
             </div>
@@ -4526,8 +4592,6 @@
                 </nldd-container>
               </nldd-card>
             </div>
-            <nldd-banner data-rp-melding variant="success" text="" hidden></nldd-banner>
-            <nldd-list variant="box" data-rp-lijst></nldd-list>
           </div>`;
 
         const lijst = beheer.querySelector('[data-rp-lijst]');
@@ -4880,6 +4944,17 @@
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
         { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Vandaag 08:40' },
         { id: ++teller, type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · greylisting bij ontvanger, na vertraging afgeleverd', tijd: 'Vandaag 08:05' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatiebatch afgeleverd - Jaarlijkse opgave Handelsregister', detail: '1.180 van 1.180 ondernemers afgeleverd', tijd: 'Vandaag 09:05' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Bakkerij De Korenbloem', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:03' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Café De Brug', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:02' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Push afgeleverd - Groene Vingers Hoveniers', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via MijnOverheid-app', tijd: 'Vandaag 09:01' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Transport Van Dijk', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:58' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'SMS afgeleverd - Slagerij Van Den Berg', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:55' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Fotostudio Lens', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:52' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Berichtenbox afgeleverd - Autogarage Snel & Zeker', detail: 'Jaarlijkse opgave Handelsregister · gelezen in Berichtenbox', tijd: 'Vandaag 08:49' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Kwekerij De Groene Tuin', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:46' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Boekhoudkantoor Cijfer', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:43' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Brief (post) verzonden - Meubelmakerij Eik', detail: 'Jaarlijkse opgave Handelsregister · aangeboden aan postverwerking', tijd: 'Vandaag 08:30' },
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key aangemaakt', detail: 'Backoffice KvK · rol Notificaties verzenden', tijd: 'Vandaag 09:12' },
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key ingetrokken', detail: 'Oude testkey · door ' + ((window.__MOZA_USER && window.__MOZA_USER.naam) || 'de beheerder'), tijd: 'Gisteren 14:30' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie verzonden - jaarlijkse opgave', detail: 'Handelsregister · 320 ondernemers', tijd: 'Gisteren 16:05' },
@@ -5138,6 +5213,124 @@
         render();
         meld('success', 'Demobatch verstuurd: 7 e-mails - 5 geslaagd (waarvan 1 na een 2e poging) en 2 mislukt. De 2 mislukte vragen om actie.');
       });
+
+      render();
+    })();
+
+    // ====================== Logboek - Profieldienst ======================
+    // Verwerkingen in de profieldienst: bevragingen, verificaties en voorkeurwijzigingen.
+    (function () {
+      const root = document.querySelector('section[data-view="logboek-profieldienst"]');
+      if (!root) return;
+      const lijst = root.querySelector('#pfl-lijst');
+      const leegP = root.querySelector('#pfl-leeg');
+      const typeChecks = root.querySelector('#pfl-type-checks');
+      const periodeSel = root.querySelector('#pfl-periode');
+      const periodeCustom = root.querySelector('#pfl-periode-custom');
+      const datumVan = root.querySelector('#pfl-datum-van');
+      const datumTot = root.querySelector('#pfl-datum-tot');
+
+      const TYPE = {
+        bevraging:   { color: 'neutral', label: 'bevraging', icon: 'magnifying-glass' },
+        verificatie: { color: 'success', label: 'verificatie', icon: 'seal-check-mark' },
+        voorkeur:    { color: 'accent',  label: 'voorkeurwijziging', icon: 'message-rectangle-text' },
+      };
+
+      const LOG = [
+        { type: 'bevraging',   titel: 'Profiel bevraagd - Bakkerij De Korenbloem', detail: 'KvK 81234567 · contactgegevens en voorkeur opgehaald', grondslag: 'Wettelijke taak', tijd: 'Vandaag 09:41' },
+        { type: 'verificatie', titel: 'Contactgegeven geverifieerd - Café De Brug', detail: 'E-mailadres · geldig bevonden', grondslag: 'Gerechtvaardigd belang', tijd: 'Vandaag 09:38' },
+        { type: 'voorkeur',    titel: 'Voorkeurskanaal bijgewerkt - Transport Van Dijk', detail: 'SMS naar e-mail (door de ondernemer)', grondslag: 'Toestemming', tijd: 'Vandaag 09:20' },
+        { type: 'bevraging',   titel: 'Profiel bevraagd - Brouwer Installatietechniek BV', detail: 'KvK 84567123 · contactgegevens opgehaald', grondslag: 'Wettelijke taak', tijd: 'Vandaag 09:05' },
+        { type: 'verificatie', titel: 'Contactgegeven geverifieerd - Groene Vingers Hoveniers', detail: 'Telefoonnummer · geldig bevonden', grondslag: 'Gerechtvaardigd belang', tijd: 'Vandaag 08:52' },
+        { type: 'bevraging',   titel: 'Profiel bevraagd - Fotostudio Lens', detail: 'KvK 87651234 · geen actueel contactgegeven gevonden', grondslag: 'Wettelijke taak', tijd: 'Vandaag 08:40' },
+        { type: 'voorkeur',    titel: 'Taalvoorkeur bijgewerkt - Autogarage Snel & Zeker', detail: 'Nederlands naar Engels (door de ondernemer)', grondslag: 'Toestemming', tijd: 'Gisteren 16:12' },
+        { type: 'verificatie', titel: 'Contactgegeven geverifieerd - Slagerij Van Den Berg', detail: 'Postadres · gecontroleerd tegen Handelsregister', grondslag: 'Gerechtvaardigd belang', tijd: 'Gisteren 15:03' },
+        { type: 'bevraging',   titel: 'Profiel bevraagd - Boekhoudkantoor Cijfer', detail: 'KvK 81234599 · contactgegevens opgehaald (KCC)', grondslag: 'Gerechtvaardigd belang', tijd: 'Gisteren 11:47' },
+      ];
+
+      const nu = new Date();
+      const vandaag0 = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate());
+      const DAG = 864e5;
+      function itemDatum(it) {
+        const t = (it.tijd || '').toLowerCase();
+        if (/vandaag/.test(t)) return vandaag0;
+        if (/gisteren/.test(t)) return new Date(vandaag0.getTime() - DAG);
+        return new Date(vandaag0.getTime() - 30 * DAG);
+      }
+      function inPeriode(it) {
+        const p = periodeSel ? periodeSel.value : 'jaar';
+        const d = itemDatum(it);
+        if (p === 'vandaag') return d.getTime() === vandaag0.getTime();
+        if (p === 'gisteren') return d.getTime() === vandaag0.getTime() - DAG;
+        if (p === 'week') { const dw = (nu.getDay() + 6) % 7; return d.getTime() >= vandaag0.getTime() - dw * DAG; }
+        if (p === 'jaar') return d.getFullYear() === nu.getFullYear();
+        if (p === 'custom') {
+          if (datumVan && datumVan.value && d < new Date(datumVan.value)) return false;
+          if (datumTot && datumTot.value) { const tot = new Date(datumTot.value); tot.setHours(23, 59, 59, 999); if (d > tot) return false; }
+          return true;
+        }
+        return true;
+      }
+      function toggleCustom() { if (periodeCustom) periodeCustom.toggleAttribute('hidden', !(periodeSel && periodeSel.value === 'custom')); }
+
+      function checkedVals() {
+        return Array.from(typeChecks.querySelectorAll('.log-check')).filter(r => {
+          const cb = r.querySelector('nldd-checkbox'); return cb && cb.checked;
+        }).map(r => r.dataset.val);
+      }
+      function zichtbaar(it) {
+        if (!inPeriode(it)) return false;
+        const types = checkedVals();
+        return types.length === 0 ? true : types.indexOf(it.type) >= 0;
+      }
+
+      function rij(it) {
+        const ty = TYPE[it.type] || TYPE.bevraging;
+        const tr = document.createElement('tr');
+        tr.className = 'log-rij';
+        tr.innerHTML =
+          '<td class="log-td-tijd"></td>' +
+          '<td class="log-td-geb"><div class="log-geb-titel"><nldd-icon class="lg-icon" size="18"></nldd-icon><span class="lg-titel"></span></div><div class="log-geb-detail lg-detail"></div></td>' +
+          '<td class="log-td-status"><nldd-tag class="lg-type"></nldd-tag></td>' +
+          '<td class="log-td-actie lg-grondslag"></td>';
+        tr.querySelector('.log-td-tijd').textContent = it.tijd;
+        const titelEl = tr.querySelector('.lg-titel'); titelEl.textContent = it.titel; titelEl.title = it.titel;
+        const detEl = tr.querySelector('.lg-detail'); detEl.textContent = it.detail; detEl.title = it.detail;
+        tr.querySelector('.lg-icon').setAttribute('name', ty.icon);
+        const tag = tr.querySelector('.lg-type'); tag.setAttribute('color', ty.color); tag.setAttribute('text', ty.label);
+        tr.querySelector('.lg-grondslag').textContent = it.grondslag;
+        return tr;
+      }
+
+      function render() {
+        lijst.textContent = '';
+        const items = LOG.filter(zichtbaar);
+        leegP.toggleAttribute('hidden', items.length > 0);
+        if (items.length) {
+          const wrap = document.createElement('div');
+          wrap.className = 'log-tabel-wrap';
+          const tabel = document.createElement('table');
+          tabel.className = 'log-tabel';
+          tabel.innerHTML = '<thead><tr><th class="log-th-tijd">Tijd</th><th>Gebeurtenis</th><th class="log-th-status">Type</th><th class="log-th-actie">Grondslag</th></tr></thead><tbody></tbody>';
+          const tbody = tabel.querySelector('tbody');
+          items.forEach(it => tbody.appendChild(rij(it)));
+          wrap.appendChild(tabel);
+          lijst.appendChild(wrap);
+        }
+      }
+
+      typeChecks.querySelectorAll('.log-check').forEach(r => {
+        const cb = r.querySelector('nldd-checkbox');
+        r.addEventListener('click', e => {
+          if (e.target.closest('nldd-checkbox')) return;
+          const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+          if (input) input.click(); else cb.toggleAttribute('checked');
+        });
+        cb.addEventListener('change', render);
+      });
+      if (periodeSel) periodeSel.addEventListener('change', () => { toggleCustom(); render(); });
+      if (datumVan) datumVan.addEventListener('change', render);
+      if (datumTot) datumTot.addEventListener('change', render);
 
       render();
     })();
