@@ -1323,8 +1323,15 @@
                         <nldd-form-field label="Onderwerp">
                           <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                         </nldd-form-field>
-                        <nldd-form-field label="Lange tekst">
+                        <nldd-form-field>
+                          <div class="lt-kop">
+                            <span class="lt-label">Lange tekst</span>
+                            <div class="log-check" id="tb-d-samen-rij"><nldd-checkbox id="tb-d-samen-cb" checked accessible-label="E-mail en brief (post) hebben dezelfde tekst"></nldd-checkbox><span>E-mail en brief (post) hebben dezelfde tekst</span></div>
+                          </div>
+                          <p class="lt-sublabel" id="tb-d-label-email" hidden>E-mail</p>
                           <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst"></div></div>
+                          <p class="lt-sublabel" id="tb-d-label-brief" hidden>Brief (post)</p>
+                          <div class="rte" id="tb-d-brief-wrap" hidden><div class="rte-area" id="tb-d-body-brief" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
                         </nldd-form-field>
                         <nldd-form-field label="Afzender (handtekening)">
                           <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
@@ -3573,11 +3580,16 @@
         kortAfz: root.querySelector('#tb-d-kort-afz'),
         subj: root.querySelector('#tb-d-subj'),
         body: root.querySelector('#tb-d-body'),
+        bodyBrief: root.querySelector('#tb-d-body-brief'),
         kort: root.querySelector('#tb-d-kort'),
       };
       // Lange tekst is een rich-text editor (contenteditable). Lezen/schrijven via helpers.
-      function bodyGet() { return velden.body && velden.body.classList.contains('rte-area') ? velden.body.innerText : ((velden.body && velden.body.value) || ''); }
-      function bodySet(v) { if (!velden.body) return; if (velden.body.classList.contains('rte-area')) velden.body.textContent = v || ''; else velden.body.value = v || ''; }
+      const rteRead = el => el && el.classList.contains('rte-area') ? el.innerText : ((el && el.value) || '');
+      const rteWrite = (el, v) => { if (!el) return; if (el.classList.contains('rte-area')) el.textContent = v || ''; else el.value = v || ''; };
+      function bodyGet() { return rteRead(velden.body); }
+      function bodySet(v) { rteWrite(velden.body, v); }
+      function briefGet() { return rteRead(velden.bodyBrief); }
+      function briefSet(v) { rteWrite(velden.bodyBrief, v); }
       // Toolbar boven de rich-text editor injecteren.
       root.querySelectorAll('.rte').forEach(wrap => {
         if (wrap.querySelector('.rte-toolbar')) return;
@@ -3605,6 +3617,32 @@
 
       let huidigId = null, bewerken = false, werk = null, taalNu = 'nl', teller = 0;
       const kloon = t => JSON.parse(JSON.stringify(t));
+
+      // --- 'E-mail en brief (post) hebben dezelfde tekst': uit = aparte brieftekst ---
+      const samenRij = root.querySelector('#tb-d-samen-rij');
+      const samenCb = root.querySelector('#tb-d-samen-cb');
+      const labelEmail = root.querySelector('#tb-d-label-email');
+      const labelBrief = root.querySelector('#tb-d-label-brief');
+      const briefWrap = root.querySelector('#tb-d-brief-wrap');
+      function samenAan() { return samenCb ? (typeof samenCb.checked === 'boolean' ? samenCb.checked : samenCb.hasAttribute('checked')) : true; }
+      function samenToggle() {
+        const samen = samenAan();
+        if (labelEmail) labelEmail.toggleAttribute('hidden', samen);
+        if (labelBrief) labelBrief.toggleAttribute('hidden', samen);
+        if (briefWrap) briefWrap.toggleAttribute('hidden', samen);
+        // Bij splitsen: start de brieftekst gelijk aan de e-mailtekst als hij nog leeg is.
+        if (!samen && !briefGet()) briefSet(bodyGet());
+      }
+      if (samenRij && samenCb) {
+        samenRij.addEventListener('click', e => {
+          if (!bewerken) return; // alleen aanpasbaar tijdens bewerken
+          if (e.target.closest('nldd-checkbox')) return;
+          const input = samenCb.shadowRoot && samenCb.shadowRoot.querySelector('input');
+          if (input) input.click(); else samenCb.toggleAttribute('checked');
+        });
+        samenCb.addEventListener('change', samenToggle);
+        customElements.whenDefined('nldd-checkbox').then(samenToggle); // hersync na upgrade
+      }
 
       function toonLijst() { detail.setAttribute('hidden', ''); listPage.removeAttribute('hidden'); }
       function toonDetail() { listPage.setAttribute('hidden', ''); detail.removeAttribute('hidden'); window.scrollTo(0, 0); }
@@ -3641,6 +3679,7 @@
         const c = (werk.content && werk.content[lang]) || leeg();
         velden.subj.value = c.subject || '';
         bodySet(c.body || '');
+        briefSet(c.briefBody || c.body || '');
         velden.kort.value = c.kort || '';
         const isLeeg = !(c.subject || c.body || c.kort);
         leegBanner.toggleAttribute('hidden', !(isLeeg && lang !== 'nl'));
@@ -3651,7 +3690,9 @@
         werk.titel = velden.titel.value;
         werk.afzender = velden.afz.value;
         werk.afzendertekst = velden.afzenderTekst.value;
-        werk.content[taalNu] = { subject: velden.subj.value, body: bodyGet(), kort: velden.kort.value };
+        const apart = !samenAan();
+        werk.briefApart = apart;
+        werk.content[taalNu] = { subject: velden.subj.value, body: bodyGet(), briefBody: apart ? briefGet() : undefined, kort: velden.kort.value };
       }
       function setBewerken(on) {
         bewerken = on;
@@ -3660,6 +3701,8 @@
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
         if (velden.body) velden.body.setAttribute('contenteditable', on ? 'true' : 'false'); // rich-text editor
+        if (velden.bodyBrief) velden.bodyBrief.setAttribute('contenteditable', on ? 'true' : 'false');
+        if (samenCb) samenCb.toggleAttribute('disabled', !on); // checkbox alleen aanpasbaar tijdens bewerken
         btnBewerk.toggleAttribute('hidden', on);
         btnOpslaan.toggleAttribute('hidden', !on);
       }
@@ -3683,8 +3726,16 @@
         velden.afz.value = werk.afzender || ('notificaties@' + _orgDomein);
         velden.afzenderTekst.value = werk.afzendertekst || _orgAfzTekst;
         if (velden.kortAfz) velden.kortAfz.value = werk.kortAfzender || (_mu.org || 'MijnOverheid'); // afzender push/SMS/WhatsApp/Signal
+        // Checkbox weerspiegelt of de brief afwijkt van de e-mail.
+        if (samenCb) {
+          const apart = !!werk.briefApart;
+          const input = samenCb.shadowRoot && samenCb.shadowRoot.querySelector('input');
+          if (input) input.checked = !apart; else samenCb.toggleAttribute('checked', !apart);
+          samenCb.toggleAttribute('checked', !apart);
+        }
         langTabs.querySelectorAll('nldd-tab-bar-item').forEach(tab => tab.toggleAttribute('selected', tab.dataset.tl === 'nl'));
         laadTaal('nl');
+        samenToggle();
         setBewerken(edit);
         melding.setAttribute('hidden', '');
         lijstMelding.setAttribute('hidden', '');
@@ -3707,6 +3758,7 @@
         t.titel = werk.titel || 'Naamloze template';
         t.afzender = werk.afzender;
         t.afzendertekst = werk.afzendertekst;
+        t.briefApart = werk.briefApart;
         t.content = werk.content;
         dTitel.textContent = t.titel;
         renderLijst();
