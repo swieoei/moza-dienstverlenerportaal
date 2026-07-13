@@ -427,31 +427,35 @@
                     </nldd-card>
                   </div>
 
-                  <nldd-title size="4"><h2>Afleverstatus vandaag</h2></nldd-title>
-                  <div class="afl-grid">
-                    <nldd-card>
-                      <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2><p slot="subtitle">Succesvol afgeleverd</p></nldd-title>
-                        <nldd-tag color="success" text="binnen norm"></nldd-tag>
-                        <ul class="afl-lijst">
-                          <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
-                          <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors
-                            <nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
-                          </li>
-                        </ul>
-                      </nldd-container>
-                    </nldd-card>
-                    <nldd-card>
-                      <nldd-container padding="16" gap="8">
-                        <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
-                        <nldd-tag color="critical" text="actie nodig"></nldd-tag>
-                        <ul class="afl-lijst">
-                          <li><strong class="js-afl-actie">2</strong> notificaties hebben actie nodig
-                            <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
-                          </li>
-                        </ul>
-                      </nldd-container>
-                    </nldd-card>
+                  <!-- Afleverstatus hoort bij de notificatiedienst: verborgen voor gebruikers die
+                       alleen tot een andere dienst toegang hebben. -->
+                  <div class="stack" data-dienst="notificatiedienst">
+                    <nldd-title size="4"><h2>Afleverstatus vandaag</h2></nldd-title>
+                    <div class="afl-grid">
+                      <nldd-card>
+                        <nldd-container padding="16" gap="8">
+                          <nldd-title size="2"><h2 class="js-afl-ok-pct">98,4%</h2><p slot="subtitle">Succesvol afgeleverd</p></nldd-title>
+                          <nldd-tag color="success" text="binnen norm"></nldd-tag>
+                          <ul class="afl-lijst">
+                            <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
+                            <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors
+                              <nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
+                            </li>
+                          </ul>
+                        </nldd-container>
+                      </nldd-card>
+                      <nldd-card>
+                        <nldd-container padding="16" gap="8">
+                          <nldd-title size="2"><h2 class="js-afl-fail-pct">1,6%</h2><p slot="subtitle">Niet afgeleverd</p></nldd-title>
+                          <nldd-tag color="critical" text="actie nodig"></nldd-tag>
+                          <ul class="afl-lijst">
+                            <li><strong class="js-afl-actie">2</strong> notificaties hebben actie nodig
+                              <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
+                            </li>
+                          </ul>
+                        </nldd-container>
+                      </nldd-card>
+                    </div>
                   </div>
 
                   <nldd-title size="4"><h2>Recente activiteit</h2></nldd-title>
@@ -462,17 +466,29 @@
                       <nldd-text-cell text="**Tijd**"></nldd-text-cell>
                       <nldd-text-cell text="**Status**"></nldd-text-cell>
                     </nldd-table-row>
-                    <nldd-table-row>
+                    <nldd-table-row data-dienst="notificatiedienst">
                       <nldd-text-cell text="Notificatiebatch: wijziging Handelsregisterwet - afscherming woonadres per 1 jul 2026 (320)"></nldd-text-cell>
                       <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
                       <nldd-text-cell text="09:42"></nldd-text-cell>
                       <nldd-cell><nldd-tag color="success" text="afgeleverd"></nldd-tag></nldd-cell>
                     </nldd-table-row>
-                    <nldd-table-row>
+                    <nldd-table-row data-dienst="notificatiedienst">
                       <nldd-text-cell text="Levering mislukt - endpoint timeout"></nldd-text-cell>
                       <nldd-text-cell text="Gemeente Utrecht"></nldd-text-cell>
                       <nldd-text-cell text="09:15"></nldd-text-cell>
                       <nldd-cell><nldd-tag color="critical" text="mislukt"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row data-dienst="profieldienst" hidden>
+                      <nldd-text-cell text="Profiel bevraagd (KvK 81234567) - contactgegevens opgehaald"></nldd-text-cell>
+                      <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
+                      <nldd-text-cell text="09:40"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="success" text="verwerkt"></nldd-tag></nldd-cell>
+                    </nldd-table-row>
+                    <nldd-table-row data-dienst="profieldienst" hidden>
+                      <nldd-text-cell text="Voorkeurskanaal bijgewerkt (SMS naar e-mail)"></nldd-text-cell>
+                      <nldd-text-cell text="Kamer van Koophandel"></nldd-text-cell>
+                      <nldd-text-cell text="09:05"></nldd-text-cell>
+                      <nldd-cell><nldd-tag color="neutral" text="beheer"></nldd-tag></nldd-cell>
                     </nldd-table-row>
                     <nldd-table-row>
                       <nldd-text-cell text="Nieuwe API-key gegenereerd"></nldd-text-cell>
@@ -739,8 +755,9 @@
                         <p>U gebruikt de notificatiedienst nu in de <strong>demo-omgeving</strong> met fictieve gegevens. Zet de stap naar productie en bereik ondernemers écht op het juiste moment, op het juiste kanaal - betrouwbaar, gemonitord en conform de aansluitvoorwaarden. Onze beheerorganisatie helpt u bij elke stap.</p>
                       </nldd-rich-text>
                       <div class="row-actions">
-                        <nldd-button variant="primary" end-icon="arrow-right" text="Productieversie aanvragen" data-goto-marktplaats="notificatiedienst"></nldd-button>
+                        <nldd-button id="nd-prod-knop" variant="primary" end-icon="arrow-right" text="Productieversie aanvragen" data-goto-marktplaats="notificatiedienst"></nldd-button>
                       </div>
+                      <nldd-banner id="nd-prod-verwijzing" variant="neutral" text="Alleen een organisatiebeheerder kan de productieversie aanvragen. Neem hiervoor contact op met de organisatiebeheerder van uw organisatie." hidden></nldd-banner>
                     </nldd-container>
                   </nldd-card>
                 </div>
@@ -2175,8 +2192,16 @@
       if (org) org.setAttribute('text', '**' + MOZA_USER.org + '**');
       if (gb) { gb.setAttribute('text', MOZA_USER.naam); gb.setAttribute('details', ROL_LABEL[MOZA_USER.rol] || 'Gebruiker'); }
       // Welkomsttekst op het dashboard met de voornaam van de ingelogde gebruiker.
+      // De ondersteunende tekst volgt de dienst: een beheerder die alleen de profiel-
+      // dienst mag zien, krijgt geen notificatie-gerichte tekst.
       const welkom = document.getElementById('dash-welkom');
-      if (welkom) welkom.setAttribute('text', 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0] + '.');
+      if (welkom) {
+        welkom.setAttribute('text', 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0] + '.');
+        const alleenProfiel = MOZA_USER.rol !== 'organisatiebeheerder' && MOZA_USER.dienst === 'profieldienst';
+        welkom.setAttribute('supporting-text', alleenProfiel
+          ? 'Bekijk de profieldienst voor bevragingen, kanaalvoorkeuren en rapportages.'
+          : 'Vandaag zijn er 1.248 notificaties verzonden. Bekijk het logboek voor de mislukte verzendingen die om actie vragen.');
+      }
       // Plaatsen waar de eigen naam wordt getoond (bv. audit-acties door de beheerder).
       document.querySelectorAll('.js-huidige-gebruiker').forEach(el => el.setAttribute('text', MOZA_USER.naam));
 
@@ -2201,7 +2226,19 @@
         document.querySelectorAll('.nav-tile[data-nav-view]').forEach(tile => {
           if (toegestaan.indexOf(tile.dataset.navView) < 0) tile.classList.add('rol-verborgen');
         });
+        // Content van een andere dienst verbergen; content van de eigen dienst tonen.
+        // Zo ziet bv. een profieldienst-beheerder geen notificatie-elementen (afleverstatus).
+        document.querySelectorAll('[data-dienst]').forEach(el => {
+          if (el.dataset.dienst === MOZA_USER.dienst) { el.classList.remove('rol-verborgen'); el.removeAttribute('hidden'); }
+          else el.classList.add('rol-verborgen');
+        });
         if (org) org.classList.add('rol-verborgen'); // organisatie-instellingen alleen voor de organisatiebeheerder
+        // Productieversie/go-live aanvragen is voorbehouden aan de organisatiebeheerder;
+        // andere rollen krijgen een verwijzing naar die rol.
+        const prodKnop = document.getElementById('nd-prod-knop');
+        const prodVerwijzing = document.getElementById('nd-prod-verwijzing');
+        if (prodKnop) prodKnop.classList.add('rol-verborgen');
+        if (prodVerwijzing) prodVerwijzing.removeAttribute('hidden');
         const actief = document.querySelector('.view.is-active');
         if (actief && toegestaan.indexOf(actief.dataset.view) < 0) showView('dashboard', 'Dashboard');
       }
