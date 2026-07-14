@@ -1472,6 +1472,7 @@
                           <span class="muted-note">Status:</span>
                           <div class="log-checks" id="log-status-checks">
                             <div class="log-check" data-val="succesvol"><nldd-checkbox accessible-label="Succesvol"></nldd-checkbox><span>Succesvol</span></div>
+                            <div class="log-check" data-val="hersteld"><nldd-checkbox accessible-label="Hersteld"></nldd-checkbox><span>Hersteld</span></div>
                             <div class="log-check" data-val="errors"><nldd-checkbox accessible-label="Met errors"></nldd-checkbox><span>Met errors</span></div>
                             <div class="log-check" data-val="mislukt"><nldd-checkbox accessible-label="Mislukt"></nldd-checkbox><span>Mislukt</span></div>
                           </div>
@@ -5178,6 +5179,7 @@
 
       const STAT = {
         succesvol: { color: 'success', label: 'succesvol' },
+        hersteld: { color: 'accent', label: 'hersteld' },
         errors: { color: 'warning', label: 'succesvol met errors' },
         mislukt: { color: 'critical', label: 'mislukt' },
         apikey: { color: 'neutral', label: 'API key' },
@@ -5187,8 +5189,8 @@
       const LOG = [
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '234567890', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Vandaag 08:15' },
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
-        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd na contactherstel', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
-        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
+        { id: ++teller, type: 'notificatie', status: 'hersteld', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd na contactherstel', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
+        { id: ++teller, type: 'notificatie', status: 'hersteld', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
         { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - Loodgietersbedrijf De Kraan', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via e-mail', opmerking: 'Push notificatie niet aangekomen, e-mail wel', tijd: 'Vandaag 08:38' },
         { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - IJssalon Bella', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via push', opmerking: 'SMS en e-mail niet aangekomen, push notificatie wel', tijd: 'Vandaag 08:22' },
         { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - Drukkerij De Pers', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via SMS', opmerking: 'WhatsApp notificatie niet aangekomen, SMS wel', tijd: 'Vandaag 08:12' },
@@ -5371,7 +5373,7 @@
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Café De Brug', detail: 'Nieuwe regelgeving 2027 · info@cafedebrug.nl', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Groene Vingers Hoveniers', detail: 'Nieuwe regelgeving 2027 · post@groenevingers.nl', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Transport Van Dijk', detail: 'Nieuwe regelgeving 2027 · planning@vandijktransport.nl', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Brouwer Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Brouwer Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', opmerking: 'Afgeleverd na 2e poging; 1e poging mislukt door tijdelijke storing', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '123456780', titel: 'E-mail mislukt - De Vries Advies', detail: 'Nieuwe regelgeving 2027 · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
