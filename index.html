@@ -490,6 +490,12 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Gebruikersbeheer"></nldd-text-cell>
                 </nldd-list-item>
+                <!-- Organisatie-instellingen ook in de hoofdnavigatie, zodat ze op elk scherm
+                     bereikbaar zijn (het account-menu klapt op smalle schermen in de overflow). -->
+                <nldd-list-item button data-view="organisatie" data-title="Instellingen">
+                  <nldd-icon-cell slot="start"><nldd-icon name="gear"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Instellingen"></nldd-text-cell>
+                </nldd-list-item>
                 <!-- Documentatie en ondersteuning: menu-item aanwezig, onderliggende pagina volgt later -->
                 <nldd-list-item button id="nav-documentatie" data-title="Documentatie en ondersteuning">
                   <nldd-icon-cell slot="start"><nldd-icon name="question-mark-circle"></nldd-icon></nldd-icon-cell>
@@ -2655,7 +2661,9 @@
     navwrap.addEventListener('click', (e) => {
       const item = e.target.closest('nldd-list-item');
       if (!item || !item.dataset.view) return;
-      showView(item.dataset.view, item.dataset.title);
+      // Instellingen: open op de organisatietab (zet ook het juiste tabblad actief).
+      if (item.dataset.view === 'organisatie' && window.__mozaInstellingen) window.__mozaInstellingen.open('org');
+      else showView(item.dataset.view, item.dataset.title);
       // Parent: naast navigeren naar het overzicht ook in-/uitklappen.
       if (item.dataset.group) setGroepUit(item.dataset.group, !expandedGroups.has(item.dataset.group));
       // In een smal venster staat de nav in een sheet: sluit die na een keuze.
