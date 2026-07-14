@@ -1300,7 +1300,7 @@
                 <!-- Lijstpagina -->
                 <div id="tb-list-page">
                   <div class="stack">
-                    <nldd-banner variant="neutral" text="De standaard notificatieteksten voor MijnOverheid, per handelingsperspectief (bron: Logius). Open een template om hem op een eigen pagina te bekijken of te bewerken - meertalig (NL, EN, DE, FR)."></nldd-banner>
+                    <nldd-banner variant="neutral" text="De standaard notificatieteksten, per handelingsperspectief. Templates zijn meertalig (NL, EN, DE, FR) en kunnen bekeken en bewerkt worden."></nldd-banner>
                     <nldd-banner id="tb-lijstmelding" variant="success" text="" hidden></nldd-banner>
                     <nldd-list id="tb-lijst" variant="box"></nldd-list>
                     <div class="inline">
@@ -4320,9 +4320,9 @@
           naam: 'Notificatiedienst', status: 'demo',
           desc: 'Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.',
           keyPrefix: 'nmp_demo',
-          rollen: ['Notificaties verzenden', 'Status & rapportage lezen', 'Contactherstel beheren'],
+          rollen: ['Notificaties verzenden', 'Status & rapportage lezen', 'Mislukte notificaties beheren'],
           keys: [
-            { naam: 'Backoffice KvK', rollen: ['Notificaties verzenden', 'Contactherstel beheren'], key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs', geldigTot: '2026-09-30' },
+            { naam: 'Backoffice KvK', rollen: ['Notificaties verzenden', 'Mislukte notificaties beheren'], key: 'nmp_demo_7f3K9qLxT2wR8vZn4bHs', geldigTot: '2026-09-30' },
             { naam: 'Rapportagedashboard', rollen: ['Status & rapportage lezen'], key: 'nmp_demo_3xQw8rTf5kLm2nPd9vBc', geldigTot: '2026-08-15' },
           ],
           rapportageTypes: ['Verzendrapport', 'Afleverpercentages per kanaal', 'Notificaties met errors en contactherstel', 'API-gebruik per key'],
@@ -4580,7 +4580,7 @@
       const ROL_INFO = {
         'Notificaties verzenden': { scope: 'schrijven', desc: 'Berichten versturen via de dienst.' },
         'Status & rapportage lezen': { scope: 'lezen', desc: 'Afleverstatus en rapportages opvragen.' },
-        'Contactherstel beheren': { scope: 'beheer', desc: 'Contactherstel-acties starten en afhandelen.' },
+        'Mislukte notificaties beheren': { scope: 'beheer', desc: 'Herstel-acties starten en afhandelen.' },
         'Profiel lezen': { scope: 'lezen', desc: 'Profiel- en contactgegevens opvragen.' },
         'Voorkeuren bijwerken': { scope: 'schrijven', desc: 'Kanaal- en taalvoorkeuren wijzigen.' },
         'Verificatie initiëren': { scope: 'beheer', desc: 'Verificatie van contactgegevens starten.' },
@@ -4778,7 +4778,7 @@
           dienst.keys.unshift(nieuw);
           renderLijst();
           panel.setAttribute('hidden', '');
-          melding('warning', 'Nieuwe key \'' + naam + '\' (' + rollen.join(', ') + ') aangemaakt, ' + (nieuw.geldigTot ? 'geldig tot ' + fmtDatum(nieuw.geldigTot) : 'zonder vervaldatum') + (advanced ? ', met geavanceerde instellingen' : '') + '. Kopieer hem nu en bewaar hem veilig.');
+          melding('success', 'Nieuwe key \'' + naam + '\' (' + rollen.join(', ') + ') aangemaakt, ' + (nieuw.geldigTot ? 'geldig tot ' + fmtDatum(nieuw.geldigTot) : 'zonder vervaldatum') + (advanced ? ', met geavanceerde instellingen' : '') + '. Kopieer hem nu en bewaar hem veilig.');
         });
 
         renderLijst();
