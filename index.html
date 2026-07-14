@@ -5369,9 +5369,9 @@
         if (item.type === 'notificatie') {
           if (types.indexOf('notificatie') < 0) return false;
           const stats = checkedVals(statusChecks);
-          // Een hersteld bericht is óók succesvol, dus het valt onder beide statusfilters.
-          const eigen = item.status === 'hersteld' ? ['hersteld', 'succesvol'] : [item.status];
-          return stats.length === 0 ? true : eigen.some(s => stats.indexOf(s) >= 0);
+          // Filter op de eigen status: 'Succesvol' toont alleen puur succesvolle berichten,
+          // 'Hersteld' alleen de herstelde (die tonen daarnaast wel beide statustags).
+          return stats.length === 0 ? true : stats.indexOf(item.status) >= 0;
         }
         return true;
       }
