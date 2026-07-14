@@ -295,6 +295,7 @@
     .an-rap-card { cursor: pointer; }
     .an-rap-card:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
     .an-rap-meer { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: #154273; margin-top: 2px; }
+    .an-rap-meer nldd-icon { width: 1em; height: 1em; flex: 0 0 auto; }
     /* Verfijnde analyse: filterbalk */
     .vfa-filters { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
     .vfa-filters nldd-form-field { flex: 1 1 200px; min-width: 180px; }
@@ -5231,7 +5232,7 @@
                 <div class="an-rap-top"><span class="an-rap-waarde">${r.waarde}</span><nldd-tag color="${r.tag.color}" text="${r.tag.text}"></nldd-tag></div>
                 <span class="an-rap-label">${r.label}</span>
                 <span class="an-rap-context">${r.context}</span>
-                <span class="an-rap-meer">Verfijnde analyse <nldd-icon name="arrow-right" size="14"></nldd-icon></span>
+                <span class="an-rap-meer">Bekijk rapport <nldd-icon name="arrow-right"></nldd-icon></span>
               </nldd-container>`;
             const openVerdieping = () => window.__mozaVerfijnd && window.__mozaVerfijnd.open({
               dienstNaam: dienst.naam,
