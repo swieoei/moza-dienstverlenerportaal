@@ -291,6 +291,15 @@
     .an-rap-waarde { font-size: 1.7rem; font-weight: 700; color: #154273; line-height: 1.1; }
     .an-rap-label { font-weight: 600; }
     .an-rap-context { font-size: 0.88rem; color: #4f5b66; }
+    /* Klikbare rapportagetegel -> verfijnde analyse */
+    .an-rap-card { cursor: pointer; }
+    .an-rap-card:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
+    .an-rap-meer { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: #154273; margin-top: 2px; }
+    /* Verfijnde analyse: filterbalk */
+    .vfa-filters { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
+    .vfa-filters nldd-form-field { flex: 1 1 200px; min-width: 180px; }
+    .vfa-filters nldd-dropdown { width: 100%; }
+    #vfa-tabel .log-tabel { min-width: 420px; }
     .gb-kaart { border-inline-start: 4px solid #d6dce2; }
     .gb-kaart.rand-notificatiedienst { border-inline-start-color: #d52b1e; }
     .gb-kaart.rand-profieldienst { border-inline-start-color: #007bc7; }
@@ -1986,6 +1995,16 @@
                       </nldd-container>
                     </nldd-card>
 
+                    <nldd-title size="5"><h3>Analyse</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-rich-text><p>Open de verfijnde analyse om variabelen verder uit te splitsen en te filteren. Deze pagina staat niet in het menu.</p></nldd-rich-text>
+                        <div class="inline">
+                          <nldd-button id="inst-verfijnde-analyse" variant="secondary" start-icon="chart-x-y-axis-line" text="Verfijnde analyse openen"></nldd-button>
+                        </div>
+                      </nldd-container>
+                    </nldd-card>
+
                     <div class="row-actions">
                       <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
                       <nldd-button variant="secondary" text="Annuleren"></nldd-button>
@@ -2155,6 +2174,59 @@
                     <nldd-button id="notif-inst-opslaan" variant="primary" text="Opslaan"></nldd-button>
                     <nldd-button variant="secondary" text="Annuleren"></nldd-button>
                   </div>
+                </div>
+              </section>
+
+              <!-- ====================== VERFIJNDE ANALYSE (verdieping per rapportagetegel) ====================== -->
+              <!-- Geen menu-item: alleen te openen via de rapportagetegels en via Instellingen -> Organisatie. -->
+              <section class="view" data-view="verfijnde-analyse">
+                <div class="stack">
+                  <div class="inline">
+                    <nldd-button id="vfa-terug" variant="secondary" start-icon="arrow-left" text="Terug"></nldd-button>
+                  </div>
+                  <div class="between">
+                    <nldd-title size="4"><h2 id="vfa-titel">Verfijnde analyse</h2><p slot="subtitle" id="vfa-sub">-</p></nldd-title>
+                    <nldd-button id="vfa-download" variant="secondary" start-icon="square-and-arrow-down" text="Download (CSV)"></nldd-button>
+                  </div>
+                  <nldd-banner variant="neutral" text="Verdieping op deze variabele. Filter verder voor een verfijnde analyse. Deze pagina staat niet in het menu en is te openen via de rapportagetegels en via Instellingen."></nldd-banner>
+
+                  <nldd-card id="vfa-kpi-card">
+                    <nldd-container padding="16" gap="8">
+                      <div class="an-rap-top"><span class="an-rap-waarde" id="vfa-kpi">-</span><nldd-tag id="vfa-kpi-tag" color="neutral" text="-"></nldd-tag></div>
+                      <span class="an-rap-label" id="vfa-kpi-label">-</span>
+                      <span class="an-rap-context" id="vfa-kpi-context"></span>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <div class="vfa-filters">
+                    <nldd-form-field label="Periode">
+                      <nldd-dropdown><select id="vfa-periode" aria-label="Periode">
+                        <option value="3">Laatste 3 maanden</option>
+                        <option value="6" selected>Laatste 6 maanden</option>
+                        <option value="12">Laatste 12 maanden</option>
+                      </select></nldd-dropdown>
+                    </nldd-form-field>
+                    <nldd-form-field label="Kanaal">
+                      <nldd-dropdown><select id="vfa-kanaal" aria-label="Kanaal">
+                        <option value="alle" selected>Alle kanalen</option>
+                        <option value="email">E-mail</option>
+                        <option value="push">Push</option>
+                        <option value="signal">Signal</option>
+                        <option value="sms">SMS</option>
+                      </select></nldd-dropdown>
+                    </nldd-form-field>
+                    <nldd-form-field label="Uitsplitsing">
+                      <nldd-dropdown><select id="vfa-split" aria-label="Uitsplitsing">
+                        <option value="kanaal" selected>Per kanaal</option>
+                        <option value="week">Per week</option>
+                        <option value="segment">Per ondernemerssegment</option>
+                      </select></nldd-dropdown>
+                    </nldd-form-field>
+                  </div>
+
+                  <nldd-title size="6"><h3>Uitsplitsing</h3></nldd-title>
+                  <div id="vfa-tabel"></div>
+                  <nldd-banner id="vfa-melding" variant="success" text="" hidden></nldd-banner>
                 </div>
               </section>
 
@@ -3015,6 +3087,12 @@
         },
       };
 
+      // Verfijnde analyse openen vanuit de organisatie-instellingen (geen menu-item).
+      const vfaKnop = root.querySelector('#inst-verfijnde-analyse');
+      if (vfaKnop) vfaKnop.addEventListener('click', () => {
+        if (window.__mozaVerfijnd) window.__mozaVerfijnd.open({ origin: { view: 'organisatie', title: 'Instellingen' } });
+      });
+
       // Link in de template-editor: standaard afzender per kanaal aanpassen.
       const tplLink = document.getElementById('tb-afz-instellingen');
       if (tplLink) tplLink.addEventListener('click', e => { e.preventDefault(); window.__mozaInstellingen.openAfzender(); });
@@ -3023,6 +3101,85 @@
       // waar de standaardkanalen worden ingesteld.
       const tplKanalenLink = document.getElementById('tb-kanalen-instellingen');
       if (tplKanalenLink) tplKanalenLink.addEventListener('click', e => { e.preventDefault(); showView('notificatie-instellingen', 'Notificatie-instellingen'); });
+    })();
+
+    // ====================== Verfijnde analyse (verdieping per rapportagetegel) ======================
+    // Geen menu-item: geopend via de rapportagetegels (window.__mozaVerfijnd.open) en via Instellingen.
+    (function () {
+      const root = document.querySelector('section[data-view="verfijnde-analyse"]');
+      if (!root) return;
+      const vfaTitel = root.querySelector('#vfa-titel');
+      const vfaSub = root.querySelector('#vfa-sub');
+      const kpiCard = root.querySelector('#vfa-kpi-card');
+      const vfaKpi = root.querySelector('#vfa-kpi');
+      const vfaKpiTag = root.querySelector('#vfa-kpi-tag');
+      const vfaKpiLabel = root.querySelector('#vfa-kpi-label');
+      const vfaKpiContext = root.querySelector('#vfa-kpi-context');
+      const vfaKanaal = root.querySelector('#vfa-kanaal');
+      const vfaSplit = root.querySelector('#vfa-split');
+      const vfaPeriode = root.querySelector('#vfa-periode');
+      const vfaTabel = root.querySelector('#vfa-tabel');
+      const vfaMelding = root.querySelector('#vfa-melding');
+      let origin = { view: 'dashboard', title: 'Dashboard' };
+
+      const SPLIT = {
+        kanaal:  { kop: 'Kanaal',  rijen: [['E-mail', 42], ['Push', 28], ['Signal', 18], ['SMS', 12]] },
+        week:    { kop: 'Week',    rijen: [['Week 23', 23], ['Week 24', 26], ['Week 25', 24], ['Week 26', 27]] },
+        segment: { kop: 'Segment', rijen: [['ZZP', 54], ['MKB', 34], ['Grootzakelijk', 12]] },
+      };
+      const TREND = ['success:stijgend', 'neutral:stabiel', 'warning:dalend', 'neutral:stabiel'];
+
+      function renderTabel() {
+        const split = SPLIT[vfaSplit.value] || SPLIT.kanaal;
+        let rijen = split.rijen;
+        if (vfaSplit.value === 'kanaal' && vfaKanaal.value !== 'alle') {
+          const map = { email: 'E-mail', push: 'Push', signal: 'Signal', sms: 'SMS' };
+          rijen = split.rijen.filter(r => r[0] === map[vfaKanaal.value]);
+        }
+        const totaal = rijen.reduce((s, r) => s + r[1], 0) || 1;
+        if (!rijen.length) { vfaTabel.innerHTML = '<p class="muted-note">Geen gegevens voor deze selectie.</p>'; return; }
+        let html = '<div class="log-tabel-wrap"><table class="log-tabel"><thead><tr>' +
+          '<th>' + split.kop + '</th><th class="log-th-status">Aandeel</th><th class="log-th-status">Trend</th>' +
+          '</tr></thead><tbody>';
+        rijen.forEach((r, i) => {
+          const pct = Math.round(r[1] / totaal * 100);
+          const t = TREND[i % TREND.length].split(':');
+          html += '<tr class="log-rij"><td>' + r[0] + '</td><td>' + pct + '%</td>' +
+            '<td><nldd-tag color="' + t[0] + '" text="' + t[1] + '"></nldd-tag></td></tr>';
+        });
+        html += '</tbody></table></div>';
+        vfaTabel.innerHTML = html;
+      }
+
+      [vfaPeriode, vfaKanaal, vfaSplit].forEach(sel => sel && sel.addEventListener('change', renderTabel));
+      root.querySelector('#vfa-terug').addEventListener('click', () => showView(origin.view, origin.title));
+      root.querySelector('#vfa-download').addEventListener('click', () => {
+        vfaMelding.setAttribute('text', 'Verfijnde analyse geëxporteerd (CSV) voor de huidige selectie. (demo)');
+        vfaMelding.removeAttribute('hidden');
+      });
+
+      window.__mozaVerfijnd = {
+        open(ctx) {
+          ctx = ctx || {};
+          origin = ctx.origin || { view: 'dashboard', title: 'Dashboard' };
+          const r = ctx.rapport;
+          vfaTitel.textContent = r ? ('Verfijnde analyse - ' + r.label) : 'Verfijnde analyse';
+          vfaSub.textContent = ctx.dienstNaam || 'Analytics en rapportages';
+          if (r) {
+            kpiCard.style.display = '';
+            vfaKpi.textContent = r.waarde;
+            vfaKpiTag.setAttribute('color', r.tag.color); vfaKpiTag.setAttribute('text', r.tag.text);
+            vfaKpiLabel.textContent = r.label;
+            vfaKpiContext.textContent = r.context;
+          } else {
+            kpiCard.style.display = 'none';
+          }
+          vfaMelding.setAttribute('hidden', '');
+          vfaPeriode.value = '6'; vfaKanaal.value = 'alle'; vfaSplit.value = 'kanaal';
+          renderTabel();
+          showView('verfijnde-analyse', 'Verfijnde analyse');
+        },
+      };
     })();
 
     // ====================== Berichtenmodule ======================
@@ -5083,12 +5240,23 @@
 
           (an.rapporten || []).forEach(r => {
             const card = document.createElement('nldd-card');
+            card.className = 'an-rap-card';
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
             card.innerHTML = `
               <nldd-container padding="16" gap="8">
                 <div class="an-rap-top"><span class="an-rap-waarde">${r.waarde}</span><nldd-tag color="${r.tag.color}" text="${r.tag.text}"></nldd-tag></div>
                 <span class="an-rap-label">${r.label}</span>
                 <span class="an-rap-context">${r.context}</span>
+                <span class="an-rap-meer">Verfijnde analyse <nldd-icon name="arrow-right" size="14"></nldd-icon></span>
               </nldd-container>`;
+            const openVerdieping = () => window.__mozaVerfijnd && window.__mozaVerfijnd.open({
+              dienstNaam: dienst.naam,
+              rapport: r,
+              origin: { view: 'rapportage-' + beheer.dataset.dienst, title: 'Analytics en rapportages' },
+            });
+            card.addEventListener('click', openVerdieping);
+            card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVerdieping(); } });
             rapportenEl.appendChild(card);
           });
 
