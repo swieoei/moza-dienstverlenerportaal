@@ -78,7 +78,8 @@
     .log-tabel thead th { font-weight: 700; white-space: nowrap; }
     .log-tabel .log-td-tijd, .log-tabel .log-th-tijd { width: 120px; white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
     .log-tabel .log-th-tijd { color: inherit; }
-    .log-tabel .log-td-status, .log-tabel .log-th-status { width: 150px; }
+    .log-tabel .log-td-status, .log-tabel .log-th-status { width: 190px; }
+    .log-tabel .log-td-status .inline { display: flex; flex-wrap: wrap; gap: 4px; }
     .log-tabel .log-td-actie, .log-tabel .log-th-actie { width: 220px; }
     .log-tabel .log-td-geb { overflow: hidden; }
     /* Icoon met vaste afmeting: nooit bepalend voor de rijhoogte (de tekst bepaalt die). */
@@ -5376,7 +5377,9 @@
         if (item.type === 'notificatie') {
           if (types.indexOf('notificatie') < 0) return false;
           const stats = checkedVals(statusChecks);
-          return stats.length === 0 ? true : stats.indexOf(item.status) >= 0;
+          // Een hersteld bericht is óók succesvol, dus het valt onder beide statusfilters.
+          const eigen = item.status === 'hersteld' ? ['hersteld', 'succesvol'] : [item.status];
+          return stats.length === 0 ? true : eigen.some(s => stats.indexOf(s) >= 0);
         }
         return true;
       }
@@ -5408,9 +5411,13 @@
         titelEl.textContent = it.titel; titelEl.title = it.titel;       // volledige tekst via tooltip
         detailEl.textContent = it.detail; detailEl.title = it.detail;   // (titel/detail staan op 1 regel)
         tr.querySelector('.lg-icon').setAttribute('name', icoon(it));
-        const tag = tr.querySelector('.lg-status');
-        tag.setAttribute('color', st.color);
-        tag.setAttribute('text', st.label);
+        // Een hersteld bericht is óók succesvol afgeleverd: toon beide statussen.
+        const statusCel = tr.querySelector('.log-td-status');
+        const statuses = it.status === 'hersteld' ? ['succesvol', 'hersteld'] : [it.status];
+        statusCel.innerHTML = '<div class="inline">' + statuses.map(s => {
+          const m = STAT[s] || STAT.apikey;
+          return '<nldd-tag color="' + m.color + '" text="' + m.label + '"></nldd-tag>';
+        }).join('') + '</div>';
 
         // Opmerking i.p.v. actieknop: wat wordt er (automatisch) gedaan / is hersteld.
         const opmCel = tr.querySelector('.log-td-actie');
