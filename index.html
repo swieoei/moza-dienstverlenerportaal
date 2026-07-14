@@ -195,9 +195,23 @@
     .rte-area h3 { font-size: 1.2rem; margin: .5em 0 .3em; }
     .rte-area h4 { font-size: 1.05rem; margin: .5em 0 .3em; }
     .rte-area blockquote { border-inline-start: 3px solid #c9ced4; margin: .5em 0; padding: .2em 0 .2em 12px; color: #444; }
-    .rte-area pre { background: #f3f5f7; border-radius: 6px; padding: 10px 12px; font-family: var(--font-mono); font-size: .9rem; white-space: pre-wrap; }
-    .rte-area code { background: #f0e7ef; border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); font-size: .9em; }
+    .rte-area pre { background: #f3f5f7; color: #1a1a1a; border-radius: 6px; padding: 10px 12px; font-family: var(--font-mono); font-size: .9rem; white-space: pre-wrap; }
+    .rte-area code { background: #f0e7ef; color: #1a1a1a; border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); font-size: .9em; }
     .rte-area ul, .rte-area ol { margin: .3em 0; padding-inline-start: 22px; }
+    .rte-area--md { font-family: var(--font-mono); font-size: .92rem; }
+    /* Alleen-lezen weergave: de editor-chrome (toolbar) is verborgen tot je op Bewerken klikt. */
+    .rte--lezen .rte-toolbar { display: none; }
+    /* Opgemaakte tekst in het kanaalvoorbeeld (markdown gerenderd). */
+    .tbp-md > :first-child { margin-top: 0; }
+    .tbp-md > :last-child { margin-bottom: 0; }
+    .tbp-md p { margin: 0 0 .6em; }
+    .tbp-md h2 { font-size: 1.25rem; margin: .5em 0 .3em; }
+    .tbp-md h3 { font-size: 1.1rem; margin: .5em 0 .3em; }
+    .tbp-md h4 { font-size: 1rem; margin: .5em 0 .3em; }
+    .tbp-md ul, .tbp-md ol { margin: .3em 0; padding-inline-start: 20px; }
+    .tbp-md blockquote { border-inline-start: 3px solid #c9ced4; margin: .5em 0; padding: .2em 0 .2em 12px; color: #555; }
+    .tbp-md code { background: #f0e7ef; color: #1a1a1a; border-radius: 4px; padding: 1px 5px; font-family: var(--font-mono); font-size: .9em; }
+    .tbp-md pre { background: #f3f5f7; color: #1a1a1a; border-radius: 6px; padding: 8px 10px; font-family: var(--font-mono); font-size: .85rem; white-space: pre-wrap; }
     /* Templatedetail: kanaal-tabbladen, taal per kanaal, ingeklapt voorbeeld per tab */
     .tb-chpane[hidden] { display: none; }
     .tb-langtabs { margin-bottom: 4px; }
@@ -1971,6 +1985,21 @@
                       <nldd-container padding="16" gap="0">
                         <div id="inst-notif">
 
+                          <!-- Algemeen: bewuste keuze (Aan/Uit) i.p.v. een gevoelige toggle -->
+                          <div class="inst-groep">
+                            <div class="inst-groep-kop">Algemeen</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Contactherstel centraal delen met aangesloten organisaties</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="Contactherstel centraal delen met aangesloten organisaties"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
+                            </div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">E-mailwaarschuwing bij mislukte levering</div>
+                              <div class="inst-rij-waarde"></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="E-mailwaarschuwing bij mislukte levering"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
+                            </div>
+                          </div>
+
                           <!-- Berichtenbox -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Berichtenbox (MijnOverheid)</div>
@@ -2035,11 +2064,6 @@
                               <div class="inst-rij-actie"><nldd-switch checked accessible-label="Sms-berichten starten met servicenaam"></nldd-switch></div>
                             </div>
                             <div class="inst-rij">
-                              <div class="inst-rij-label">Internationale sms-berichten verzenden</div>
-                              <div class="inst-rij-waarde"></div>
-                              <div class="inst-rij-actie"><nldd-switch accessible-label="Internationale sms-berichten verzenden"></nldd-switch></div>
-                            </div>
-                            <div class="inst-rij">
                               <div class="inst-rij-label">Limiet internationale sms-berichten</div>
                               <div class="inst-rij-waarde">100 per dag<span class="inst-sub">0 vandaag verzonden</span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
@@ -2075,21 +2099,10 @@
                       </nldd-container>
                     </nldd-card>
 
-                    <nldd-title size="5"><h3>Overige</h3></nldd-title>
-                    <nldd-card>
-                      <nldd-container padding="16" gap="12">
-                        <nldd-form-field label="Contactherstel centraal delen met aangesloten organisaties">
-                          <nldd-switch checked></nldd-switch>
-                        </nldd-form-field>
-                        <nldd-form-field label="E-mailwaarschuwing bij mislukte levering">
-                          <nldd-switch checked></nldd-switch>
-                        </nldd-form-field>
-                        <div class="row-actions">
-                          <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
-                          <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                        </div>
-                      </nldd-container>
-                    </nldd-card>
+                    <div class="row-actions">
+                      <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
+                      <nldd-button variant="secondary" text="Annuleren"></nldd-button>
+                    </div>
                   </div>
 
                   <!-- ===== Tab: Mijn profiel ===== -->
@@ -2321,9 +2334,75 @@
   </div>
 
   <script>
+    // Lichte markdown-conversie voor de rich-text editor (voldoende voor de knoppen die de
+    // toolbar biedt: koppen, vet/cursief/doorhalen, lijsten, citaat, code en links).
+    window.mdNaarHtml = function (md) {
+      const esc = s => ((s || '') + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const inline = s => {
+        s = esc(s);
+        s = s.replace(/`([^`]+)`/g, (m, c) => '<code>' + c + '</code>');
+        s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        s = s.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+        s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+        s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+        return s;
+      };
+      const lines = ((md || '') + '').replace(/\r\n?/g, '\n').split('\n');
+      let html = '', i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+        if (/^```/.test(line)) { const buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; } i++; html += '<pre>' + esc(buf.join('\n')) + '</pre>'; continue; }
+        const h = line.match(/^(#{1,3})\s+(.*)$/);
+        if (h) { const lvl = { '#': 'h2', '##': 'h3', '###': 'h4' }[h[1]]; html += '<' + lvl + '>' + inline(h[2]) + '</' + lvl + '>'; i++; continue; }
+        if (/^>\s?/.test(line)) { const buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; } html += '<blockquote>' + inline(buf.join('<br>')) + '</blockquote>'; continue; }
+        if (/^\s*[-*]\s+/.test(line)) { const buf = []; while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) { buf.push('<li>' + inline(lines[i].replace(/^\s*[-*]\s+/, '')) + '</li>'); i++; } html += '<ul>' + buf.join('') + '</ul>'; continue; }
+        if (/^\s*\d+\.\s+/.test(line)) { const buf = []; while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { buf.push('<li>' + inline(lines[i].replace(/^\s*\d+\.\s+/, '')) + '</li>'); i++; } html += '<ol>' + buf.join('') + '</ol>'; continue; }
+        if (/^\s*$/.test(line)) { i++; continue; }
+        const buf = [line]; i++;
+        while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,3}\s|>\s?|\s*[-*]\s|\s*\d+\.\s|```)/.test(lines[i])) { buf.push(lines[i]); i++; }
+        html += '<p>' + inline(buf.join('<br>')) + '</p>';
+      }
+      return html || '<p></p>';
+    };
+    window.htmlNaarMd = function (html) {
+      const div = document.createElement('div'); div.innerHTML = html || '';
+      const inline = node => {
+        let out = '';
+        node.childNodes.forEach(n => {
+          if (n.nodeType === 3) { out += n.textContent; return; }
+          if (n.nodeType !== 1) return;
+          const tag = n.tagName.toLowerCase();
+          if (tag === 'br') out += '\n';
+          else if (tag === 'strong' || tag === 'b') out += '**' + inline(n) + '**';
+          else if (tag === 'em' || tag === 'i') out += '*' + inline(n) + '*';
+          else if (tag === 'del' || tag === 's' || tag === 'strike') out += '~~' + inline(n) + '~~';
+          else if (tag === 'code') out += '`' + n.textContent + '`';
+          else if (tag === 'a') out += '[' + inline(n) + '](' + (n.getAttribute('href') || '') + ')';
+          else out += inline(n);
+        });
+        return out;
+      };
+      const blocks = [];
+      Array.from(div.childNodes).forEach(n => {
+        if (n.nodeType === 3) { const t = n.textContent.trim(); if (t) blocks.push(t); return; }
+        if (n.nodeType !== 1) return;
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'h2') blocks.push('# ' + inline(n));
+        else if (tag === 'h3') blocks.push('## ' + inline(n));
+        else if (tag === 'h4') blocks.push('### ' + inline(n));
+        else if (tag === 'blockquote') blocks.push(inline(n).split('\n').map(l => '> ' + l).join('\n'));
+        else if (tag === 'pre') blocks.push('```\n' + n.textContent + '\n```');
+        else if (tag === 'ul') blocks.push(Array.from(n.children).map(li => '- ' + inline(li)).join('\n'));
+        else if (tag === 'ol') blocks.push(Array.from(n.children).map((li, idx) => (idx + 1) + '. ' + inline(li)).join('\n'));
+        else if (tag === 'br') { /* overslaan */ }
+        else blocks.push(inline(n));
+      });
+      return blocks.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+    };
+
     // Rich-text editor: bouwt een toolbar boven een .rte-area (contenteditable). Wordt door
     // zowel de berichten-composer als de templatedetail gebruikt, zodat beide dezelfde editor
-    // krijgen. Kernopmaak werkt via document.execCommand; Visueel/Markdown is een weergavekeuze.
+    // krijgen. Kernopmaak werkt via document.execCommand; Visueel/Markdown wisselt de weergave.
     window.bouwRicheToolbar = function (wrap) {
       if (!wrap || wrap.querySelector('.rte-toolbar')) return;
       const area = wrap.querySelector('.rte-area');
@@ -2369,12 +2448,27 @@
         '</div>';
       wrap.insertBefore(tb, area);
 
+      area.dataset.mode = 'visual';
+      // Wisselen tussen visuele (opgemaakte) weergave en de ruwe markdown-broncode.
+      function zetModus(mode) {
+        if (area.dataset.mode === mode) return;
+        if (mode === 'markdown') { area.textContent = window.htmlNaarMd(area.innerHTML); area.classList.add('rte-area--md'); }
+        else { area.innerHTML = window.mdNaarHtml(area.textContent); area.classList.remove('rte-area--md'); }
+        area.dataset.mode = mode;
+        tb.querySelectorAll('.rte-mode').forEach(m => m.classList.toggle('is-actief', m.dataset.mode === mode));
+        tb.querySelectorAll('.rte-btn, .rte-select').forEach(el => el.toggleAttribute('disabled', mode === 'markdown'));
+      }
+      // Helpers voor de templatedetail: markdown lezen/schrijven en terug naar visuele weergave.
+      wrap.__zetMd = md => { area.dataset.mode = 'markdown'; area.textContent = (md || ''); zetModus('visual'); };
+      wrap.__leesMd = () => area.dataset.mode === 'markdown' ? area.textContent : window.htmlNaarMd(area.innerHTML);
+      wrap.__naarVisueel = () => zetModus('visual');
+
       // Selectie behouden voor de opmaakknoppen; select en kleurkiezer moeten normaal openen.
       tb.addEventListener('mousedown', e => { if (e.target.closest('.rte-btn') && !e.target.closest('.rte-color')) e.preventDefault(); });
       tb.addEventListener('click', e => {
         const modeBtn = e.target.closest('.rte-mode');
-        if (modeBtn) { tb.querySelectorAll('.rte-mode').forEach(m => m.classList.toggle('is-actief', m === modeBtn)); return; }
-        const b = e.target.closest('.rte-btn'); if (!b) return;
+        if (modeBtn) { zetModus(modeBtn.dataset.mode); return; }
+        const b = e.target.closest('.rte-btn'); if (!b || b.hasAttribute('disabled')) return;
         if (b.classList.contains('rte-inline-code')) {
           herstel(); const sel = window.getSelection(); const tekst = sel ? sel.toString() : '';
           if (tekst) { try { document.execCommand('insertHTML', false, '<code>' + escHtml(tekst) + '</code>'); } catch (e2) {} }
@@ -3541,7 +3635,8 @@
       // E-mailformat per taal, met de vaste MijnOverheid-v2-secties (bron: Logius).
       // {afzender} = afzendernaam (eerste regel handtekening); [datum_actie] blijft placeholder.
       function maakBody(f, reden, actie) {
-        return f.aanhef + '\n\n' + f.waaromH + '\n' + reden + '\n\n' + f.doenH + '\n' + actie + '\n\n' + f.login + '\n\n' + f.groet + '\n\n{afzender}';
+        // De sectiekoppen zijn markdown-koppen en de afzender is vet, zodat de opmaak zichtbaar is.
+        return f.aanhef + '\n\n## ' + f.waaromH + '\n\n' + reden + '\n\n## ' + f.doenH + '\n\n' + actie + '\n\n' + f.login + '\n\n' + f.groet + '\n\n**{afzender}**';
       }
       const FRAME = {
         nl: { aanhef: 'Geachte [voorletter(s)] [achternaam],', groet: 'Met vriendelijke groet,',
@@ -3632,7 +3727,7 @@
         afzender: 'stuurgroep@rijksoverheid.nl', afzendertekst: HANDTEKENING.bzk,
         content: {
           nl: { subject: 'Agenda stuurgroep Digitale Overheid - [datum]',
-                body: 'Beste leden van de stuurgroep,\n\nHierbij de agenda voor de stuurgroep Digitale Overheid op [datum] van [begintijd] tot [eindtijd], locatie [locatie].\n\nAgenda:\n1. Opening en mededelingen\n2. Vaststellen verslag vorige vergadering\n3. Voortgang programma\'s en projecten\n4. Besluitvorming [onderwerp]\n5. Rondvraag en sluiting\n\nDe vergaderstukken vindt u in de bijlage. Graag tot dan.\n\nMet vriendelijke groet,\n[Naam]',
+                body: 'Beste leden van de stuurgroep,\n\nHierbij de agenda voor de stuurgroep **Digitale Overheid** op [datum] van [begintijd] tot [eindtijd], locatie [locatie].\n\n## Agenda\n\n1. Opening en mededelingen\n2. Vaststellen verslag vorige vergadering\n3. Voortgang programma\'s en projecten\n4. Besluitvorming [onderwerp]\n5. Rondvraag en sluiting\n\n> De vergaderstukken vindt u in de bijlage. Graag tot dan.\n\nMet vriendelijke groet,\n[Naam]',
                 kort: 'Agenda stuurgroep Digitale Overheid op [datum], [begintijd]. De stukken staan in de bijlage.' },
           en: { subject: 'Agenda steering group Digital Government - [datum]',
                 body: 'Dear members of the steering group,\n\nPlease find the agenda for the steering group Digital Government on [datum] from [begintijd] to [eindtijd], location [locatie].\n\nAgenda:\n1. Opening and announcements\n2. Approval of the previous minutes\n3. Progress of programmes and projects\n4. Decision-making [onderwerp]\n5. Any other business and closing\n\nThe documents are attached. See you then.\n\nKind regards,\n[Naam]',
@@ -3659,15 +3754,14 @@
       };
       // Postadres per organisatie (zelfde inhoud als op de organisatie-instellingenpagina).
       const briefAdres = { kvk: 'Kamer van Koophandel, Postbus 48, 3500 GA Utrecht', bzk: 'Ministerie van BZK, Postbus 20011, 2500 EA Den Haag' };
-      // Lange tekst is een rich-text editor (contenteditable). Lezen/schrijven via helpers.
-      const rteRead = el => el && el.classList.contains('rte-area') ? el.innerText : ((el && el.value) || '');
-      const rteWrite = (el, v) => { if (!el) return; if (el.classList.contains('rte-area')) el.textContent = v || ''; else el.value = v || ''; };
-      function bodyGet() { return rteRead(velden.body); }
-      function bodySet(v) { rteWrite(velden.body, v); }
-      function briefGet() { return rteRead(velden.bodyBrief); }
-      function briefSet(v) { rteWrite(velden.bodyBrief, v); }
-      // Gedeelde rich-text toolbar boven elke editor injecteren.
+      // Gedeelde rich-text toolbar boven elke editor injecteren (nodig voor de md-helpers).
       root.querySelectorAll('.rte').forEach(wrap => window.bouwRicheToolbar(wrap));
+      // Lange tekst is een markdown-tekst die in de rich-text editor opgemaakt wordt getoond.
+      const rteWrap = el => el && el.closest ? el.closest('.rte') : null;
+      function bodyGet() { const w = rteWrap(velden.body); return w && w.__leesMd ? w.__leesMd() : (velden.body ? velden.body.innerText : ''); }
+      function bodySet(v) { const w = rteWrap(velden.body); if (w && w.__zetMd) w.__zetMd(v); else if (velden.body) velden.body.textContent = v || ''; }
+      function briefGet() { const w = rteWrap(velden.bodyBrief); return w && w.__leesMd ? w.__leesMd() : (velden.bodyBrief ? velden.bodyBrief.innerText : ''); }
+      function briefSet(v) { const w = rteWrap(velden.bodyBrief); if (w && w.__zetMd) w.__zetMd(v); else if (velden.bodyBrief) velden.bodyBrief.textContent = v || ''; }
       const dTitel = root.querySelector('#tb-d-titel');
       const dTag = root.querySelector('#tb-d-tag');
       const dCat = root.querySelector('#tb-d-cat');
@@ -3803,6 +3897,8 @@
         if (velden.body) velden.body.setAttribute('contenteditable', on ? 'true' : 'false'); // rich-text editor
         if (velden.bodyBrief) velden.bodyBrief.setAttribute('contenteditable', on ? 'true' : 'false');
         if (samenCb) samenCb.toggleAttribute('disabled', !on); // checkbox alleen aanpasbaar tijdens bewerken
+        // De editor-toolbar verschijnt pas bij bewerken; in de leesweergave staat de opgemaakte tekst zonder chrome.
+        root.querySelectorAll('.rte').forEach(w => { w.classList.toggle('rte--lezen', !on); if (!on && w.__naarVisueel) w.__naarVisueel(); });
         btnBewerk.toggleAttribute('hidden', on);
         btnOpslaan.toggleAttribute('hidden', !on);
       }
@@ -3995,7 +4091,7 @@
                 '<div class="tbp-bbox-body">' +
                   '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
                   '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
-                  '<div class="tbp-pre">' + esc(body) + '</div>' +
+                  '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                 '</div>' +
               '</div>', 'berichtenbox');
         } else if (groep === 'email') {
@@ -4009,7 +4105,7 @@
                     '<div><strong>Aan:</strong> [voorletter(s)] [achternaam]</div>' +
                     '<div><strong>Onderwerp:</strong> ' + esc(subject) + '</div>' +
                   '</div>' +
-                  '<div class="tbp-pre">' + esc(body) + '</div>' +
+                  '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                   (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
                 '</div>' +
               '</div>', 'email') +
@@ -4020,7 +4116,7 @@
                   '<div class="tbp-brief-afz tbp-pre">' + esc(briefAfzender) + '</div>' +
                   '<div class="tbp-brief-aan">[voorletter(s)] [achternaam]<br>[straat en huisnummer]<br>[postcode en plaats]</div>' +
                   '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
-                  '<div class="tbp-pre">' + esc(briefBody) + '</div>' +
+                  '<div class="tbp-md">' + window.mdNaarHtml(briefBody) + '</div>' +
                 '</div>' +
               '</div>', 'post');
         } else {
