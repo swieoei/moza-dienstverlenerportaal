@@ -1274,7 +1274,7 @@
                               <div class="rte"><div class="rte-area" id="body-nl" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Lange tekst e-mail en brief (post)" data-placeholder="Schrijf hier de lange tekst voor e-mail en brief (post)..."></div></div>
                               <p class="lt-sublabel" id="lt-label-brief" hidden>Brief (post)</p>
                               <div class="rte" id="rte-brief-wrap" hidden><div class="rte-area" id="body-brief-nl" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
-                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, Signal, SMS)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                               <p class="muted-note">Kort en bondig - push en SMS tonen doorgaans maximaal ~160 tekens.</p>
                               <div class="inline">
                                 <nldd-button id="auto-vertaal" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Automatisch vertalen naar EN, DE en FR"></nldd-button>
@@ -1286,7 +1286,7 @@
                               <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-en" readonly></nldd-text-field></nldd-form-field>
                               <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-en" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
-                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-en" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, Signal, SMS)"><nldd-multi-line-text-field id="short-en" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <div data-langpane="de" hidden>
@@ -1294,7 +1294,7 @@
                               <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-de" readonly></nldd-text-field></nldd-form-field>
                               <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-de" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
-                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-de" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, Signal, SMS)"><nldd-multi-line-text-field id="short-de" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <div data-langpane="fr" hidden>
@@ -1302,7 +1302,7 @@
                               <nldd-banner variant="neutral" text="Automatisch vertaald vanuit het Nederlands. Pas de Nederlandse tekst aan en vertaal opnieuw."></nldd-banner>
                               <nldd-form-field label="Onderwerp"><nldd-text-field id="subj-fr" readonly></nldd-text-field></nldd-form-field>
                               <nldd-form-field label="Lange tekst (e-mail en brief (post))"><nldd-multi-line-text-field id="body-fr" rows="8" readonly></nldd-multi-line-text-field></nldd-form-field>
-                              <nldd-form-field label="Korte tekst (push, SMS, WhatsApp/Signal)"><nldd-multi-line-text-field id="short-fr" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
+                              <nldd-form-field label="Korte tekst (push, Signal, SMS)"><nldd-multi-line-text-field id="short-fr" rows="2" readonly></nldd-multi-line-text-field></nldd-form-field>
                             </nldd-container>
                           </div>
                           <nldd-banner id="vertaal-melding" variant="success" text="" hidden></nldd-banner>
@@ -1362,59 +1362,33 @@
                           <div class="lt-kop"><span class="lt-label">Kanalen</span></div>
                           <p class="muted-note">Kies welke kanalen deze template gebruikt. Standaard volgt de template de kanalen uit uw organisatie-instellingen.</p>
                           <div class="log-checks" id="tb-d-kanalen">
-                            <div class="log-check" data-kanaal="berichtenbox"><nldd-checkbox accessible-label="Berichtenbox"></nldd-checkbox><span>Berichtenbox</span></div>
                             <div class="log-check" data-kanaal="email"><nldd-checkbox accessible-label="E-mail"></nldd-checkbox><span>E-mail</span></div>
-                            <div class="log-check" data-kanaal="brief"><nldd-checkbox accessible-label="Brief (post)"></nldd-checkbox><span>Brief (post)</span></div>
                             <div class="log-check" data-kanaal="push"><nldd-checkbox accessible-label="Push"></nldd-checkbox><span>Push</span></div>
+                            <div class="log-check" data-kanaal="signal"><nldd-checkbox accessible-label="Signal"></nldd-checkbox><span>Signal</span></div>
                             <div class="log-check" data-kanaal="sms"><nldd-checkbox accessible-label="SMS"></nldd-checkbox><span>SMS</span></div>
-                            <div class="log-check" data-kanaal="whatsapp"><nldd-checkbox accessible-label="WhatsApp/Signal"></nldd-checkbox><span>WhatsApp/Signal</span></div>
                           </div>
                           <nldd-banner id="tb-d-kanaal-waarschuwing" variant="warning" text="" hidden></nldd-banner>
                         </nldd-form-field>
 
-                        <!-- Kanaal-tabbladen: Berichtenbox eerst, dan e-mail/brief, dan de korte kanalen -->
+                        <!-- Kanaal-tabbladen: e-mail en de korte kanalen (push, Signal, sms) -->
                         <nldd-tab-bar id="tb-kanaaltabs" accessible-label="Kanaal">
-                          <nldd-tab-bar-item selected text="Berichtenbox" data-ch="bbox"></nldd-tab-bar-item>
-                          <nldd-tab-bar-item text="E-mail en brief (post)" data-ch="email"></nldd-tab-bar-item>
-                          <nldd-tab-bar-item text="Push, SMS, WhatsApp, Signal" data-ch="kort"></nldd-tab-bar-item>
+                          <nldd-tab-bar-item selected text="E-mail" data-ch="email"></nldd-tab-bar-item>
+                          <nldd-tab-bar-item text="Push, Signal, SMS" data-ch="kort"></nldd-tab-bar-item>
                         </nldd-tab-bar>
 
-                        <!-- Tabblad: Berichtenbox (MijnOverheid) - de basis van het bericht -->
-                        <div class="tb-chpane" data-chpane="bbox">
+                        <!-- Tabblad: e-mail -->
+                        <div class="tb-chpane" data-chpane="email">
                           <nldd-container gap="20">
-                            <nldd-tab-bar class="tb-langtabs" data-group="lang" accessible-label="Taal (Berichtenbox)">
+                            <nldd-tab-bar class="tb-langtabs" data-group="lang" accessible-label="Taal (e-mail)">
                               <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
                               <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
                               <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
                               <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
                             </nldd-tab-bar>
                             <nldd-banner class="tb-leegtaal" data-group="lang" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
-                            <p class="muted-note">Elk kanaal heeft een eigen korte en lange tekst. Ze zijn standaard gelijk, maar u kunt ze per kanaal aanpassen.</p>
                             <nldd-form-field label="Onderwerp">
                               <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                             </nldd-form-field>
-                            <nldd-form-field label="Korte tekst (samenvatting in het Berichtenbox-overzicht)">
-                              <nldd-multi-line-text-field id="tb-d-bbox-kort" rows="2" readonly></nldd-multi-line-text-field>
-                            </nldd-form-field>
-                            <nldd-form-field label="Lange tekst">
-                              <div class="rte"><div class="rte-area" id="tb-d-bbox-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst Berichtenbox"></div></div>
-                            </nldd-form-field>
-                            <div class="tb-pv-blok">
-                              <nldd-button class="tb-pv-toggle" data-ch="bbox" variant="secondary" start-icon="eye" text="Voorbeeld tonen"></nldd-button>
-                              <div class="tbp-kanalen tb-pv-inhoud" id="tb-pv-bbox" hidden></div>
-                            </div>
-                          </nldd-container>
-                        </div>
-
-                        <!-- Tabblad: e-mail en brief (post) - eigen handtekening/afzender per kanaal -->
-                        <div class="tb-chpane" data-chpane="email" hidden>
-                          <nldd-container gap="20">
-                            <nldd-tab-bar class="tb-langtabs" data-group="lang" accessible-label="Taal (e-mail en brief)">
-                              <nldd-tab-bar-item selected text="NL" data-tl="nl"></nldd-tab-bar-item>
-                              <nldd-tab-bar-item text="EN" data-tl="en"></nldd-tab-bar-item>
-                              <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
-                              <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
-                            </nldd-tab-bar>
                             <nldd-form-field label="Lange tekst">
                               <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst e-mail"></div></div>
                             </nldd-form-field>
@@ -1424,18 +1398,6 @@
                             <nldd-form-field label="Verzonden vanuit e-mailadres">
                               <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
                             </nldd-form-field>
-                            <div class="lt-kop">
-                              <span class="lt-label">Brief (post)</span>
-                              <div class="log-check" id="tb-d-samen-rij"><nldd-checkbox id="tb-d-samen-cb" checked accessible-label="Brief (post) heeft dezelfde tekst als de e-mail"></nldd-checkbox><span>Brief (post) heeft dezelfde tekst als de e-mail</span></div>
-                            </div>
-                            <p class="muted-note" id="tb-d-samentekst">De brief (post) gebruikt de lange tekst van de e-mail.</p>
-                            <div id="tb-d-brief-tekstveld" hidden>
-                              <p class="lt-sublabel">Aparte tekst brief (post)</p>
-                              <div class="rte" id="tb-d-brief-wrap"><div class="rte-area" id="tb-d-body-brief" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
-                            </div>
-                            <nldd-form-field label="Afzender brief (post)">
-                              <nldd-multi-line-text-field id="tb-d-brief-afz" rows="3" readonly></nldd-multi-line-text-field>
-                            </nldd-form-field>
                             <div class="tb-pv-blok">
                               <nldd-button class="tb-pv-toggle" data-ch="email" variant="secondary" start-icon="eye" text="Voorbeeld tonen"></nldd-button>
                               <div class="tbp-kanalen tb-pv-inhoud" id="tb-pv-email" hidden></div>
@@ -1443,7 +1405,7 @@
                           </nldd-container>
                         </div>
 
-                        <!-- Tabblad: push, SMS, WhatsApp, Signal -->
+                        <!-- Tabblad: push, Signal, SMS -->
                         <div class="tb-chpane" data-chpane="kort" hidden>
                           <nldd-container gap="20">
                             <nldd-tab-bar class="tb-langtabs" data-group="kort" accessible-label="Taal (korte kanalen)">
@@ -2035,16 +1997,6 @@
                             </div>
                           </div>
 
-                          <!-- Berichtenbox -->
-                          <div class="inst-groep">
-                            <div class="inst-groep-kop">Berichtenbox (MijnOverheid)</div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzendernaam">
-                              <div class="inst-rij-label">Standaard afzender</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-bbox"></span></div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                          </div>
-
                           <!-- E-mail -->
                           <div class="inst-groep" id="inst-groep-email">
                             <div class="inst-groep-kop">E-mailinstellingen</div>
@@ -2070,26 +2022,6 @@
                             </div>
                           </div>
 
-                          <!-- Brief (post): valt onder e-mail (zelfde lange tekst als e-mail) -->
-                          <div class="inst-groep">
-                            <div class="inst-groep-kop">Brief (post)-instellingen</div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Brief (post) gebruiken voor</div>
-                              <div class="inst-rij-waarde"><span class="inst-sub">Kies of de brief alleen als terugvaloptie bij contactherstel wordt ingezet of voor alle templates beschikbaar is.</span></div>
-                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="Brief (post) gebruiken voor"><option value="contactherstel" selected>Alleen contactherstel</option><option value="alle">Alle templates</option></select></nldd-dropdown></div>
-                            </div>
-                            <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
-                              <div class="inst-rij-label">Standaard afzenderadres</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-brief"></span></div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                            <div class="inst-rij">
-                              <div class="inst-rij-label">Briefopmaak</div>
-                              <div class="inst-rij-waarde">Niet ingesteld</div>
-                              <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
-                            </div>
-                          </div>
-
                           <!-- SMS -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Sms-instellingen</div>
@@ -2100,7 +2032,7 @@
                             </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Standaard afzender" data-shared-afz="1">
                               <div class="inst-rij-label">Standaard afzender</div>
-                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span><span class="inst-sub">Geldt ook voor WhatsApp/Signal en push - hier aanpassen wijzigt de afzender voor alle drie de kanalen.</span></div>
+                              <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span><span class="inst-sub">Geldt ook voor Signal en push - hier aanpassen wijzigt de afzender voor alle drie de kanalen.</span></div>
                               <div class="inst-rij-actie"><nldd-link class="inst-actie" href="#" text="Wijzigen"></nldd-link></div>
                             </div>
                             <div class="inst-rij">
@@ -2115,13 +2047,13 @@
                             </div>
                           </div>
 
-                          <!-- WhatsApp / Signal -->
+                          <!-- Signal -->
                           <div class="inst-groep">
-                            <div class="inst-groep-kop">WhatsApp / Signal-instellingen</div>
+                            <div class="inst-groep-kop">Signal-instellingen</div>
                             <div class="inst-rij">
                               <div class="inst-rij-label">Dit kanaal gebruiken</div>
                               <div class="inst-rij-waarde"><span class="inst-sub">Optioneel kanaal.</span></div>
-                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="WhatsApp/Signal-kanaal gebruiken"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="Signal-kanaal gebruiken"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
                             </div>
                             <div class="inst-rij">
                               <div class="inst-rij-label">Standaard afzender</div>
@@ -2940,15 +2872,12 @@
     (function () {
       const u = window.__MOZA_USER || {};
       const mailDomein = (u.email || 'notificaties@kvk.nl').split('@')[1] || 'kvk.nl';
-      const briefAdres = { kvk: 'Kamer van Koophandel, Postbus 48, 3500 GA Utrecht', bzk: 'Ministerie van BZK, Postbus 20011, 2500 EA Den Haag' };
       const zet = (sel, v) => document.querySelectorAll(sel).forEach(el => el.textContent = v);
-      zet('.js-afz-bbox', u.org || 'Kamer van Koophandel');
       zet('.js-afz-email-naam', u.org || 'Kamer van Koophandel');
       zet('.js-afz-email-adres', 'notificaties@' + mailDomein);
-      // De standaard afzender bij Sms geldt ook voor WhatsApp/Signal en push (zelfde naam).
+      // De standaard afzender bij Sms geldt ook voor Signal en push (zelfde naam).
       const smsAfz = u.org || 'Kamer van Koophandel';
       zet('.js-afz-sms', smsAfz);
-      zet('.js-afz-brief', briefAdres[u.orgKey] || briefAdres.kvk);
       zet('.js-afz-push', smsAfz);
       zet('.js-afz-whats', smsAfz);
 
@@ -3002,10 +2931,10 @@
           if (waardeEl && nw[0]) waardeEl.textContent = nw[0];
           if (subEl && nw[1] !== undefined) subEl.textContent = nw[1];
           det.remove();
-          // Gedeelde afzender (Sms): ook doorvoeren naar WhatsApp/Signal en push.
+          // Gedeelde afzender (Sms): ook doorvoeren naar Signal en push.
           if (rij.dataset.sharedAfz && nw[0]) {
             root.querySelectorAll('.js-afz-whats, .js-afz-push').forEach(el => el.textContent = nw[0]);
-            meld('success', 'Standaard afzender bijgewerkt naar "' + nw[0] + '" voor Sms, WhatsApp/Signal en push. (demo)');
+            meld('success', 'Standaard afzender bijgewerkt naar "' + nw[0] + '" voor Sms, Signal en push. (demo)');
             return;
           }
           meld('success', 'Standaard afzender bijgewerkt: ' + nw.filter(Boolean).join(' · ') + '. (demo)');
@@ -3769,8 +3698,7 @@
         const content = {};
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const f = FRAME[l];
-          const lange = maakBody(f, spec.reden[l], spec.actie[l]);
-          content[l] = { subject: f.subj(spec.desc[l]), bboxKort: spec.reden[l], bboxBody: lange, body: lange, kort: f.kort(spec.desc[l]) };
+          content[l] = { subject: f.subj(spec.desc[l]), body: maakBody(f, spec.reden[l], spec.actie[l]), kort: f.kort(spec.desc[l]) };
         });
         return content;
       }
@@ -3806,19 +3734,13 @@
         afzenderTekst: root.querySelector('#tb-d-afzender'),
         kortAfz: root.querySelector('#tb-d-kort-afz'),
         subj: root.querySelector('#tb-d-subj'),
-        bboxKort: root.querySelector('#tb-d-bbox-kort'),
-        bboxBody: root.querySelector('#tb-d-bbox-body'),
         body: root.querySelector('#tb-d-body'),
-        bodyBrief: root.querySelector('#tb-d-body-brief'),
-        briefAfz: root.querySelector('#tb-d-brief-afz'),
         kort: root.querySelector('#tb-d-kort'),
       };
-      // Postadres per organisatie (zelfde inhoud als op de organisatie-instellingenpagina).
-      const briefAdres = { kvk: 'Kamer van Koophandel, Postbus 48, 3500 GA Utrecht', bzk: 'Ministerie van BZK, Postbus 20011, 2500 EA Den Haag' };
 
       // Kanalen: standaard volgt een template de kanalen van de organisatie-instellingen.
-      const STANDAARD_KANALEN = ['berichtenbox', 'email', 'brief', 'push', 'sms', 'whatsapp'];
-      const KANAAL_LABEL = { berichtenbox: 'Berichtenbox', email: 'E-mail', brief: 'Brief (post)', push: 'Push', sms: 'SMS', whatsapp: 'WhatsApp/Signal' };
+      const STANDAARD_KANALEN = ['email', 'push', 'signal', 'sms'];
+      const KANAAL_LABEL = { email: 'E-mail', push: 'Push', signal: 'Signal', sms: 'SMS' };
       const kanalenBox = root.querySelector('#tb-d-kanalen');
       const kanaalWaarschuwing = root.querySelector('#tb-d-kanaal-waarschuwing');
       const kanaalRijen = () => Array.from(kanalenBox.querySelectorAll('.log-check'));
@@ -3863,10 +3785,6 @@
       const mdZet = (el, v) => { const w = rteWrap(el); if (w && w.__zetMd) w.__zetMd(v); else if (el) el.textContent = v || ''; };
       function bodyGet() { return mdLees(velden.body); }
       function bodySet(v) { mdZet(velden.body, v); }
-      function bboxBodyGet() { return mdLees(velden.bboxBody); }
-      function bboxBodySet(v) { mdZet(velden.bboxBody, v); }
-      function briefGet() { return mdLees(velden.bodyBrief); }
-      function briefSet(v) { mdZet(velden.bodyBrief, v); }
       const dTitel = root.querySelector('#tb-d-titel');
       const dTag = root.querySelector('#tb-d-tag');
       const dCat = root.querySelector('#tb-d-cat');
@@ -3890,32 +3808,6 @@
       let huidigId = null, bewerken = false, werk = null, teller = 0;
       const taal = { lang: 'nl', kort: 'nl' };
       const kloon = t => JSON.parse(JSON.stringify(t));
-
-      // --- 'E-mail en brief (post) hebben dezelfde tekst': uit = aparte brieftekst ---
-      const samenRij = root.querySelector('#tb-d-samen-rij');
-      const samenCb = root.querySelector('#tb-d-samen-cb');
-      const briefVeld = root.querySelector('#tb-d-brief-tekstveld');
-      const samenNote = root.querySelector('#tb-d-samentekst');
-      function samenAan() { return samenCb ? (typeof samenCb.checked === 'boolean' ? samenCb.checked : samenCb.hasAttribute('checked')) : true; }
-      function samenToggle() {
-        const samen = samenAan();
-        if (briefVeld) briefVeld.toggleAttribute('hidden', samen);
-        if (samenNote) samenNote.textContent = samen
-          ? 'De brief (post) gebruikt de lange tekst van de e-mail.'
-          : 'De brief (post) heeft een eigen tekst.';
-        // Bij splitsen: start de brieftekst gelijk aan de lange tekst als hij nog leeg is.
-        if (!samen && !briefGet()) briefSet(bodyGet());
-      }
-      if (samenRij && samenCb) {
-        samenRij.addEventListener('click', e => {
-          if (!bewerken) return; // alleen aanpasbaar tijdens bewerken
-          if (e.target.closest('nldd-checkbox')) return;
-          const input = samenCb.shadowRoot && samenCb.shadowRoot.querySelector('input');
-          if (input) input.click(); else samenCb.toggleAttribute('checked');
-        });
-        samenCb.addEventListener('change', samenToggle);
-        customElements.whenDefined('nldd-checkbox').then(samenToggle); // hersync na upgrade
-      }
 
       function toonLijst() { detail.setAttribute('hidden', ''); listPage.removeAttribute('hidden'); }
       function toonDetail() { listPage.setAttribute('hidden', ''); detail.removeAttribute('hidden'); window.scrollTo(0, 0); }
@@ -3953,14 +3845,11 @@
         const isLeeg = group === 'lang' ? !(c.subject || c.body) : !c.kort;
         leegBanners.filter(b => b.dataset.group === group).forEach(b => b.toggleAttribute('hidden', !(isLeeg && lang !== 'nl')));
       }
-      // Lange tekst-groep: onderwerp + korte/lange tekst per kanaal (Berichtenbox en e-mail) + brief.
+      // Lange tekst-groep (e-mail): onderwerp en lange tekst.
       function laadLang(lang) {
         const c = (werk.content && werk.content[lang]) || leeg();
         velden.subj.value = c.subject || '';
-        if (velden.bboxKort) velden.bboxKort.value = c.bboxKort || '';
-        bboxBodySet(c.bboxBody || c.body || '');
         bodySet(c.body || '');
-        briefSet(c.briefBody || c.body || '');
         taal.lang = lang;
         toonLeeg('lang', c, lang);
       }
@@ -3974,13 +3863,8 @@
       function bewaarLang() {
         if (!bewerken || !werk) return;
         const c = werk.content[taal.lang] || (werk.content[taal.lang] = leeg());
-        const apart = !samenAan();
-        werk.briefApart = apart;
         c.subject = velden.subj.value;
-        if (velden.bboxKort) c.bboxKort = velden.bboxKort.value;
-        c.bboxBody = bboxBodyGet();
         c.body = bodyGet();
-        c.briefBody = apart ? briefGet() : undefined;
       }
       function bewaarKort() {
         if (!bewerken || !werk) return;
@@ -3992,7 +3876,6 @@
         werk.titel = velden.titel.value;
         werk.afzender = velden.afz.value;
         werk.afzendertekst = velden.afzenderTekst.value;
-        if (velden.briefAfz) werk.briefAfzender = velden.briefAfz.value;
         if (velden.kortAfz) werk.kortAfzender = velden.kortAfz.value;
         werk.kanalen = leesKanalen();
         bewaarLang();
@@ -4000,12 +3883,11 @@
       }
       function setBewerken(on) {
         bewerken = on;
-        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.bboxKort, velden.kort].forEach(el => {
+        [velden.titel, velden.afz, velden.afzenderTekst, velden.kortAfz, velden.subj, velden.kort].forEach(el => {
           if (!el) return;
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
-        [velden.bboxBody, velden.body, velden.bodyBrief].forEach(el => { if (el) el.setAttribute('contenteditable', on ? 'true' : 'false'); }); // rich-text editors
-        if (samenCb) samenCb.toggleAttribute('disabled', !on); // checkbox alleen aanpasbaar tijdens bewerken
+        if (velden.body) velden.body.setAttribute('contenteditable', on ? 'true' : 'false'); // rich-text editor
         if (kanalenBox) kanalenBox.querySelectorAll('nldd-checkbox').forEach(cb => cb.toggleAttribute('disabled', !on)); // kanaalkeuze alleen tijdens bewerken
         // De editor-toolbar verschijnt pas bij bewerken; in de leesweergave staat de opgemaakte tekst zonder chrome.
         root.querySelectorAll('.rte').forEach(w => { w.classList.toggle('rte--lezen', !on); if (!on && w.__naarVisueel) w.__naarVisueel(); });
@@ -4039,15 +3921,7 @@
         const _orgAfzTekst = (_mu.org || 'MijnOverheid') + '\nAfdeling Notificaties\nW https://mijn.overheid.nl';
         velden.afz.value = werk.afzender || ('notificaties@' + _orgDomein);
         velden.afzenderTekst.value = werk.afzendertekst || _orgAfzTekst; // handtekening e-mail
-        if (velden.briefAfz) velden.briefAfz.value = werk.briefAfzender || (briefAdres[_mu.orgKey] || briefAdres.kvk); // afzenderadres brief (post)
-        if (velden.kortAfz) velden.kortAfz.value = werk.kortAfzender || (_mu.org || 'MijnOverheid'); // afzender push/SMS/WhatsApp/Signal
-        // Checkbox weerspiegelt of de brief afwijkt van de e-mail.
-        if (samenCb) {
-          const apart = !!werk.briefApart;
-          const input = samenCb.shadowRoot && samenCb.shadowRoot.querySelector('input');
-          if (input) input.checked = !apart; else samenCb.toggleAttribute('checked', !apart);
-          samenCb.toggleAttribute('checked', !apart);
-        }
+        if (velden.kortAfz) velden.kortAfz.value = werk.kortAfzender || (_mu.org || 'MijnOverheid'); // afzender push/Signal/SMS
         // Kanalen van de template (of de standaard van de organisatie) + waarschuwing bij afwijking.
         zetKanalen(werk.kanalen);
         toonKanaalWaarschuwing();
@@ -4057,9 +3931,8 @@
         setLangBars('kort', 'nl');
         laadLang('nl');
         laadKort('nl');
-        samenToggle();
         sluitVoorbeelden();
-        kiesKanaal('bbox');
+        kiesKanaal('email');
         setBewerken(edit);
         melding.setAttribute('hidden', '');
         lijstMelding.setAttribute('hidden', '');
@@ -4155,12 +4028,10 @@
       const esc = s => ((s || '') + '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       // Per kanaal een testverzending: handmatig een ontvanger invoeren of een lijst uploaden.
       const TEST_CFG = {
-        berichtenbox: { placeholder: 'test-BSN of KvK-nummer', ontvangers: 'profielen', help: 'Upload een CSV of Excel met per regel een BSN of KvK-nummer; het bericht komt in de Berichtenbox van het gekoppelde profiel.' },
         email: { placeholder: 'test-e-mailadres, bijv. naam@voorbeeld.nl', ontvangers: 'e-mailadressen', help: 'Upload een CSV of Excel met in de eerste kolom een e-mailadres per regel.' },
-        post:  { placeholder: 'test-postadres, bijv. Straat 1, 1234 AB Plaats', ontvangers: 'adressen', help: 'Upload een CSV of Excel met per regel naam, straat, postcode en plaats.' },
         push:  { placeholder: 'test-BSN of KvK-nummer', ontvangers: 'profielen', help: 'Upload een CSV of Excel met per regel een BSN of KvK-nummer; de push gaat naar het gekoppelde profiel.' },
+        signal: { placeholder: 'test-telefoonnummer, bijv. 06-12345678', ontvangers: 'telefoonnummers', help: 'Upload een CSV of Excel met een mobiel telefoonnummer per regel.' },
         sms:   { placeholder: 'test-telefoonnummer, bijv. 06-12345678', ontvangers: 'telefoonnummers', help: 'Upload een CSV of Excel met een mobiel telefoonnummer per regel.' },
-        whats: { placeholder: 'test-telefoonnummer, bijv. 06-12345678', ontvangers: 'telefoonnummers', help: 'Upload een CSV of Excel met een mobiel telefoonnummer per regel.' },
       };
       const testBlok = (key, label) => {
         const cfg = TEST_CFG[key];
@@ -4181,42 +4052,25 @@
       };
       const kanaalBlok = (label, inner, key) => '<div class="tbp-kanaal"><div class="tbp-kanaal-label">' + label + '</div>' + inner + testBlok(key, label) + '</div>';
 
-      // Bouwt het voorbeeld voor één kanaalgroep. Berichtenbox/e-mail/brief gebruiken de lange
-      // tekst; de brief heeft een eigen afzenderadres en eventueel een eigen tekst.
+      // Bouwt het voorbeeld voor één kanaalgroep: e-mail, of de korte kanalen (push, Signal, sms).
       function bouwKanaalVoorbeeld(container, groep) {
         if (bewerken) { if (groep === 'kort') bewaarKort(); else bewaarLang(); }
         const merk = MERK[(werk && werk.huisstijl) || 'mijnoverheid'] || MERK.mijnoverheid;
         const cLang = (werk && werk.content && werk.content[taal.lang]) || leeg();
         const cKort = (werk && werk.content && werk.content[taal.kort]) || leeg();
         const handtekening = velden.afzenderTekst.value || '';            // handtekening e-mail
-        const briefAfzender = (velden.briefAfz && velden.briefAfz.value) || handtekening; // afzenderadres brief (post)
         const kortAfzender = (velden.kortAfz && velden.kortAfz.value) || eersteRegel(handtekening) || 'MijnOverheid';
         const naam = eersteRegel(handtekening) || 'MijnOverheid';
         const email = velden.afz.value || '';
         const subject = resolveAfz(cLang.subject);
-        const bboxKort = resolveAfz(cLang.bboxKort);
-        const bboxBody = resolveAfz(cLang.bboxBody || cLang.body);
         const body = resolveAfz(cLang.body);
-        const briefBody = resolveAfz((werk && werk.briefApart && cLang.briefBody) ? cLang.briefBody : cLang.body);
         const kort = resolveAfz(cKort.kort);
         // Alleen de kanalen tonen die voor deze template zijn ingeschakeld.
         const kanalen = (werk && werk.kanalen) || STANDAARD_KANALEN;
         const magK = k => kanalen.indexOf(k) >= 0;
         const blok = (label, inner, testKey, kanaalKey) => magK(kanaalKey) ? kanaalBlok(label, inner, testKey) : '';
         const wrap = html => html || '<p class="muted-note">Voor deze template zijn er in dit tabblad geen ingeschakelde kanalen.</p>';
-        if (groep === 'bbox') {
-          container.innerHTML = wrap(
-            blok('Berichtenbox (MijnOverheid)',
-              '<div class="tbp-bbox">' +
-                '<div class="tbp-bbox-header" style="background:' + merk.kleur + '">MijnOverheid · Berichtenbox</div>' +
-                '<div class="tbp-bbox-body">' +
-                  '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
-                  '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
-                  (bboxKort ? '<div class="tbp-bbox-kort">' + esc(bboxKort) + '</div>' : '') +
-                  '<div class="tbp-md">' + window.mdNaarHtml(bboxBody) + '</div>' +
-                '</div>' +
-              '</div>', 'berichtenbox', 'berichtenbox'));
-        } else if (groep === 'email') {
+        if (groep === 'email') {
           container.innerHTML = wrap(
             blok('E-mail',
               '<div class="tbp-mail">' +
@@ -4230,17 +4084,7 @@
                   '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                   (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
                 '</div>' +
-              '</div>', 'email', 'email') +
-            blok('Brief (post)',
-              '<div class="tbp-brief">' +
-                '<div class="tbp-brief-band" style="background:' + merk.kleur + '"></div>' +
-                '<div class="tbp-brief-body">' +
-                  '<div class="tbp-brief-afz tbp-pre">' + esc(briefAfzender) + '</div>' +
-                  '<div class="tbp-brief-aan">[voorletter(s)] [achternaam]<br>[straat en huisnummer]<br>[postcode en plaats]</div>' +
-                  '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
-                  '<div class="tbp-md">' + window.mdNaarHtml(briefBody) + '</div>' +
-                '</div>' +
-              '</div>', 'post', 'brief'));
+              '</div>', 'email', 'email'));
         } else {
           container.innerHTML = wrap(
             blok('Push (MijnOverheid-app)',
@@ -4249,10 +4093,10 @@
                 '<div class="tbp-push-titel">' + esc(subject) + '</div>' +
                 '<div class="tbp-push-tekst">' + esc(kort) + '</div>' +
               '</div>', 'push', 'push') +
+            blok('Signal',
+              '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'signal', 'signal') +
             blok('SMS',
-              '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms', 'sms') +
-            blok('WhatsApp / Signal',
-              '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'whats', 'whatsapp'));
+              '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms', 'sms'));
         }
       }
 
@@ -5486,10 +5330,10 @@
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Transport Van Dijk', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:58' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'SMS afgeleverd - Slagerij Van Den Berg', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:55' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Fotostudio Lens', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:52' },
-        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Berichtenbox afgeleverd - Autogarage Snel & Zeker', detail: 'Jaarlijkse opgave Handelsregister · gelezen in Berichtenbox', tijd: 'Vandaag 08:49' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Push afgeleverd - Autogarage Snel & Zeker', detail: 'Jaarlijkse opgave Handelsregister · geopend in de MijnOverheid-app', tijd: 'Vandaag 08:49' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Kwekerij De Groene Tuin', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:46' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Boekhoudkantoor Cijfer', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:43' },
-        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Brief (post) verzonden - Meubelmakerij Eik', detail: 'Jaarlijkse opgave Handelsregister · aangeboden aan postverwerking', tijd: 'Vandaag 08:30' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'SMS afgeleverd - Meubelmakerij Eik', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 08:30' },
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key aangemaakt', detail: 'Backoffice KvK · rol Notificaties verzenden', tijd: 'Vandaag 09:12' },
         { id: ++teller, type: 'apikey', status: 'apikey', titel: 'API-key ingetrokken', detail: 'Oude testkey · door ' + ((window.__MOZA_USER && window.__MOZA_USER.naam) || 'de beheerder'), tijd: 'Gisteren 14:30' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie verzonden - jaarlijkse opgave', detail: 'Handelsregister · 320 ondernemers', tijd: 'Gisteren 16:05' },
