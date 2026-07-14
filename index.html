@@ -559,8 +559,8 @@
                           <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                           <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                           <ul class="afl-lijst">
-                            <li>Voor <strong class="js-afl-template">1</strong> notificaties is de ingestelde template onbekend - te controleren in de verzendapplicatie</li>
-                            <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd</li>
+                            <li class="js-afl-li-template"></li>
+                            <li class="js-afl-li-retry"></li>
                           </ul>
                           <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                         </nldd-container>
@@ -882,8 +882,8 @@
                         <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                         <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                         <ul class="afl-lijst">
-                          <li>Voor <strong class="js-afl-bsn">1</strong> notificaties is een correctieverzoek van het BSN-nummer ingediend</li>
-                          <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd</li>
+                          <li class="js-afl-li-bsn"></li>
+                          <li class="js-afl-li-retry"></li>
                         </ul>
                         <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                       </nldd-container>
@@ -2701,9 +2701,15 @@
         zet('.js-afl-fail-pct', pct(failPct) + '%');
         zet('.js-afl-err', nf.format(this.metErrors));
         zet('.js-afl-actie', String(this.actieNodig));
-        zet('.js-afl-bsn', String(this.bsnNodig));
-        zet('.js-afl-template', String(this.templateNodig));
-        zet('.js-afl-retry', String(this.retryNodig));
+        // Herstelactie-regels met correcte enkelvoud/meervoud, afhankelijk van het aantal notificaties.
+        const notif = (n) => n === 1 ? 'notificatie' : 'notificaties';
+        const zetLi = (sel, html) => document.querySelectorAll(sel).forEach(el => el.innerHTML = html);
+        const n1 = (n) => '<strong>' + nf.format(n) + '</strong> ' + notif(n);
+        zetLi('.js-afl-li-bsn', 'Voor ' + n1(this.bsnNodig) + ' is het BSN-nummer onbekend; een correctieverzoek is ingediend');
+        zetLi('.js-afl-li-template', 'Voor ' + n1(this.templateNodig) + ' is de ingestelde template onbekend - te controleren in de verzendapplicatie');
+        zetLi('.js-afl-li-retry', this.retryNodig === 1
+          ? 'Voor ' + n1(this.retryNodig) + ' wordt de contactherstel-brief verstuurd'
+          : 'Voor ' + n1(this.retryNodig) + ' worden contactherstel-brieven verstuurd');
       },
     };
     window.__mozaTellers.render();
