@@ -513,7 +513,7 @@
                           <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                           <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
                           <ul class="afl-lijst">
-                            <li>Voor <strong class="js-afl-bsn">1</strong> notificaties is een correctieverzoek van het BSN-nummer ingediend</li>
+                            <li>Voor <strong class="js-afl-template">1</strong> notificaties is de ingestelde template onbekend - te controleren in de verzendapplicatie</li>
                             <li>Voor <strong class="js-afl-retry">1</strong> notificaties wordt de contactherstel-brief verstuurd</li>
                           </ul>
                           <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
@@ -2601,7 +2601,8 @@
     window.__mozaTellers = {
       verzonden: 1248,       // totaal verzonden vandaag
       actieNodig: 2,         // niet afgeleverd, herstelactie loopt (loopt mee met het logboek)
-      bsnNodig: 1,           // waarvan een BSN-correctieverzoek is ingediend
+      bsnNodig: 0,           // waarvan een BSN-correctieverzoek is ingediend
+      templateNodig: 1,      // waarvan de ingestelde template onbekend is (te controleren bij de dienstverlener)
       retryNodig: 1,         // waarvan een contactherstel-brief wordt verstuurd
       metErrors: 17,         // succesvol afgeleverd, maar pas na een of meer fouten/herverzendingen
       nietAfgeleverdBasis: 18, // niet afgeleverd zonder mogelijke actie (definitieve bounces e.d.)
@@ -2623,6 +2624,7 @@
         zet('.js-afl-err', nf.format(this.metErrors));
         zet('.js-afl-actie', String(this.actieNodig));
         zet('.js-afl-bsn', String(this.bsnNodig));
+        zet('.js-afl-template', String(this.templateNodig));
         zet('.js-afl-retry', String(this.retryNodig));
       },
     };
@@ -5187,7 +5189,7 @@
 
       let teller = 0;
       const LOG = [
-        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '234567890', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Vandaag 08:15' },
+        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'template', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekende template in de verzendapplicatie', opmerking: 'Template onbekend. Controleer de ingestelde template in uw verzendapplicatie.', tijd: 'Vandaag 08:15' },
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
         { id: ++teller, type: 'notificatie', status: 'hersteld', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd na contactherstel', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
         { id: ++teller, type: 'notificatie', status: 'hersteld', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
@@ -5269,9 +5271,9 @@
         // Opmerking i.p.v. actieknop: wat wordt er (automatisch) gedaan / is hersteld.
         const opmCel = tr.querySelector('.log-td-actie');
         let opm = '';
-        if (it.status === 'mislukt' && it.actie === 'bsn') opm = 'Correctieverzoek BSN-nummer aangevraagd';
+        if (it.opmerking) opm = it.opmerking;
+        else if (it.status === 'mislukt' && it.actie === 'bsn') opm = 'Correctieverzoek BSN-nummer aangevraagd';
         else if (it.status === 'mislukt' && it.actie === 'retry') opm = 'E-mailadres incorrect - contactherstel-brief wordt verstuurd om het e-mailadres te corrigeren';
-        else if (it.opmerking) opm = it.opmerking;
         if (opm) { opmCel.textContent = opm; opmCel.title = opm; }
         else opmCel.innerHTML = `<span class="log-geen-actie">-</span>`;
         return tr;
@@ -5309,6 +5311,7 @@
         if (window.__mozaTellers) {
           window.__mozaTellers.actieNodig = mislukt;
           window.__mozaTellers.bsnNodig = misluktItems.filter(x => x.actie === 'bsn').length;
+          window.__mozaTellers.templateNodig = misluktItems.filter(x => x.actie === 'template').length;
           window.__mozaTellers.retryNodig = misluktItems.filter(x => x.actie === 'retry').length;
           window.__mozaTellers.render();
         }
