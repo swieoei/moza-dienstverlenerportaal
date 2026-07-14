@@ -50,11 +50,18 @@
     .mp-tile[data-svc] { cursor: pointer; }
     .mp-tile[data-svc]:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
     .mp-tile--on { box-shadow: inset 4px 0 0 #39870c; border-radius: 8px; }
-    /* Binnenkort-tegel: banner over de tegel, inhoud gedimd en niet klikbaar. */
-    .mp-tile-wrap { position: relative; }
-    .mp-binnenkort .mp-tile { opacity: 0.5; pointer-events: none; }
-    .mp-binnenkort-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-    .mp-binnenkort-band { background: #154273; color: #fff; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; padding: 10px 22px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transform: rotate(-4deg); }
+    /* Binnenkort-tegel: schuine hoek-ribbon in dezelfde stijl als de concept-banner. */
+    .mp-tile-wrap { position: relative; overflow: hidden; border-radius: 8px; }
+    .mp-binnenkort-ribbon {
+      position: absolute; inset-block-start: 18px; inset-inline-end: -54px; inline-size: 200px;
+      transform: rotate(45deg); transform-origin: center; text-align: center;
+      padding-block: var(--primitives-space-4, 5px);
+      background: var(--components-status-bar-warning-background-color, #e17000);
+      color: var(--components-status-bar-warning-content-color, #fff);
+      font-family: var(--font-base); font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; font-size: 0.72rem; pointer-events: none; z-index: 5;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
     .svc-status { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; }
     .svc-status--on { color: #39870c; font-weight: 600; }
     .svc-status--off { color: #5a5a5a; }
@@ -1600,11 +1607,11 @@
                             <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
                             <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
                             <div class="row-actions">
-                              <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst"></nldd-button>
+                              <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst" disabled></nldd-button>
                             </div>
                           </nldd-container>
                         </nldd-card>
-                        <div class="mp-binnenkort-overlay"><span class="mp-binnenkort-band">Binnenkort beschikbaar</span></div>
+                        <span class="mp-binnenkort-ribbon">Binnenkort</span>
                       </div>
 
                       <!-- DigiD -->
