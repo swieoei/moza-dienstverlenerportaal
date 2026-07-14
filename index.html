@@ -254,6 +254,7 @@
     .dienst-notificatiedienst { color: #a3120a; background: #fce8e6; border-color: #f5c6c1; }
     .dienst-profieldienst { color: #0b71a8; background: #e3f1fb; border-color: #b6dcf3; }
     .dienst-alle { color: #4f5b66; background: #eef1f4; border-color: #d6dce2; }
+    .dienst-project { color: #4b3a86; background: #eee9f8; border-color: #d3c8ee; }
     .gb-kaart { border-inline-start: 4px solid #d6dce2; }
     .gb-kaart.rand-notificatiedienst { border-inline-start-color: #d52b1e; }
     .gb-kaart.rand-profieldienst { border-inline-start-color: #007bc7; }
@@ -1878,6 +1879,14 @@
                         <nldd-title size="6"><h3>Nieuwe gebruiker uitnodigen</h3><p slot="subtitle">Zet de gebruiker op en configureer de rol</p></nldd-title>
                         <nldd-form-field label="Naam"><nldd-text-field id="gbf-naam" placeholder="Voor- en achternaam"></nldd-text-field></nldd-form-field>
                         <nldd-form-field label="E-mailadres"><nldd-text-field id="gbf-email" placeholder="naam@organisatie.nl"></nldd-text-field></nldd-form-field>
+                        <nldd-form-field label="Project">
+                          <nldd-dropdown>
+                            <select id="gbf-project" aria-label="Project"></select>
+                          </nldd-dropdown>
+                        </nldd-form-field>
+                        <nldd-form-field id="gbf-project-nieuw-field" label="Naam nieuw project" hidden>
+                          <nldd-text-field id="gbf-project-nieuw" placeholder="Bijv. incasso"></nldd-text-field>
+                        </nldd-form-field>
                         <nldd-form-field label="Rol">
                           <nldd-dropdown>
                             <select id="gbf-rol" aria-label="Rol">
@@ -1921,6 +1930,11 @@
                           <option value="Notificatiedienst">Notificatiedienst</option>
                           <option value="Profieldienst">Profieldienst</option>
                         </select>
+                      </nldd-dropdown>
+                    </nldd-form-field>
+                    <nldd-form-field label="Filter op project">
+                      <nldd-dropdown>
+                        <select id="gb-filter-project" aria-label="Filter op project"></select>
                       </nldd-dropdown>
                     </nldd-form-field>
                   </div>
@@ -5070,7 +5084,11 @@
       const leegP = root.querySelector('#gb-leeg');
       const filterRol = root.querySelector('#gb-filter-rol');
       const filterDienst = root.querySelector('#gb-filter-dienst');
+      const filterProject = root.querySelector('#gb-filter-project');
       const user = window.__MOZA_USER || { org: 'Kamer van Koophandel', orgKey: 'kvk', email: 'sanne.deboer@kvk.nl' };
+
+      // Gebruikers horen bij een project. Bestaande projecten om uit te kiezen; nieuwe kunnen erbij.
+      const PROJECTEN = ['incasso', 'betalen', 'service', 'vergaderen'];
 
       const ROLLEN = {
         organisatiebeheerder: { label: 'Organisatiebeheerder', color: 'accent',
@@ -5083,16 +5101,16 @@
 
       const ORG = {
         kvk: { naam: 'Kamer van Koophandel', users: [
-          { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder' },
-          { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst' },
-          { naam: 'Lin Zhao', email: 'l.zhao@kvk.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst' },
-          { naam: 'Deniz Öztürk', email: 'd.ozturk@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs' },
+          { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder', project: 'betalen' },
+          { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'incasso' },
+          { naam: 'Lin Zhao', email: 'l.zhao@kvk.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service' },
+          { naam: 'Deniz Öztürk', email: 'd.ozturk@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs', project: 'incasso' },
         ] },
         bzk: { naam: 'Ministerie van BZK', users: [
-          { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder' },
-          { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst' },
-          { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst' },
-          { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc' },
+          { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder', project: 'vergaderen' },
+          { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'betalen' },
+          { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service' },
+          { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc', project: 'incasso' },
         ] },
       };
 
@@ -5173,6 +5191,7 @@
                   ${actief ? '' : '<nldd-tag color="critical" text="geen toegang"></nldd-tag>'}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
+                  ${u.project ? '<span class="dienst-chip dienst-project">Project: ' + u.project + '</span>' : ''}
                 </div>
               </div>
               <p class="gb-toegang-inline"><strong>Toegang:</strong> <span class="gb-toeg"></span></p>
@@ -5209,10 +5228,12 @@
       function render() {
         const fr = filterRol ? filterRol.value : 'alle';
         const fd = filterDienst ? filterDienst.value : 'alle';
+        const fp = filterProject ? filterProject.value : 'alle';
         lijst.textContent = '';
         const zichtbaar = org.users.filter(u => {
           if (fr !== 'alle' && u.rol !== fr) return false;
           if (fd !== 'alle' && dienstVan(u) !== fd) return false;
+          if (fp !== 'alle' && u.project !== fp) return false;
           return true;
         });
         if (leegP) leegP.toggleAttribute('hidden', zichtbaar.length > 0);
@@ -5220,11 +5241,34 @@
       }
       if (filterRol) filterRol.addEventListener('change', render);
       if (filterDienst) filterDienst.addEventListener('change', render);
+      if (filterProject) filterProject.addEventListener('change', render);
 
-      // Uitnodig-formulier: gebruiker opzetten en rol configureren.
+      // Uitnodig-formulier: gebruiker opzetten en rol/project configureren.
       const form = root.querySelector('#gb-uitnodig-form');
       const fRol = root.querySelector('#gbf-rol');
       const fDienstField = root.querySelector('#gbf-dienst-field');
+      const fProject = root.querySelector('#gbf-project');
+      const fProjectNieuwField = root.querySelector('#gbf-project-nieuw-field');
+      const fProjectNieuw = root.querySelector('#gbf-project-nieuw');
+      // Vul de project-dropdowns: bestaande projecten om uit te kiezen + de optie om een nieuw aan te maken.
+      function vulProjecten() {
+        if (fProject) {
+          const huidig = fProject.value;
+          fProject.innerHTML = PROJECTEN.map(p => '<option value="' + p + '">' + p + '</option>').join('') +
+            '<option value="__nieuw">+ Nieuw project aanmaken</option>';
+          fProject.value = (huidig && (PROJECTEN.indexOf(huidig) >= 0 || huidig === '__nieuw')) ? huidig : PROJECTEN[0];
+        }
+        if (filterProject) {
+          const huidigF = filterProject.value || 'alle';
+          filterProject.innerHTML = '<option value="alle">Alle projecten</option>' +
+            PROJECTEN.map(p => '<option value="' + p + '">' + p + '</option>').join('');
+          filterProject.value = (huidigF === 'alle' || PROJECTEN.indexOf(huidigF) >= 0) ? huidigF : 'alle';
+        }
+      }
+      vulProjecten();
+      function toonNieuwProject() { if (fProjectNieuwField) fProjectNieuwField.toggleAttribute('hidden', fProject.value !== '__nieuw'); }
+      if (fProject) fProject.addEventListener('change', toonNieuwProject);
+      toonNieuwProject();
       function toonDienstVeld() { fDienstField.toggleAttribute('hidden', fRol.value === 'organisatiebeheerder'); }
       fRol.addEventListener('change', toonDienstVeld);
       toonDienstVeld();
@@ -5234,7 +5278,12 @@
         const naam = (root.querySelector('#gbf-naam').value || '').trim() || 'Nieuwe gebruiker';
         const email = (root.querySelector('#gbf-email').value || '').trim() || 'nieuw@' + (org.naam === 'Ministerie van BZK' ? 'rijksoverheid.nl' : 'kvk.nl');
         const rol = fRol.value;
+        // Project: bestaand gekozen, of een nieuw aangemaakt project.
+        let project = fProject ? fProject.value : '';
+        if (project === '__nieuw') project = ((fProjectNieuw && fProjectNieuw.value) || '').trim();
+        if (project && PROJECTEN.indexOf(project) < 0) { PROJECTEN.push(project); vulProjecten(); }
         const nieuw = { naam: naam, email: email, rol: rol };
+        if (project) nieuw.project = project;
         if (rol !== 'organisatiebeheerder') nieuw.dienst = root.querySelector('#gbf-dienst').value;
         if (rol === 'keyeigenaar') nieuw.key = 'nmp_demo_nieuw';
         org.users.push(nieuw);
@@ -5242,11 +5291,14 @@
         // in de lijst verschijnt (ook als er een filter aanstond die hem zou verbergen).
         if (filterRol) filterRol.value = 'alle';
         if (filterDienst) filterDienst.value = 'alle';
+        if (filterProject) filterProject.value = 'alle';
         render();
         form.setAttribute('hidden', '');
         root.querySelector('#gbf-naam').value = '';
         root.querySelector('#gbf-email').value = '';
-        meld('success', naam + ' uitgenodigd als ' + ((ROLLEN[rol] || {}).label || rol) + (nieuw.dienst ? ' voor de ' + nieuw.dienst : '') + '. (demo)');
+        if (fProjectNieuw) fProjectNieuw.value = '';
+        if (fProject) { fProject.value = PROJECTEN[0]; toonNieuwProject(); }
+        meld('success', naam + ' uitgenodigd als ' + ((ROLLEN[rol] || {}).label || rol) + (nieuw.dienst ? ' voor de ' + nieuw.dienst : '') + (project ? ' - project ' + project : '') + '. (demo)');
       });
 
       render();
