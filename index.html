@@ -1361,7 +1361,7 @@
                               <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
                             </nldd-tab-bar>
                             <nldd-banner class="tb-leegtaal" data-group="lang" variant="neutral" text="Nog geen vertaling in deze taal - vul aan bij het bewerken." hidden></nldd-banner>
-                            <p class="muted-note">De Berichtenbox in MijnOverheid is de basis van het bericht. E-mail en brief (post) gebruiken standaard dezelfde tekst.</p>
+                            <p class="muted-note">Elk kanaal heeft een eigen korte en lange tekst. Ze zijn standaard gelijk, maar u kunt ze per kanaal aanpassen.</p>
                             <nldd-form-field label="Onderwerp">
                               <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                             </nldd-form-field>
@@ -1369,7 +1369,7 @@
                               <nldd-multi-line-text-field id="tb-d-bbox-kort" rows="2" readonly></nldd-multi-line-text-field>
                             </nldd-form-field>
                             <nldd-form-field label="Lange tekst">
-                              <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst"></div></div>
+                              <div class="rte"><div class="rte-area" id="tb-d-bbox-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst Berichtenbox"></div></div>
                             </nldd-form-field>
                             <div class="tb-pv-blok">
                               <nldd-button class="tb-pv-toggle" data-ch="bbox" variant="secondary" start-icon="eye" text="Voorbeeld tonen"></nldd-button>
@@ -1387,11 +1387,17 @@
                               <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
                               <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
                             </nldd-tab-bar>
+                            <nldd-form-field label="Korte tekst (preheader e-mail)">
+                              <nldd-multi-line-text-field id="tb-d-email-kort" rows="2" readonly></nldd-multi-line-text-field>
+                            </nldd-form-field>
+                            <nldd-form-field label="Lange tekst">
+                              <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst e-mail"></div></div>
+                            </nldd-form-field>
                             <div class="lt-kop">
-                              <span class="lt-label">Tekst e-mail en brief (post)</span>
-                              <div class="log-check" id="tb-d-samen-rij"><nldd-checkbox id="tb-d-samen-cb" checked accessible-label="E-mail en brief (post) hebben dezelfde tekst"></nldd-checkbox><span>E-mail en brief (post) hebben dezelfde tekst</span></div>
+                              <span class="lt-label">Brief (post)</span>
+                              <div class="log-check" id="tb-d-samen-rij"><nldd-checkbox id="tb-d-samen-cb" checked accessible-label="Brief (post) heeft dezelfde tekst als de e-mail"></nldd-checkbox><span>Brief (post) heeft dezelfde tekst als de e-mail</span></div>
                             </div>
-                            <p class="muted-note" id="tb-d-samentekst">E-mail en brief gebruiken de lange tekst van de Berichtenbox.</p>
+                            <p class="muted-note" id="tb-d-samentekst">De brief (post) gebruikt de lange tekst van de e-mail.</p>
                             <div id="tb-d-brief-tekstveld" hidden>
                               <p class="lt-sublabel">Aparte tekst brief (post)</p>
                               <div class="rte" id="tb-d-brief-wrap"><div class="rte-area" id="tb-d-body-brief" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
@@ -3736,7 +3742,8 @@
         const content = {};
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const f = FRAME[l];
-          content[l] = { subject: f.subj(spec.desc[l]), bboxKort: spec.reden[l], body: maakBody(f, spec.reden[l], spec.actie[l]), kort: f.kort(spec.desc[l]) };
+          const lange = maakBody(f, spec.reden[l], spec.actie[l]);
+          content[l] = { subject: f.subj(spec.desc[l]), bboxKort: spec.reden[l], bboxBody: lange, emailKort: spec.reden[l], body: lange, kort: f.kort(spec.desc[l]) };
         });
         return content;
       }
@@ -3772,6 +3779,8 @@
         kortAfz: root.querySelector('#tb-d-kort-afz'),
         subj: root.querySelector('#tb-d-subj'),
         bboxKort: root.querySelector('#tb-d-bbox-kort'),
+        bboxBody: root.querySelector('#tb-d-bbox-body'),
+        emailKort: root.querySelector('#tb-d-email-kort'),
         body: root.querySelector('#tb-d-body'),
         bodyBrief: root.querySelector('#tb-d-body-brief'),
         briefAfz: root.querySelector('#tb-d-brief-afz'),
@@ -3783,10 +3792,14 @@
       root.querySelectorAll('.rte').forEach(wrap => window.bouwRicheToolbar(wrap));
       // Lange tekst is een markdown-tekst die in de rich-text editor opgemaakt wordt getoond.
       const rteWrap = el => el && el.closest ? el.closest('.rte') : null;
-      function bodyGet() { const w = rteWrap(velden.body); return w && w.__leesMd ? w.__leesMd() : (velden.body ? velden.body.innerText : ''); }
-      function bodySet(v) { const w = rteWrap(velden.body); if (w && w.__zetMd) w.__zetMd(v); else if (velden.body) velden.body.textContent = v || ''; }
-      function briefGet() { const w = rteWrap(velden.bodyBrief); return w && w.__leesMd ? w.__leesMd() : (velden.bodyBrief ? velden.bodyBrief.innerText : ''); }
-      function briefSet(v) { const w = rteWrap(velden.bodyBrief); if (w && w.__zetMd) w.__zetMd(v); else if (velden.bodyBrief) velden.bodyBrief.textContent = v || ''; }
+      const mdLees = el => { const w = rteWrap(el); return w && w.__leesMd ? w.__leesMd() : (el ? el.innerText : ''); };
+      const mdZet = (el, v) => { const w = rteWrap(el); if (w && w.__zetMd) w.__zetMd(v); else if (el) el.textContent = v || ''; };
+      function bodyGet() { return mdLees(velden.body); }
+      function bodySet(v) { mdZet(velden.body, v); }
+      function bboxBodyGet() { return mdLees(velden.bboxBody); }
+      function bboxBodySet(v) { mdZet(velden.bboxBody, v); }
+      function briefGet() { return mdLees(velden.bodyBrief); }
+      function briefSet(v) { mdZet(velden.bodyBrief, v); }
       const dTitel = root.querySelector('#tb-d-titel');
       const dTag = root.querySelector('#tb-d-tag');
       const dCat = root.querySelector('#tb-d-cat');
@@ -3821,8 +3834,8 @@
         const samen = samenAan();
         if (briefVeld) briefVeld.toggleAttribute('hidden', samen);
         if (samenNote) samenNote.textContent = samen
-          ? 'E-mail en brief gebruiken de lange tekst van de Berichtenbox.'
-          : 'De brief (post) heeft een eigen tekst; de e-mail volgt de Berichtenbox.';
+          ? 'De brief (post) gebruikt de lange tekst van de e-mail.'
+          : 'De brief (post) heeft een eigen tekst.';
         // Bij splitsen: start de brieftekst gelijk aan de lange tekst als hij nog leeg is.
         if (!samen && !briefGet()) briefSet(bodyGet());
       }
@@ -3873,11 +3886,13 @@
         const isLeeg = group === 'lang' ? !(c.subject || c.body) : !c.kort;
         leegBanners.filter(b => b.dataset.group === group).forEach(b => b.toggleAttribute('hidden', !(isLeeg && lang !== 'nl')));
       }
-      // Lange tekst (Berichtenbox + e-mail/brief): onderwerp, lange tekst en de aparte brieftekst.
+      // Lange tekst-groep: onderwerp + korte/lange tekst per kanaal (Berichtenbox en e-mail) + brief.
       function laadLang(lang) {
         const c = (werk.content && werk.content[lang]) || leeg();
         velden.subj.value = c.subject || '';
         if (velden.bboxKort) velden.bboxKort.value = c.bboxKort || '';
+        bboxBodySet(c.bboxBody || c.body || '');
+        if (velden.emailKort) velden.emailKort.value = c.emailKort || c.bboxKort || '';
         bodySet(c.body || '');
         briefSet(c.briefBody || c.body || '');
         taal.lang = lang;
@@ -3897,6 +3912,8 @@
         werk.briefApart = apart;
         c.subject = velden.subj.value;
         if (velden.bboxKort) c.bboxKort = velden.bboxKort.value;
+        c.bboxBody = bboxBodyGet();
+        if (velden.emailKort) c.emailKort = velden.emailKort.value;
         c.body = bodyGet();
         c.briefBody = apart ? briefGet() : undefined;
       }
@@ -3917,12 +3934,11 @@
       }
       function setBewerken(on) {
         bewerken = on;
-        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.bboxKort, velden.kort].forEach(el => {
+        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.bboxKort, velden.emailKort, velden.kort].forEach(el => {
           if (!el) return;
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
-        if (velden.body) velden.body.setAttribute('contenteditable', on ? 'true' : 'false'); // rich-text editor
-        if (velden.bodyBrief) velden.bodyBrief.setAttribute('contenteditable', on ? 'true' : 'false');
+        [velden.bboxBody, velden.body, velden.bodyBrief].forEach(el => { if (el) el.setAttribute('contenteditable', on ? 'true' : 'false'); }); // rich-text editors
         if (samenCb) samenCb.toggleAttribute('disabled', !on); // checkbox alleen aanpasbaar tijdens bewerken
         // De editor-toolbar verschijnt pas bij bewerken; in de leesweergave staat de opgemaakte tekst zonder chrome.
         root.querySelectorAll('.rte').forEach(w => { w.classList.toggle('rte--lezen', !on); if (!on && w.__naarVisueel) w.__naarVisueel(); });
@@ -4108,6 +4124,8 @@
         const email = velden.afz.value || '';
         const subject = resolveAfz(cLang.subject);
         const bboxKort = resolveAfz(cLang.bboxKort);
+        const bboxBody = resolveAfz(cLang.bboxBody || cLang.body);
+        const emailKort = resolveAfz(cLang.emailKort);
         const body = resolveAfz(cLang.body);
         const briefBody = resolveAfz((werk && werk.briefApart && cLang.briefBody) ? cLang.briefBody : cLang.body);
         const kort = resolveAfz(cKort.kort);
@@ -4120,7 +4138,7 @@
                   '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
                   '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
                   (bboxKort ? '<div class="tbp-bbox-kort">' + esc(bboxKort) + '</div>' : '') +
-                  '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
+                  '<div class="tbp-md">' + window.mdNaarHtml(bboxBody) + '</div>' +
                 '</div>' +
               '</div>', 'berichtenbox');
         } else if (groep === 'email') {
@@ -4134,6 +4152,7 @@
                     '<div><strong>Aan:</strong> [voorletter(s)] [achternaam]</div>' +
                     '<div><strong>Onderwerp:</strong> ' + esc(subject) + '</div>' +
                   '</div>' +
+                  (emailKort ? '<div class="tbp-bbox-kort">' + esc(emailKort) + '</div>' : '') +
                   '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                   (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
                 '</div>' +
