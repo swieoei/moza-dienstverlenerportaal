@@ -4808,9 +4808,10 @@
       const scopeColor = { lezen: 'neutral', schrijven: 'accent', beheer: 'warning' };
       const rollenVan = k => k.rollen || (k.rol ? [k.rol] : []);
 
-      // Een API-key-eigenaar mag de bestaande key alleen kopieren, niet zelf een
-      // nieuwe key aanmaken. De aanmaakknop wordt daarom voor die rol verborgen.
+      // Een API-key-eigenaar mag de bestaande key alleen kopieren, niet zelf een nieuwe key
+      // aanmaken en ook geen key intrekken. Die acties worden voor die rol verborgen.
       const magKeyAanmaken = !window.__MOZA_USER || window.__MOZA_USER.rol !== 'keyeigenaar';
+      const magKeyIntrekken = magKeyAanmaken;
 
       document.querySelectorAll('.api-keys-beheer[data-dienst]').forEach(beheer => {
         const dienst = MP_DIENSTEN[beheer.dataset.dienst];
@@ -4854,6 +4855,7 @@
             </nldd-card>`;
           const el = wrap.firstElementChild;
           el.querySelector('h3').textContent = k.naam;
+          if (!magKeyIntrekken) { const ib = el.querySelector('.k-intrek'); if (ib) ib.classList.add('rol-verborgen'); }
           const rollenBox = el.querySelector('.k-rollen');
           rollenVan(k).forEach(r => {
             const info = ROL_INFO[r] || {};
