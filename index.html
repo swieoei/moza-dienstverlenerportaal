@@ -1356,6 +1356,22 @@
                           <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
                         </nldd-form-field>
 
+                        <!-- Kanalen voor deze template: standaard de organisatie-instellingen, maar per
+                             (custom) template aan te passen. Afwijken geeft een waarschuwing. -->
+                        <nldd-form-field>
+                          <div class="lt-kop"><span class="lt-label">Kanalen</span></div>
+                          <p class="muted-note">Kies welke kanalen deze template gebruikt. Standaard volgt de template de kanalen uit uw organisatie-instellingen.</p>
+                          <div class="log-checks" id="tb-d-kanalen">
+                            <div class="log-check" data-kanaal="berichtenbox"><nldd-checkbox accessible-label="Berichtenbox"></nldd-checkbox><span>Berichtenbox</span></div>
+                            <div class="log-check" data-kanaal="email"><nldd-checkbox accessible-label="E-mail"></nldd-checkbox><span>E-mail</span></div>
+                            <div class="log-check" data-kanaal="brief"><nldd-checkbox accessible-label="Brief (post)"></nldd-checkbox><span>Brief (post)</span></div>
+                            <div class="log-check" data-kanaal="push"><nldd-checkbox accessible-label="Push"></nldd-checkbox><span>Push</span></div>
+                            <div class="log-check" data-kanaal="sms"><nldd-checkbox accessible-label="SMS"></nldd-checkbox><span>SMS</span></div>
+                            <div class="log-check" data-kanaal="whatsapp"><nldd-checkbox accessible-label="WhatsApp/Signal"></nldd-checkbox><span>WhatsApp/Signal</span></div>
+                          </div>
+                          <nldd-banner id="tb-d-kanaal-waarschuwing" variant="warning" text="" hidden></nldd-banner>
+                        </nldd-form-field>
+
                         <!-- Kanaal-tabbladen: Berichtenbox eerst, dan e-mail/brief, dan de korte kanalen -->
                         <nldd-tab-bar id="tb-kanaaltabs" accessible-label="Kanaal">
                           <nldd-tab-bar-item selected text="Berichtenbox" data-ch="bbox"></nldd-tab-bar-item>
@@ -3766,6 +3782,7 @@
       // Organisatie-specifieke (custom) template. Alleen zichtbaar voor de eigen organisatie.
       BIB.push({
         id: 'agenda-stuurgroep', titel: 'Agenda stuurgroep', cat: null, status: 'custom', org: 'bzk', huisstijl: 'bzk',
+        kanalen: ['email'],
         afzender: 'stuurgroep@rijksoverheid.nl', afzendertekst: HANDTEKENING.bzk,
         content: {
           nl: { subject: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk - ((vergaderdatum))',
@@ -3798,6 +3815,46 @@
       };
       // Postadres per organisatie (zelfde inhoud als op de organisatie-instellingenpagina).
       const briefAdres = { kvk: 'Kamer van Koophandel, Postbus 48, 3500 GA Utrecht', bzk: 'Ministerie van BZK, Postbus 20011, 2500 EA Den Haag' };
+
+      // Kanalen: standaard volgt een template de kanalen van de organisatie-instellingen.
+      const STANDAARD_KANALEN = ['berichtenbox', 'email', 'brief', 'push', 'sms', 'whatsapp'];
+      const KANAAL_LABEL = { berichtenbox: 'Berichtenbox', email: 'E-mail', brief: 'Brief (post)', push: 'Push', sms: 'SMS', whatsapp: 'WhatsApp/Signal' };
+      const kanalenBox = root.querySelector('#tb-d-kanalen');
+      const kanaalWaarschuwing = root.querySelector('#tb-d-kanaal-waarschuwing');
+      const kanaalRijen = () => Array.from(kanalenBox.querySelectorAll('.log-check'));
+      function kanaalCb(rij) { return rij.querySelector('nldd-checkbox'); }
+      function kanaalAan(cb) { return typeof cb.checked === 'boolean' ? cb.checked : cb.hasAttribute('checked'); }
+      function leesKanalen() { return kanaalRijen().filter(r => kanaalAan(kanaalCb(r))).map(r => r.dataset.kanaal); }
+      function zetKanalen(lijst) {
+        const set = new Set(lijst || STANDAARD_KANALEN);
+        kanaalRijen().forEach(r => {
+          const cb = kanaalCb(r); const aan = set.has(r.dataset.kanaal);
+          const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+          if (input) input.checked = aan; else cb.toggleAttribute('checked', aan);
+          cb.toggleAttribute('checked', aan);
+        });
+      }
+      function toonKanaalWaarschuwing() {
+        const gekozen = leesKanalen();
+        const mist = STANDAARD_KANALEN.filter(k => gekozen.indexOf(k) < 0);
+        const afwijkend = mist.length > 0;
+        if (afwijkend && kanaalWaarschuwing) {
+          const gekozenLabels = gekozen.map(k => KANAAL_LABEL[k] || k).join(', ') || 'geen kanaal';
+          kanaalWaarschuwing.setAttribute('text', 'Deze template wijkt af van de standaardkanalen van uw organisatie. Alleen: ' + gekozenLabels + '. (Niet gebruikt: ' + mist.map(k => KANAAL_LABEL[k] || k).join(', ') + '.)');
+          kanaalWaarschuwing.removeAttribute('hidden');
+        } else if (kanaalWaarschuwing) {
+          kanaalWaarschuwing.setAttribute('hidden', '');
+        }
+      }
+      if (kanalenBox) kanalenBox.addEventListener('change', toonKanaalWaarschuwing);
+      // Klik op de rij (naast de checkbox) toggelt ook, alleen tijdens bewerken.
+      if (kanalenBox) kanalenBox.addEventListener('click', e => {
+        if (!bewerken) return;
+        if (e.target.closest('nldd-checkbox')) return;
+        const rij = e.target.closest('.log-check'); if (!rij) return;
+        const cb = kanaalCb(rij); const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+        if (input) input.click(); else { cb.toggleAttribute('checked'); toonKanaalWaarschuwing(); }
+      });
       // Gedeelde rich-text toolbar boven elke editor injecteren (nodig voor de md-helpers).
       root.querySelectorAll('.rte').forEach(wrap => window.bouwRicheToolbar(wrap));
       // Lange tekst is een markdown-tekst die in de rich-text editor opgemaakt wordt getoond.
@@ -3937,6 +3994,7 @@
         werk.afzendertekst = velden.afzenderTekst.value;
         if (velden.briefAfz) werk.briefAfzender = velden.briefAfz.value;
         if (velden.kortAfz) werk.kortAfzender = velden.kortAfz.value;
+        werk.kanalen = leesKanalen();
         bewaarLang();
         bewaarKort();
       }
@@ -3948,6 +4006,7 @@
         });
         [velden.bboxBody, velden.body, velden.bodyBrief].forEach(el => { if (el) el.setAttribute('contenteditable', on ? 'true' : 'false'); }); // rich-text editors
         if (samenCb) samenCb.toggleAttribute('disabled', !on); // checkbox alleen aanpasbaar tijdens bewerken
+        if (kanalenBox) kanalenBox.querySelectorAll('nldd-checkbox').forEach(cb => cb.toggleAttribute('disabled', !on)); // kanaalkeuze alleen tijdens bewerken
         // De editor-toolbar verschijnt pas bij bewerken; in de leesweergave staat de opgemaakte tekst zonder chrome.
         root.querySelectorAll('.rte').forEach(w => { w.classList.toggle('rte--lezen', !on); if (!on && w.__naarVisueel) w.__naarVisueel(); });
         btnBewerk.toggleAttribute('hidden', on);
@@ -3989,6 +4048,9 @@
           if (input) input.checked = !apart; else samenCb.toggleAttribute('checked', !apart);
           samenCb.toggleAttribute('checked', !apart);
         }
+        // Kanalen van de template (of de standaard van de organisatie) + waarschuwing bij afwijking.
+        zetKanalen(werk.kanalen);
+        toonKanaalWaarschuwing();
         // Beide taalgroepen starten op NL; taal wordt per groep onthouden.
         taal.lang = 'nl'; taal.kort = 'nl';
         setLangBars('lang', 'nl');
@@ -4032,6 +4094,7 @@
         t.afzendertekst = werk.afzendertekst;
         t.briefAfzender = werk.briefAfzender;
         t.kortAfzender = werk.kortAfzender;
+        t.kanalen = werk.kanalen;
         t.briefApart = werk.briefApart;
         t.content = werk.content;
         dTitel.textContent = t.titel;
@@ -4136,9 +4199,14 @@
         const body = resolveAfz(cLang.body);
         const briefBody = resolveAfz((werk && werk.briefApart && cLang.briefBody) ? cLang.briefBody : cLang.body);
         const kort = resolveAfz(cKort.kort);
+        // Alleen de kanalen tonen die voor deze template zijn ingeschakeld.
+        const kanalen = (werk && werk.kanalen) || STANDAARD_KANALEN;
+        const magK = k => kanalen.indexOf(k) >= 0;
+        const blok = (label, inner, testKey, kanaalKey) => magK(kanaalKey) ? kanaalBlok(label, inner, testKey) : '';
+        const wrap = html => html || '<p class="muted-note">Voor deze template zijn er in dit tabblad geen ingeschakelde kanalen.</p>';
         if (groep === 'bbox') {
-          container.innerHTML =
-            kanaalBlok('Berichtenbox (MijnOverheid)',
+          container.innerHTML = wrap(
+            blok('Berichtenbox (MijnOverheid)',
               '<div class="tbp-bbox">' +
                 '<div class="tbp-bbox-header" style="background:' + merk.kleur + '">MijnOverheid · Berichtenbox</div>' +
                 '<div class="tbp-bbox-body">' +
@@ -4147,10 +4215,10 @@
                   (bboxKort ? '<div class="tbp-bbox-kort">' + esc(bboxKort) + '</div>' : '') +
                   '<div class="tbp-md">' + window.mdNaarHtml(bboxBody) + '</div>' +
                 '</div>' +
-              '</div>', 'berichtenbox');
+              '</div>', 'berichtenbox', 'berichtenbox'));
         } else if (groep === 'email') {
-          container.innerHTML =
-            kanaalBlok('E-mail',
+          container.innerHTML = wrap(
+            blok('E-mail',
               '<div class="tbp-mail">' +
                 '<div class="tbp-mail-header" style="background:' + merk.kleur + '">' + esc(merk.naam) + '</div>' +
                 '<div class="tbp-mail-body">' +
@@ -4162,8 +4230,8 @@
                   '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                   (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
                 '</div>' +
-              '</div>', 'email') +
-            kanaalBlok('Brief (post)',
+              '</div>', 'email', 'email') +
+            blok('Brief (post)',
               '<div class="tbp-brief">' +
                 '<div class="tbp-brief-band" style="background:' + merk.kleur + '"></div>' +
                 '<div class="tbp-brief-body">' +
@@ -4172,19 +4240,19 @@
                   '<p class="tbp-brief-onderwerp"><strong>Betreft:</strong> ' + esc(subject) + '</p>' +
                   '<div class="tbp-md">' + window.mdNaarHtml(briefBody) + '</div>' +
                 '</div>' +
-              '</div>', 'post');
+              '</div>', 'post', 'brief'));
         } else {
-          container.innerHTML =
-            kanaalBlok('Push (MijnOverheid-app)',
+          container.innerHTML = wrap(
+            blok('Push (MijnOverheid-app)',
               '<div class="tbp-push">' +
                 '<div class="tbp-push-app"><span class="tbp-push-icon" style="background:' + merk.kleur + '">M</span> MijnOverheid <span class="tbp-push-nu">nu</span></div>' +
                 '<div class="tbp-push-titel">' + esc(subject) + '</div>' +
                 '<div class="tbp-push-tekst">' + esc(kort) + '</div>' +
-              '</div>', 'push') +
-            kanaalBlok('SMS',
-              '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms') +
-            kanaalBlok('WhatsApp / Signal',
-              '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'whats');
+              '</div>', 'push', 'push') +
+            blok('SMS',
+              '<div class="tbp-sms"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-sms">' + esc(kort) + '</div></div>', 'sms', 'sms') +
+            blok('WhatsApp / Signal',
+              '<div class="tbp-whats"><div class="tbp-sms-van">' + esc(kortAfzender) + '</div><div class="tbp-bubble tbp-bubble-whats">' + esc(kort) + '</div></div>', 'whats', 'whatsapp'));
         }
       }
 
