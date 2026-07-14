@@ -5592,13 +5592,13 @@
       root.querySelector('#log-demo').addEventListener('click', () => {
         // Gepseudonimiseerde stuurgroep-adressen van de Rijksoverheid (7 verschillende ontvangers).
         const batch = [
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - r**.b**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - j**.v**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - m**.d**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - e**.k**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - a**.h**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', opmerking: 'Afgeleverd na 2e poging; 1e poging mislukt door tijdelijke storing', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - l**.p**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', opmerking: 'E-mailadres onbekend of ongeldig - controleer het adres', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - t**.m**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', opmerking: 'Tijdelijk geweigerd (postvak vol) - wordt automatisch opnieuw geprobeerd', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - a**.v**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - p**.b**@logius.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - m**.d**@belastingdienst.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - r**.b**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - e**.j**@kvk.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'Afgeleverd na 2e poging; 1e poging mislukt door tijdelijke storing', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - k**.m**@rvo.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'E-mailadres onbekend of ongeldig - controleer het adres', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - s**.k**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'Tijdelijk geweigerd (postvak vol) - wordt automatisch opnieuw geprobeerd', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
         LOG.unshift(...batch);
         if (window.__mozaTellers) { window.__mozaTellers.verzonden += 7; window.__mozaTellers.metErrors += 1; } // 7 verzonden, 1 succesvol met errors
