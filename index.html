@@ -1352,7 +1352,7 @@
                           </div>
                         </div>
 
-                        <nldd-form-field label="Titel">
+                        <nldd-form-field label="Naam template">
                           <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
                         </nldd-form-field>
 
@@ -2393,13 +2393,13 @@
         if (/^```/.test(line)) { const buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; } i++; html += '<pre>' + esc(buf.join('\n')) + '</pre>'; continue; }
         const h = line.match(/^(#{1,3})\s+(.*)$/);
         if (h) { const lvl = { '#': 'h2', '##': 'h3', '###': 'h4' }[h[1]]; html += '<' + lvl + '>' + inline(h[2]) + '</' + lvl + '>'; i++; continue; }
-        if (/^>\s?/.test(line)) { const buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; } html += '<blockquote>' + inline(buf.join('<br>')) + '</blockquote>'; continue; }
+        if (/^>\s?/.test(line)) { const buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; } html += '<blockquote>' + buf.map(inline).join('<br>') + '</blockquote>'; continue; }
         if (/^\s*[-*]\s+/.test(line)) { const buf = []; while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) { buf.push('<li>' + inline(lines[i].replace(/^\s*[-*]\s+/, '')) + '</li>'); i++; } html += '<ul>' + buf.join('') + '</ul>'; continue; }
         if (/^\s*\d+\.\s+/.test(line)) { const buf = []; while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { buf.push('<li>' + inline(lines[i].replace(/^\s*\d+\.\s+/, '')) + '</li>'); i++; } html += '<ol>' + buf.join('') + '</ol>'; continue; }
         if (/^\s*$/.test(line)) { i++; continue; }
         const buf = [line]; i++;
         while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#{1,3}\s|>\s?|\s*[-*]\s|\s*\d+\.\s|```)/.test(lines[i])) { buf.push(lines[i]); i++; }
-        html += '<p>' + inline(buf.join('<br>')) + '</p>';
+        html += '<p>' + buf.map(inline).join('<br>') + '</p>';
       }
       return html || '<p></p>';
     };
@@ -3768,9 +3768,9 @@
         id: 'agenda-stuurgroep', titel: 'Agenda stuurgroep', cat: null, status: 'custom', org: 'bzk', huisstijl: 'bzk',
         afzender: 'stuurgroep@rijksoverheid.nl', afzendertekst: HANDTEKENING.bzk,
         content: {
-          nl: { subject: 'Agenda stuurgroep Digitale Overheid - [datum]',
-                body: 'Beste leden van de stuurgroep,\n\nHierbij de agenda voor de stuurgroep **Digitale Overheid** op [datum] van [begintijd] tot [eindtijd], locatie [locatie].\n\n## Agenda\n\n1. Opening en mededelingen\n2. Vaststellen verslag vorige vergadering\n3. Voortgang programma\'s en projecten\n4. Besluitvorming [onderwerp]\n5. Rondvraag en sluiting\n\n> De vergaderstukken vindt u in de bijlage. Graag tot dan.\n\nMet vriendelijke groet,\n[Naam]',
-                kort: 'Agenda stuurgroep Digitale Overheid op [datum], [begintijd]. De stukken staan in de bijlage.' },
+          nl: { subject: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk - ((vergaderdatum))',
+                body: 'Beste ((naam)),\n\nHierbij nodigen wij u uit voor de vergadering van de Stuurgroep MijnOverheid Zakelijk op ((vergaderdatum)).\n\nDe agenda en de stukken vindt u in de werkomgeving van het programma.\n\nMet vriendelijke groet,\nProgramma MijnOverheid Zakelijk',
+                kort: 'Uitnodiging voor de vergadering van de Stuurgroep MijnOverheid Zakelijk op ((vergaderdatum)). De stukken staan in de werkomgeving van het programma.' },
           en: { subject: 'Agenda steering group Digital Government - [datum]',
                 body: 'Dear members of the steering group,\n\nPlease find the agenda for the steering group Digital Government on [datum] from [begintijd] to [eindtijd], location [locatie].\n\nAgenda:\n1. Opening and announcements\n2. Approval of the previous minutes\n3. Progress of programmes and projects\n4. Decision-making [onderwerp]\n5. Any other business and closing\n\nThe documents are attached. See you then.\n\nKind regards,\n[Naam]',
                 kort: 'Steering group Digital Government on [datum], [begintijd]. Documents attached.' },
