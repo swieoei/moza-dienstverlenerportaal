@@ -103,6 +103,9 @@
     .lg-kind-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
     .lg-kind-dot--afgeleverd { background: #2a8a4a; }
     .lg-kind-dot--niet { background: #a3120a; }
+    .lg-kind-dot--voltooid { background: #2a8a4a; }
+    .lg-kind-dot--bezig { background: #d97706; }
+    .lg-kind-dot--todo { background: #6a7180; }
     .lg-kind-dot--stap { background: #6a7180; }
     .log-rij-detail .lg-bsn-form { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
     .log-periode-rij { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
@@ -1399,7 +1402,7 @@
                              (custom) template aan te passen. Afwijken geeft een waarschuwing. -->
                         <nldd-form-field>
                           <div class="lt-kop"><span class="lt-label">Kanalen</span></div>
-                          <p class="muted-note">Kies welke kanalen deze template gebruikt. Standaard volgt de template de kanalen uit uw organisatie-instellingen.</p>
+                          <p class="muted-note">Kies welke kanalen deze template gebruikt. Standaard volgt de template de kanalen uit uw <nldd-link id="tb-kanalen-instellingen" href="#" text="organisatie-instellingen"></nldd-link>.</p>
                           <div class="log-checks" id="tb-d-kanalen">
                             <div class="log-check" data-kanaal="email"><nldd-checkbox accessible-label="E-mail"></nldd-checkbox><span>E-mail</span></div>
                             <div class="log-check" data-kanaal="push"><nldd-checkbox accessible-label="Push"></nldd-checkbox><span>Push</span></div>
@@ -3012,6 +3015,11 @@
       // Link in de template-editor: standaard afzender per kanaal aanpassen.
       const tplLink = document.getElementById('tb-afz-instellingen');
       if (tplLink) tplLink.addEventListener('click', e => { e.preventDefault(); window.__mozaInstellingen.openAfzender(); });
+
+      // Link in de template-editor ('organisatie-instellingen') naar de notificatie-instellingen,
+      // waar de standaardkanalen worden ingesteld.
+      const tplKanalenLink = document.getElementById('tb-kanalen-instellingen');
+      if (tplKanalenLink) tplKanalenLink.addEventListener('click', e => { e.preventDefault(); showView('notificatie-instellingen', 'Notificatie-instellingen'); });
     })();
 
     // ====================== Berichtenmodule ======================
@@ -3746,16 +3754,16 @@
         content: {
           nl: { subject: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk - ((vergaderdatum))',
                 body: 'Beste ((naam)),\n\nHierbij nodigen wij u uit voor de vergadering van de Stuurgroep MijnOverheid Zakelijk op ((vergaderdatum)).\n\nDe agenda en de stukken vindt u in de werkomgeving van het programma.\n\nMet vriendelijke groet,\nProgramma MijnOverheid Zakelijk',
-                kort: 'Uitnodiging voor de vergadering van de Stuurgroep MijnOverheid Zakelijk op ((vergaderdatum)). De stukken staan in de werkomgeving van het programma.' },
+                kort: '' },
           en: { subject: 'Invitation to the MijnOverheid Zakelijk Steering Committee meeting - ((vergaderdatum))',
                 body: 'Dear ((naam)),\n\nWe would like to invite you to the meeting of the MijnOverheid Zakelijk Steering Committee on ((vergaderdatum)).\n\nYou can find the agenda and documents in the programme workspace.\n\nKind regards,\nProgramme MijnOverheid Zakelijk',
-                kort: 'Invitation to the MijnOverheid Zakelijk Steering Committee meeting on ((vergaderdatum)). The documents are in the programme workspace.' },
+                kort: '' },
           de: { subject: 'Einladung zur Sitzung des Lenkungsausschusses MijnOverheid Zakelijk - ((vergaderdatum))',
                 body: 'Guten Tag ((naam)),\n\nhiermit laden wir Sie zur Sitzung des Lenkungsausschusses MijnOverheid Zakelijk am ((vergaderdatum)) ein.\n\nDie Tagesordnung und die Unterlagen finden Sie in der Arbeitsumgebung des Programms.\n\nMit freundlichen Grüßen,\nProgramm MijnOverheid Zakelijk',
-                kort: 'Einladung zur Sitzung des Lenkungsausschusses MijnOverheid Zakelijk am ((vergaderdatum)). Die Unterlagen finden Sie in der Arbeitsumgebung des Programms.' },
+                kort: '' },
           fr: { subject: 'Invitation à la réunion du comité de pilotage MijnOverheid Zakelijk - ((vergaderdatum))',
                 body: 'Bonjour ((naam)),\n\nNous avons le plaisir de vous inviter à la réunion du comité de pilotage MijnOverheid Zakelijk le ((vergaderdatum)).\n\nVous trouverez l\'ordre du jour et les documents dans l\'espace de travail du programme.\n\nCordialement,\nProgramme MijnOverheid Zakelijk',
-                kort: 'Réunion du comité de pilotage MijnOverheid Zakelijk le ((vergaderdatum)). Les documents se trouvent dans l\'espace de travail du programme.' },
+                kort: '' },
         },
       });
 
@@ -5541,8 +5549,9 @@
         apikey: { color: 'neutral', label: 'API key' },
       };
       // Vaste stappenreeks voor contactherstel (parent-child onder een 'E-mailadres onbekend of ongeldig').
-      const HERSTEL_STAPPEN = ['Contactherstel-brief geïnitieerd', 'Contactherstel-brieven geprint', 'Brieven klaar voor verzending'];
-      const herstelKinderen = (aantal) => HERSTEL_STAPPEN.slice(0, aantal).map(label => ({ label: label, uitkomst: 'stap' }));
+      const HERSTEL_STAPPEN = ['Contactherstel-brief geïnitieerd', 'Contactherstel-brieven geprint', 'Brieven klaar voor verzending', 'Contactherstel-brieven verstuurd', 'Correct e-mailadres ontvangen', 'Contactherstel afgerond'];
+      // voltooid = aantal stappen dat is afgerond (met een vink); de overige stappen staan nog open.
+      const herstelKinderen = (voltooid) => HERSTEL_STAPPEN.map((label, i) => ({ label: label, uitkomst: i < voltooid ? 'voltooid' : (i === voltooid ? 'bezig' : 'todo') }));
 
       let teller = 0;
       const LOG = [
@@ -5606,9 +5615,16 @@
         tr.className = 'log-kind';
         tr.dataset.parent = String(parentId);
         tr.hidden = true;
-        const afg = kind.uitkomst === 'afgeleverd';
+        // Statuslabel per uitkomst: kanalen tonen wel/niet afgeleverd, processtappen
+        // voltooid (groen), in behandeling (oranje) of nog open (grijs, geen label).
+        const TAG = {
+          afgeleverd: { color: 'success', text: 'afgeleverd' },
+          niet: { color: 'critical', text: 'niet afgeleverd' },
+          voltooid: { color: 'success', text: 'voltooid' },
+          bezig: { color: 'warning', text: 'in behandeling' },
+        };
         const isKanaal = kind.uitkomst === 'afgeleverd' || kind.uitkomst === 'niet';
-        const tekst = isKanaal ? (kind.label + (afg ? ' - afgeleverd' : ' - niet afgeleverd')) : kind.label;
+        const tekst = isKanaal ? (kind.label + (kind.uitkomst === 'afgeleverd' ? ' - afgeleverd' : ' - niet afgeleverd')) : kind.label;
         tr.innerHTML =
           '<td class="log-td-tijd"></td>' +
           '<td class="log-td-geb"><div class="lg-kind-geb"><span class="lg-kind-dot lg-kind-dot--' + kind.uitkomst + '"></span><span class="lg-kind-label"></span></div></td>' +
@@ -5616,10 +5632,8 @@
           '<td class="log-td-actie"></td>';
         const lab = tr.querySelector('.lg-kind-label');
         lab.textContent = tekst; lab.title = tekst;
-        if (isKanaal) {
-          tr.querySelector('.log-td-status').innerHTML =
-            '<nldd-tag color="' + (afg ? 'success' : 'critical') + '" text="' + (afg ? 'afgeleverd' : 'niet afgeleverd') + '"></nldd-tag>';
-        }
+        const tag = TAG[kind.uitkomst];
+        if (tag) tr.querySelector('.log-td-status').innerHTML = '<nldd-tag color="' + tag.color + '" text="' + tag.text + '"></nldd-tag>';
         return tr;
       }
 
