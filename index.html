@@ -491,6 +491,11 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="chart-x-y-axis-line"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Analytics en rapportages"></nldd-text-cell>
                 </nldd-list-item>
+                <nldd-list-item button data-view="notificatie-instellingen" data-title="Notificatie-instellingen" data-parent="notificatiedienst" hidden>
+                  <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
+                  <nldd-icon-cell slot="start"><nldd-icon name="gear"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Notificatie-instellingen"></nldd-text-cell>
+                </nldd-list-item>
 
                 <nldd-list-item button data-view="audit" data-title="Audit en logboek">
                   <nldd-icon-cell slot="start"><nldd-icon name="check-list"></nldd-icon></nldd-icon-cell>
@@ -910,6 +915,15 @@
                         <nldd-title size="5"><h3>Analytics en rapportages</h3></nldd-title>
                         <nldd-rich-text><p>Volg de trend over tijd en genereer rapportages over verzendingen, afleverpercentages en storingen.</p></nldd-rich-text>
                         <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar analytics en rapportages" data-nav-view="rapportage-notificatiedienst" data-nav-title="Analytics en rapportages"></nldd-button></div>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <!-- Notificatie-instellingen -->
+                    <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="notificatie-instellingen" data-nav-title="Notificatie-instellingen" aria-label="Naar Notificatie-instellingen">
+                      <nldd-container padding="16" gap="12">
+                        <nldd-title size="5"><h3>Notificatie-instellingen</h3></nldd-title>
+                        <nldd-rich-text><p>Stel de kanalen en de standaard afzender per kanaal in voor de notificatiedienst.</p></nldd-rich-text>
+                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar notificatie-instellingen" data-nav-view="notificatie-instellingen" data-nav-title="Notificatie-instellingen"></nldd-button></div>
                       </nldd-container>
                     </nldd-card>
                   </div>
@@ -1944,8 +1958,65 @@
                       </nldd-container>
                     </nldd-card>
 
-                    <nldd-title size="5"><h3>Notificatie-instellingen</h3></nldd-title>
-                    <p class="muted-note">De standaard afzender per kanaal wordt gebruikt voor notificaties, tenzij een template een eigen afzender heeft.</p>
+                    <div class="row-actions">
+                      <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
+                      <nldd-button variant="secondary" text="Annuleren"></nldd-button>
+                    </div>
+                  </div>
+
+                  <!-- ===== Tab: Mijn profiel ===== -->
+                  <div class="stack" data-inst-panel="profiel" hidden>
+                    <nldd-title size="5"><h3>Persoonsgegevens</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="Naam">
+                          <nldd-text-field id="pf-naam"></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="E-mailadres">
+                          <nldd-text-field id="pf-email"></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Rol">
+                          <nldd-text-field id="pf-rol" readonly></nldd-text-field>
+                        </nldd-form-field>
+                        <nldd-form-field label="Voorkeurstaal">
+                          <nldd-dropdown>
+                            <select id="pf-taal" aria-label="Voorkeurstaal">
+                              <option value="nl" selected>Nederlands</option>
+                              <option value="en">Engels</option>
+                            </select>
+                          </nldd-dropdown>
+                        </nldd-form-field>
+                      </nldd-container>
+                    </nldd-card>
+
+                    <nldd-title size="5"><h3>Mijn meldingen</h3></nldd-title>
+                    <nldd-card>
+                      <nldd-container padding="16" gap="12">
+                        <nldd-form-field label="E-mail bij mislukte notificaties die actie nodig hebben">
+                          <nldd-switch checked></nldd-switch>
+                        </nldd-form-field>
+                        <nldd-form-field label="Wekelijkse samenvatting per e-mail">
+                          <nldd-switch></nldd-switch>
+                        </nldd-form-field>
+                        <div class="row-actions">
+                          <nldd-button id="inst-profiel-opslaan" variant="primary" text="Opslaan"></nldd-button>
+                          <nldd-button variant="secondary" text="Annuleren"></nldd-button>
+                        </div>
+                      </nldd-container>
+                    </nldd-card>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ====================== NOTIFICATIE-INSTELLINGEN (notificatiedienst) ====================== -->
+              <section class="view" data-view="notificatie-instellingen">
+                <div class="stack">
+                  <div class="between">
+                    <nldd-title size="4"><h2>Notificatiedienst</h2></nldd-title>
+                    <nldd-tag color="accent" text="demo"></nldd-tag>
+                  </div>
+                  <nldd-banner id="notif-inst-melding" variant="success" text="" hidden></nldd-banner>
+                  <p class="muted-note">De standaard afzender per kanaal wordt gebruikt voor notificaties, tenzij een template een eigen afzender heeft.</p>
                     <nldd-card>
                       <nldd-container padding="16" gap="0">
                         <div id="inst-notif">
@@ -2053,53 +2124,9 @@
                         </div>
                       </nldd-container>
                     </nldd-card>
-
-                    <div class="row-actions">
-                      <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
-                      <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                    </div>
-                  </div>
-
-                  <!-- ===== Tab: Mijn profiel ===== -->
-                  <div class="stack" data-inst-panel="profiel" hidden>
-                    <nldd-title size="5"><h3>Persoonsgegevens</h3></nldd-title>
-                    <nldd-card>
-                      <nldd-container padding="16" gap="12">
-                        <nldd-form-field label="Naam">
-                          <nldd-text-field id="pf-naam"></nldd-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field label="E-mailadres">
-                          <nldd-text-field id="pf-email"></nldd-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field label="Rol">
-                          <nldd-text-field id="pf-rol" readonly></nldd-text-field>
-                        </nldd-form-field>
-                        <nldd-form-field label="Voorkeurstaal">
-                          <nldd-dropdown>
-                            <select id="pf-taal" aria-label="Voorkeurstaal">
-                              <option value="nl" selected>Nederlands</option>
-                              <option value="en">Engels</option>
-                            </select>
-                          </nldd-dropdown>
-                        </nldd-form-field>
-                      </nldd-container>
-                    </nldd-card>
-
-                    <nldd-title size="5"><h3>Mijn meldingen</h3></nldd-title>
-                    <nldd-card>
-                      <nldd-container padding="16" gap="12">
-                        <nldd-form-field label="E-mail bij mislukte notificaties die actie nodig hebben">
-                          <nldd-switch checked></nldd-switch>
-                        </nldd-form-field>
-                        <nldd-form-field label="Wekelijkse samenvatting per e-mail">
-                          <nldd-switch></nldd-switch>
-                        </nldd-form-field>
-                        <div class="row-actions">
-                          <nldd-button id="inst-profiel-opslaan" variant="primary" text="Opslaan"></nldd-button>
-                          <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                        </div>
-                      </nldd-container>
-                    </nldd-card>
+                  <div class="row-actions">
+                    <nldd-button id="notif-inst-opslaan" variant="primary" text="Opslaan"></nldd-button>
+                    <nldd-button variant="secondary" text="Annuleren"></nldd-button>
                   </div>
                 </div>
               </section>
@@ -2523,8 +2550,8 @@
       if (MOZA_USER.rol && MOZA_USER.rol !== 'organisatiebeheerder') {
         const TOEGANG = {
           dienstbeheerder: {
-            notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'analytics'],
-            profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'logboek-profieldienst', 'apikeys-profieldienst', 'rapportage-profieldienst', 'analytics'],
+            notificatiedienst: ['dashboard', 'notificatiedienst', 'berichten', 'templates', 'logboek', 'apikeys-notificatiedienst', 'rapportage-notificatiedienst', 'notificatie-instellingen'],
+            profieldienst: ['dashboard', 'profieldienst', 'kanaalvoorkeur', 'logboek-profieldienst', 'apikeys-profieldienst', 'rapportage-profieldienst'],
           },
           keyeigenaar: {
             notificatiedienst: ['dashboard', 'notificatiedienst', 'apikeys-notificatiedienst', 'logboek'],
@@ -2865,7 +2892,11 @@
       const tabs = root.querySelector('#inst-tabs');
       const panels = root.querySelectorAll('[data-inst-panel]');
       const melding = root.querySelector('#inst-melding');
-      const notif = root.querySelector('#inst-notif');
+      // De notificatie-instellingen zijn verhuisd naar een eigen view onder de notificatiedienst.
+      const notifRoot = document.querySelector('section[data-view="notificatie-instellingen"]');
+      const notif = notifRoot ? notifRoot.querySelector('#inst-notif') : null;
+      const notifMelding = notifRoot ? notifRoot.querySelector('#notif-inst-melding') : null;
+      function meldNotif(v, t) { if (!notifMelding) return; notifMelding.setAttribute('variant', v); notifMelding.setAttribute('text', t); notifMelding.removeAttribute('hidden'); }
 
       function toonTab(name) {
         panels.forEach(p => p.toggleAttribute('hidden', p.dataset.instPanel !== name));
@@ -2901,30 +2932,35 @@
           det.remove();
           // Gedeelde afzender (Sms): ook doorvoeren naar Signal en push.
           if (rij.dataset.sharedAfz && nw[0]) {
-            root.querySelectorAll('.js-afz-whats, .js-afz-push').forEach(el => el.textContent = nw[0]);
-            meld('success', 'Standaard afzender bijgewerkt naar "' + nw[0] + '" voor Sms, Signal en push. (demo)');
+            notifRoot.querySelectorAll('.js-afz-whats, .js-afz-push').forEach(el => el.textContent = nw[0]);
+            meldNotif('success', 'Standaard afzender bijgewerkt naar "' + nw[0] + '" voor Sms, Signal en push. (demo)');
             return;
           }
-          meld('success', 'Standaard afzender bijgewerkt: ' + nw.filter(Boolean).join(' · ') + '. (demo)');
+          meldNotif('success', 'Standaard afzender bijgewerkt: ' + nw.filter(Boolean).join(' · ') + '. (demo)');
         });
       }
 
-      // Acties in de instellingenlijst: afzender bewerken of demo-melding bij Wijzigen/Beheren.
-      notif.addEventListener('click', e => {
-        const link = e.target.closest('.inst-actie'); if (!link) return; e.preventDefault();
-        const rij = link.closest('.inst-rij'); if (!rij) return;
-        const label = rij.querySelector('.inst-rij-label').textContent;
-        if (rij.dataset.inst === 'edit') openEdit(rij);
-        else meld('success', '"' + label + '" aanpassen. (demo)');
-      });
+      if (notif) {
+        // Acties in de instellingenlijst: afzender bewerken of demo-melding bij Wijzigen/Beheren.
+        notif.addEventListener('click', e => {
+          const link = e.target.closest('.inst-actie'); if (!link) return; e.preventDefault();
+          const rij = link.closest('.inst-rij'); if (!rij) return;
+          const label = rij.querySelector('.inst-rij-label').textContent;
+          if (rij.dataset.inst === 'edit') openEdit(rij);
+          else meldNotif('success', '"' + label + '" aanpassen. (demo)');
+        });
 
-      // Aan/uit-instellingen zijn nu toggles (nldd-switch); toon een korte bevestiging.
-      notif.addEventListener('change', e => {
-        const sw = e.target.closest('nldd-switch'); if (!sw) return;
-        const rij = sw.closest('.inst-rij'); if (!rij) return;
-        const label = rij.querySelector('.inst-rij-label').textContent;
-        meld('success', '"' + label + '" ' + (sw.checked ? 'aangezet' : 'uitgezet') + '. (demo)');
-      });
+        // Aan/uit-instellingen zijn nu toggles (nldd-switch); toon een korte bevestiging.
+        notif.addEventListener('change', e => {
+          const sw = e.target.closest('nldd-switch'); if (!sw) return;
+          const rij = sw.closest('.inst-rij'); if (!rij) return;
+          const label = rij.querySelector('.inst-rij-label').textContent;
+          meldNotif('success', '"' + label + '" ' + (sw.checked ? 'aangezet' : 'uitgezet') + '. (demo)');
+        });
+
+        const notifOpslaan = notifRoot.querySelector('#notif-inst-opslaan');
+        if (notifOpslaan) notifOpslaan.addEventListener('click', () => meldNotif('success', 'Notificatie-instellingen opgeslagen. (demo)'));
+      }
 
       const orgOpslaan = root.querySelector('#inst-org-opslaan');
       if (orgOpslaan) orgOpslaan.addEventListener('click', () => meld('success', 'Organisatie-instellingen opgeslagen. (demo)'));
@@ -2937,8 +2973,8 @@
       window.__mozaInstellingen = {
         open(tab) { showView('organisatie', 'Instellingen'); toonTab(tab || 'org'); },
         openAfzender() {
-          showView('organisatie', 'Instellingen'); toonTab('org');
-          const groep = root.querySelector('#inst-groep-email');
+          showView('notificatie-instellingen', 'Notificatie-instellingen');
+          const groep = notifRoot && notifRoot.querySelector('#inst-groep-email');
           if (groep) {
             groep.scrollIntoView({ behavior: 'smooth', block: 'center' });
             groep.classList.remove('inst-highlight'); void groep.offsetWidth; groep.classList.add('inst-highlight');
