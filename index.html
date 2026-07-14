@@ -1952,7 +1952,6 @@
               <!-- ====================== INSTELLINGEN ORGANISATIE ====================== -->
               <section class="view" data-view="organisatie">
                 <div class="stack">
-                  <nldd-title size="4"><h2>Instellingen</h2></nldd-title>
                   <nldd-tab-bar id="inst-tabs" accessible-label="Instellingen">
                     <nldd-tab-bar-item selected text="Organisatie" icon="person-badge-gear" data-panel="org"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Mijn profiel" icon="person" data-panel="profiel"></nldd-tab-bar-item>
@@ -1992,16 +1991,6 @@
                           </nldd-dropdown>
                         </nldd-form-field>
                         <p class="muted-note">Hoelang de logboekgegevens (verzendingen, afleverstatus en contactherstel per gebeurtenis) bewaard blijven voordat ze automatisch worden verwijderd. Standaard 7 dagen. De audit trail staat hier los van: die wordt altijd 10 jaar bewaard en is niet aanpasbaar.</p>
-                      </nldd-container>
-                    </nldd-card>
-
-                    <nldd-title size="5"><h3>Analyse</h3></nldd-title>
-                    <nldd-card>
-                      <nldd-container padding="16" gap="12">
-                        <nldd-rich-text><p>Open de verfijnde analyse om variabelen verder uit te splitsen en te filteren. Deze pagina staat niet in het menu.</p></nldd-rich-text>
-                        <div class="inline">
-                          <nldd-button id="inst-verfijnde-analyse" variant="secondary" start-icon="chart-x-y-axis-line" text="Verfijnde analyse openen"></nldd-button>
-                        </div>
                       </nldd-container>
                     </nldd-card>
 
@@ -3086,12 +3075,6 @@
           }
         },
       };
-
-      // Verfijnde analyse openen vanuit de organisatie-instellingen (geen menu-item).
-      const vfaKnop = root.querySelector('#inst-verfijnde-analyse');
-      if (vfaKnop) vfaKnop.addEventListener('click', () => {
-        if (window.__mozaVerfijnd) window.__mozaVerfijnd.open({ origin: { view: 'organisatie', title: 'Instellingen' } });
-      });
 
       // Link in de template-editor: standaard afzender per kanaal aanpassen.
       const tplLink = document.getElementById('tb-afz-instellingen');
