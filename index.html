@@ -1388,11 +1388,14 @@
                               <nldd-tab-bar-item text="DE" data-tl="de"></nldd-tab-bar-item>
                               <nldd-tab-bar-item text="FR" data-tl="fr"></nldd-tab-bar-item>
                             </nldd-tab-bar>
-                            <nldd-form-field label="Korte tekst (preheader e-mail)">
-                              <nldd-multi-line-text-field id="tb-d-email-kort" rows="2" readonly></nldd-multi-line-text-field>
-                            </nldd-form-field>
                             <nldd-form-field label="Lange tekst">
                               <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst e-mail"></div></div>
+                            </nldd-form-field>
+                            <nldd-form-field label="Handtekening e-mail">
+                              <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
+                            </nldd-form-field>
+                            <nldd-form-field label="Verzonden vanuit e-mailadres">
+                              <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
                             </nldd-form-field>
                             <div class="lt-kop">
                               <span class="lt-label">Brief (post)</span>
@@ -1403,12 +1406,6 @@
                               <p class="lt-sublabel">Aparte tekst brief (post)</p>
                               <div class="rte" id="tb-d-brief-wrap"><div class="rte-area" id="tb-d-body-brief" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
                             </div>
-                            <nldd-form-field label="Handtekening e-mail">
-                              <nldd-multi-line-text-field id="tb-d-afzender" rows="4" readonly></nldd-multi-line-text-field>
-                            </nldd-form-field>
-                            <nldd-form-field label="Verzonden vanuit e-mailadres">
-                              <nldd-text-field id="tb-d-afz" readonly></nldd-text-field>
-                            </nldd-form-field>
                             <nldd-form-field label="Afzender brief (post)">
                               <nldd-multi-line-text-field id="tb-d-brief-afz" rows="3" readonly></nldd-multi-line-text-field>
                             </nldd-form-field>
@@ -3744,7 +3741,7 @@
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const f = FRAME[l];
           const lange = maakBody(f, spec.reden[l], spec.actie[l]);
-          content[l] = { subject: f.subj(spec.desc[l]), bboxKort: spec.reden[l], bboxBody: lange, emailKort: spec.reden[l], body: lange, kort: f.kort(spec.desc[l]) };
+          content[l] = { subject: f.subj(spec.desc[l]), bboxKort: spec.reden[l], bboxBody: lange, body: lange, kort: f.kort(spec.desc[l]) };
         });
         return content;
       }
@@ -3781,7 +3778,6 @@
         subj: root.querySelector('#tb-d-subj'),
         bboxKort: root.querySelector('#tb-d-bbox-kort'),
         bboxBody: root.querySelector('#tb-d-bbox-body'),
-        emailKort: root.querySelector('#tb-d-email-kort'),
         body: root.querySelector('#tb-d-body'),
         bodyBrief: root.querySelector('#tb-d-body-brief'),
         briefAfz: root.querySelector('#tb-d-brief-afz'),
@@ -3893,7 +3889,6 @@
         velden.subj.value = c.subject || '';
         if (velden.bboxKort) velden.bboxKort.value = c.bboxKort || '';
         bboxBodySet(c.bboxBody || c.body || '');
-        if (velden.emailKort) velden.emailKort.value = c.emailKort || c.bboxKort || '';
         bodySet(c.body || '');
         briefSet(c.briefBody || c.body || '');
         taal.lang = lang;
@@ -3914,7 +3909,6 @@
         c.subject = velden.subj.value;
         if (velden.bboxKort) c.bboxKort = velden.bboxKort.value;
         c.bboxBody = bboxBodyGet();
-        if (velden.emailKort) c.emailKort = velden.emailKort.value;
         c.body = bodyGet();
         c.briefBody = apart ? briefGet() : undefined;
       }
@@ -3935,7 +3929,7 @@
       }
       function setBewerken(on) {
         bewerken = on;
-        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.bboxKort, velden.emailKort, velden.kort].forEach(el => {
+        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.bboxKort, velden.kort].forEach(el => {
           if (!el) return;
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
@@ -4126,7 +4120,6 @@
         const subject = resolveAfz(cLang.subject);
         const bboxKort = resolveAfz(cLang.bboxKort);
         const bboxBody = resolveAfz(cLang.bboxBody || cLang.body);
-        const emailKort = resolveAfz(cLang.emailKort);
         const body = resolveAfz(cLang.body);
         const briefBody = resolveAfz((werk && werk.briefApart && cLang.briefBody) ? cLang.briefBody : cLang.body);
         const kort = resolveAfz(cKort.kort);
@@ -4153,7 +4146,6 @@
                     '<div><strong>Aan:</strong> [voorletter(s)] [achternaam]</div>' +
                     '<div><strong>Onderwerp:</strong> ' + esc(subject) + '</div>' +
                   '</div>' +
-                  (emailKort ? '<div class="tbp-bbox-kort">' + esc(emailKort) + '</div>' : '') +
                   '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                   (handtekening ? '<div class="tbp-mail-footer tbp-pre">' + esc(handtekening) + '</div>' : '') +
                 '</div>' +
