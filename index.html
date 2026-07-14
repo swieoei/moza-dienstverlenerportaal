@@ -264,6 +264,9 @@
     .gb-cards { display: flex; flex-direction: column; gap: 10px; }
     .gb-toegang-inline { font-size: 0.85rem; color: #444; }
     .gb-toegang-inline strong { color: inherit; }
+    .gb-kaart--geen { opacity: 0.62; border-inline-start-color: #b0b6bd !important; }
+    .gb-edit { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--context-border-color, #e3e3e3); max-width: 440px; }
+    .gb-edit nldd-dropdown { width: 100%; }
     /* Voorkeurskanaal: prioriteit per kanaal */
     .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
     .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -5184,20 +5187,68 @@
 
       function meld(v, t) { melding.setAttribute('variant', v); melding.setAttribute('text', t); melding.removeAttribute('hidden'); }
 
+      // Knop-helper voor de kaartacties.
+      function knop(variant, icon, text, onClick, destructive) {
+        const b = document.createElement('nldd-button');
+        b.setAttribute('variant', variant);
+        if (icon) b.setAttribute('start-icon', icon);
+        b.setAttribute('text', text);
+        if (destructive) b.setAttribute('destructive', '');
+        b.addEventListener('click', onClick);
+        return b;
+      }
+
+      // Inline rol-bewerkveld binnen een kaart: rol (+ dienst) wijzigen en opslaan.
+      function bouwEdit(u) {
+        const edit = document.createElement('div');
+        edit.className = 'gb-edit';
+        edit.hidden = true;
+        edit.innerHTML =
+          '<nldd-form-field label="Rol"><nldd-dropdown><select class="gbe-rol" aria-label="Rol">' +
+            '<option value="organisatiebeheerder">Organisatiebeheerder</option>' +
+            '<option value="dienstbeheerder">Dienstbeheerder</option>' +
+            '<option value="keyeigenaar">API-key-eigenaar</option>' +
+          '</select></nldd-dropdown></nldd-form-field>' +
+          '<nldd-form-field class="gbe-dienst-field" label="Dienst"><nldd-dropdown><select class="gbe-dienst" aria-label="Dienst">' +
+            '<option value="Notificatiedienst">Notificatiedienst</option>' +
+            '<option value="Profieldienst">Profieldienst</option>' +
+          '</select></nldd-dropdown></nldd-form-field>' +
+          '<div class="row-actions"><nldd-button class="gbe-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="gbe-annuleer" variant="secondary" text="Annuleren"></nldd-button></div>';
+        const rolSel = edit.querySelector('.gbe-rol');
+        const dienstSel = edit.querySelector('.gbe-dienst');
+        const dienstField = edit.querySelector('.gbe-dienst-field');
+        const syncDienst = () => dienstField.toggleAttribute('hidden', rolSel.value === 'organisatiebeheerder');
+        const vul = () => { rolSel.value = u.rol; if (u.dienst) dienstSel.value = u.dienst; syncDienst(); };
+        vul(); customElements.whenDefined('nldd-dropdown').then(vul);
+        rolSel.addEventListener('change', syncDienst);
+        edit.querySelector('.gbe-annuleer').addEventListener('click', () => { edit.hidden = true; });
+        edit.querySelector('.gbe-opslaan').addEventListener('click', () => {
+          u.rol = rolSel.value;
+          if (u.rol === 'organisatiebeheerder') delete u.dienst;
+          else u.dienst = dienstSel.value;
+          if (u.rol === 'keyeigenaar' && !u.key) u.key = 'nmp_demo_nieuw';
+          render();
+          meld('success', 'Rol van ' + u.naam + ' gewijzigd naar ' + ROLLEN[u.rol].label + (u.dienst ? ' voor de ' + u.dienst : '') + '. (demo)');
+        });
+        return edit;
+      }
+
       function kaart(u) {
         const meta = ROLLEN[u.rol] || ROLLEN.dienstbeheerder;
         const jij = (u.email || '').toLowerCase() === (user.email || '').toLowerCase();
+        const actief = u.actief !== false;
         const toeg = (typeof meta.toegang === 'function' ? meta.toegang(u) : meta.toegang) || [];
         const dienst = dienstVan(u);
         const dm = dienst && DIENST[dienst];
         const wrap = document.createElement('div');
         wrap.innerHTML = `
-          <nldd-card class="gb-kaart ${dm ? dm.rand : ''}">
+          <nldd-card class="gb-kaart ${dm ? dm.rand : ''} ${actief ? '' : 'gb-kaart--geen'}">
             <nldd-container padding="12" gap="8">
               <div class="between">
                 <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title>
                 <div class="inline">
                   ${jij ? '<nldd-tag color="success" text="u"></nldd-tag>' : ''}
+                  ${actief ? '' : '<nldd-tag color="critical" text="geen toegang"></nldd-tag>'}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
                 </div>
@@ -5209,12 +5260,27 @@
         const el = wrap.firstElementChild;
         el.querySelector('.gb-naam').textContent = u.naam;
         el.querySelector('.gb-mail').textContent = u.email;
-        el.querySelector('.gb-toeg').textContent = toeg.join(' · ');
+        el.querySelector('.gb-toeg').textContent = actief ? toeg.join(' · ') : 'Toegang ingetrokken - kan momenteel niet inloggen.';
         const acties = el.querySelector('.gb-acties');
-        const rolBtn = document.createElement('nldd-button');
-        rolBtn.setAttribute('variant', 'secondary'); rolBtn.setAttribute('text', 'Rol wijzigen');
-        rolBtn.addEventListener('click', () => meld('success', 'Rol van ' + u.naam + ' wijzigen. (demo)'));
-        acties.appendChild(rolBtn);
+        const container = el.querySelector('nldd-container');
+        const edit = bouwEdit(u);
+
+        if (actief) {
+          acties.appendChild(knop('secondary', 'pencil', 'Rol wijzigen', () => { edit.hidden = !edit.hidden; }));
+          if (!jij) acties.appendChild(knop('secondary', 'lock-closed', 'Toegang intrekken', () => {
+            u.actief = false; render(); meld('warning', 'Toegang van ' + u.naam + ' ingetrokken. (demo)');
+          }));
+        } else {
+          acties.appendChild(knop('primary', 'key', 'Opnieuw toegang geven', () => {
+            u.actief = true; render(); meld('success', u.naam + ' heeft weer toegang. (demo)');
+          }));
+        }
+        if (!jij) acties.appendChild(knop('secondary', 'trash-can', 'Verwijderen', () => {
+          const i = org.users.indexOf(u); if (i >= 0) org.users.splice(i, 1);
+          render(); meld('success', u.naam + ' verwijderd. (demo)');
+        }, true));
+
+        container.appendChild(edit);
         return el;
       }
 
