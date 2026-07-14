@@ -140,7 +140,8 @@
     .tbp-bbox-header { padding: 12px 18px; color: #fff; font-weight: 700; }
     .tbp-bbox-body { padding: 16px 18px; }
     .tbp-bbox-meta { font-size: .85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 10px; margin-bottom: 12px; }
-    .tbp-bbox-onderwerp { font-weight: 700; margin-bottom: 8px; }
+    .tbp-bbox-onderwerp { font-weight: 700; margin-bottom: 4px; }
+    .tbp-bbox-kort { color: #555; font-size: 0.92rem; margin-bottom: 10px; }
     .tbp-bbox-body .tbp-pre { line-height: 1.5; }
     .tbp-mail { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
     .tbp-mail-header { padding: 14px 18px; color: #fff; font-weight: 700; }
@@ -1364,6 +1365,9 @@
                             <nldd-form-field label="Onderwerp">
                               <nldd-text-field id="tb-d-subj" readonly></nldd-text-field>
                             </nldd-form-field>
+                            <nldd-form-field label="Korte tekst (samenvatting in het Berichtenbox-overzicht)">
+                              <nldd-multi-line-text-field id="tb-d-bbox-kort" rows="2" readonly></nldd-multi-line-text-field>
+                            </nldd-form-field>
                             <nldd-form-field label="Lange tekst">
                               <div class="rte"><div class="rte-area" id="tb-d-body" contenteditable="false" role="textbox" aria-multiline="true" aria-label="Lange tekst"></div></div>
                             </nldd-form-field>
@@ -2038,6 +2042,11 @@
                           <!-- Brief (post): valt onder e-mail (zelfde lange tekst als e-mail) -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Brief (post)-instellingen</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Brief (post) gebruiken voor</div>
+                              <div class="inst-rij-waarde"><span class="inst-sub">Kies of de brief alleen als terugvaloptie bij contactherstel wordt ingezet of voor alle templates beschikbaar is.</span></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="Brief (post) gebruiken voor"><option value="contactherstel" selected>Alleen contactherstel</option><option value="alle">Alle templates</option></select></nldd-dropdown></div>
+                            </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Afzenderadres">
                               <div class="inst-rij-label">Standaard afzenderadres</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-brief"></span></div>
@@ -2053,6 +2062,11 @@
                           <!-- SMS -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Sms-instellingen</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Dit kanaal gebruiken</div>
+                              <div class="inst-rij-waarde"><span class="inst-sub">Optioneel kanaal.</span></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="Sms-kanaal gebruiken"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
+                            </div>
                             <div class="inst-rij inst-rij--edit" data-inst="edit" data-veld="Standaard afzender" data-shared-afz="1">
                               <div class="inst-rij-label">Standaard afzender</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-sms"></span><span class="inst-sub">Geldt ook voor WhatsApp/Signal en push - hier aanpassen wijzigt de afzender voor alle drie de kanalen.</span></div>
@@ -2074,6 +2088,11 @@
                           <div class="inst-groep">
                             <div class="inst-groep-kop">WhatsApp / Signal-instellingen</div>
                             <div class="inst-rij">
+                              <div class="inst-rij-label">Dit kanaal gebruiken</div>
+                              <div class="inst-rij-waarde"><span class="inst-sub">Optioneel kanaal.</span></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="WhatsApp/Signal-kanaal gebruiken"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
+                            </div>
+                            <div class="inst-rij">
                               <div class="inst-rij-label">Standaard afzender</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-whats"></span><span class="inst-sub">Wordt ingesteld bij Sms-instellingen.</span></div>
                               <div class="inst-rij-actie"></div>
@@ -2088,6 +2107,11 @@
                           <!-- Push -->
                           <div class="inst-groep">
                             <div class="inst-groep-kop">Push (MijnOverheid-app)</div>
+                            <div class="inst-rij">
+                              <div class="inst-rij-label">Dit kanaal gebruiken</div>
+                              <div class="inst-rij-waarde"><span class="inst-sub">Optioneel kanaal.</span></div>
+                              <div class="inst-rij-actie"><nldd-dropdown><select class="inst-keuze" aria-label="Push-kanaal gebruiken"><option value="aan" selected>Aan</option><option value="uit">Uit</option></select></nldd-dropdown></div>
+                            </div>
                             <div class="inst-rij">
                               <div class="inst-rij-label">Standaard afzender</div>
                               <div class="inst-rij-waarde"><span class="inst-waarde js-afz-push"></span><span class="inst-sub">Wordt ingesteld bij Sms-instellingen.</span></div>
@@ -3712,7 +3736,7 @@
         const content = {};
         ['nl', 'en', 'de', 'fr'].forEach(l => {
           const f = FRAME[l];
-          content[l] = { subject: f.subj(spec.desc[l]), body: maakBody(f, spec.reden[l], spec.actie[l]), kort: f.kort(spec.desc[l]) };
+          content[l] = { subject: f.subj(spec.desc[l]), bboxKort: spec.reden[l], body: maakBody(f, spec.reden[l], spec.actie[l]), kort: f.kort(spec.desc[l]) };
         });
         return content;
       }
@@ -3747,6 +3771,7 @@
         afzenderTekst: root.querySelector('#tb-d-afzender'),
         kortAfz: root.querySelector('#tb-d-kort-afz'),
         subj: root.querySelector('#tb-d-subj'),
+        bboxKort: root.querySelector('#tb-d-bbox-kort'),
         body: root.querySelector('#tb-d-body'),
         bodyBrief: root.querySelector('#tb-d-body-brief'),
         briefAfz: root.querySelector('#tb-d-brief-afz'),
@@ -3852,6 +3877,7 @@
       function laadLang(lang) {
         const c = (werk.content && werk.content[lang]) || leeg();
         velden.subj.value = c.subject || '';
+        if (velden.bboxKort) velden.bboxKort.value = c.bboxKort || '';
         bodySet(c.body || '');
         briefSet(c.briefBody || c.body || '');
         taal.lang = lang;
@@ -3870,6 +3896,7 @@
         const apart = !samenAan();
         werk.briefApart = apart;
         c.subject = velden.subj.value;
+        if (velden.bboxKort) c.bboxKort = velden.bboxKort.value;
         c.body = bodyGet();
         c.briefBody = apart ? briefGet() : undefined;
       }
@@ -3890,7 +3917,7 @@
       }
       function setBewerken(on) {
         bewerken = on;
-        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.kort].forEach(el => {
+        [velden.titel, velden.afz, velden.afzenderTekst, velden.briefAfz, velden.kortAfz, velden.subj, velden.bboxKort, velden.kort].forEach(el => {
           if (!el) return;
           if (on) el.removeAttribute('readonly'); else el.setAttribute('readonly', '');
         });
@@ -4080,6 +4107,7 @@
         const naam = eersteRegel(handtekening) || 'MijnOverheid';
         const email = velden.afz.value || '';
         const subject = resolveAfz(cLang.subject);
+        const bboxKort = resolveAfz(cLang.bboxKort);
         const body = resolveAfz(cLang.body);
         const briefBody = resolveAfz((werk && werk.briefApart && cLang.briefBody) ? cLang.briefBody : cLang.body);
         const kort = resolveAfz(cKort.kort);
@@ -4091,6 +4119,7 @@
                 '<div class="tbp-bbox-body">' +
                   '<div class="tbp-bbox-meta"><strong>Afzender:</strong> ' + esc(naam) + '</div>' +
                   '<div class="tbp-bbox-onderwerp">' + esc(subject) + '</div>' +
+                  (bboxKort ? '<div class="tbp-bbox-kort">' + esc(bboxKort) + '</div>' : '') +
                   '<div class="tbp-md">' + window.mdNaarHtml(body) + '</div>' +
                 '</div>' +
               '</div>', 'berichtenbox');
@@ -5467,14 +5496,15 @@
       wireChecks(statusChecks);
 
       root.querySelector('#log-demo').addEventListener('click', () => {
+        // Gepseudonimiseerde stuurgroep-adressen van de Rijksoverheid (7 verschillende ontvangers).
         const batch = [
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Bakkerij De Korenbloem', detail: 'Nieuwe regelgeving 2027 · info@dekorenbloem.nl', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Café De Brug', detail: 'Nieuwe regelgeving 2027 · info@cafedebrug.nl', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Groene Vingers Hoveniers', detail: 'Nieuwe regelgeving 2027 · post@groenevingers.nl', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail verzonden - Transport Van Dijk', detail: 'Nieuwe regelgeving 2027 · planning@vandijktransport.nl', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'errors', titel: 'E-mail verzonden - Brouwer Installatietechniek BV', detail: 'Nieuwe regelgeving 2027 · 1e poging mislukt (tijdelijke storing), 2e verzending geslaagd', opmerking: 'Afgeleverd na 2e poging; 1e poging mislukt door tijdelijke storing', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', actie: 'bsn', huidigBsn: '123456780', titel: 'E-mail mislukt - De Vries Advies', detail: 'Nieuwe regelgeving 2027 · onbekend/onjuist BSN - niet te koppelen aan een profiel', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Meijer Techniek', detail: 'Nieuwe regelgeving 2027 · e-mailadres onbereikbaar (bounce)', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - r**.b**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - j**.v**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - m**.d**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - e**.k**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - a**.h**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', opmerking: 'Afgeleverd na 2e poging; 1e poging mislukt door tijdelijke storing', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - l**.p**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', opmerking: 'E-mailadres onbekend of ongeldig - controleer het adres', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - t**.m**@rijksoverheid.nl', detail: 'Agenda stuurgroep Digitale Overheid', opmerking: 'Tijdelijk geweigerd (postvak vol) - wordt automatisch opnieuw geprobeerd', tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
         LOG.unshift(...batch);
         if (window.__mozaTellers) { window.__mozaTellers.verzonden += 7; window.__mozaTellers.metErrors += 1; } // 7 verzonden, 1 succesvol met errors
