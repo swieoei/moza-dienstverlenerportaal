@@ -50,6 +50,11 @@
     .mp-tile[data-svc] { cursor: pointer; }
     .mp-tile[data-svc]:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
     .mp-tile--on { box-shadow: inset 4px 0 0 #39870c; border-radius: 8px; }
+    /* Binnenkort-tegel: banner over de tegel, inhoud gedimd en niet klikbaar. */
+    .mp-tile-wrap { position: relative; }
+    .mp-binnenkort .mp-tile { opacity: 0.5; pointer-events: none; }
+    .mp-binnenkort-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .mp-binnenkort-band { background: #154273; color: #fff; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; padding: 10px 22px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transform: rotate(-4deg); }
     .svc-status { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; }
     .svc-status--on { color: #39870c; font-weight: 600; }
     .svc-status--off { color: #5a5a5a; }
@@ -523,12 +528,8 @@
                   <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Gebruikersbeheer"></nldd-text-cell>
                 </nldd-list-item>
-                <!-- Organisatie-instellingen ook in de hoofdnavigatie, zodat ze op elk scherm
-                     bereikbaar zijn (het account-menu klapt op smalle schermen in de overflow). -->
-                <nldd-list-item button data-view="organisatie" data-title="Instellingen">
-                  <nldd-icon-cell slot="start"><nldd-icon name="gear"></nldd-icon></nldd-icon-cell>
-                  <nldd-text-cell text="Instellingen"></nldd-text-cell>
-                </nldd-list-item>
+                <!-- Organisatie-instellingen staan alleen in het account-menu rechtsboven
+                     ('Organisatie-instellingen'); geen apart item in de verticale navigatie. -->
                 <!-- Documentatie en ondersteuning: menu-item aanwezig, onderliggende pagina volgt later -->
                 <nldd-list-item button id="nav-documentatie" data-title="Documentatie en ondersteuning">
                   <nldd-icon-cell slot="start"><nldd-icon name="question-mark-circle"></nldd-icon></nldd-icon-cell>
@@ -1581,17 +1582,20 @@
                       <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
                     </nldd-title>
                     <div class="svc-grid">
-                      <!-- Berichtendienst (plek 3 in het dienstenaanbod, nog niet afgenomen) -->
-                      <nldd-card class="mp-tile">
-                        <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>Berichtendienst</h2></nldd-title>
-                          <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
-                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                          <div class="row-actions">
-                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst"></nldd-button>
-                          </div>
-                        </nldd-container>
-                      </nldd-card>
+                      <!-- Berichtendienst (plek 3 in het dienstenaanbod, binnenkort beschikbaar) -->
+                      <div class="mp-tile-wrap mp-binnenkort">
+                        <nldd-card class="mp-tile">
+                          <nldd-container padding="16" gap="12">
+                            <nldd-title size="5"><h2>Berichtendienst</h2></nldd-title>
+                            <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
+                            <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
+                            <div class="row-actions">
+                              <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst"></nldd-button>
+                            </div>
+                          </nldd-container>
+                        </nldd-card>
+                        <div class="mp-binnenkort-overlay"><span class="mp-binnenkort-band">Binnenkort beschikbaar</span></div>
+                      </div>
 
                       <!-- DigiD -->
                       <nldd-card class="mp-tile">
@@ -1871,7 +1875,7 @@
                         <nldd-title size="6"><h3>Nieuwe gebruiker uitnodigen</h3><p slot="subtitle">Zet de gebruiker op en configureer de rol</p></nldd-title>
                         <nldd-form-field label="Naam"><nldd-text-field id="gbf-naam" placeholder="Voor- en achternaam"></nldd-text-field></nldd-form-field>
                         <nldd-form-field label="E-mailadres"><nldd-text-field id="gbf-email" placeholder="naam@organisatie.nl"></nldd-text-field></nldd-form-field>
-                        <nldd-form-field label="Project">
+                        <nldd-form-field id="gbf-project-field" label="Project">
                           <nldd-dropdown>
                             <select id="gbf-project" aria-label="Project"></select>
                           </nldd-dropdown>
@@ -2040,7 +2044,6 @@
                     <nldd-tag color="accent" text="demo"></nldd-tag>
                   </div>
                   <nldd-banner id="notif-inst-melding" variant="success" text="" hidden></nldd-banner>
-                  <p class="muted-note">De standaard afzender per kanaal wordt gebruikt voor notificaties, tenzij een template een eigen afzender heeft.</p>
                     <nldd-card>
                       <nldd-container padding="16" gap="0">
                         <div id="inst-notif">
@@ -5286,13 +5289,13 @@
 
       const ORG = {
         kvk: { naam: 'Kamer van Koophandel', users: [
-          { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder', project: 'betalen' },
+          { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder' },
           { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'incasso' },
           { naam: 'Lin Zhao', email: 'l.zhao@kvk.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service' },
           { naam: 'Deniz Öztürk', email: 'd.ozturk@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs', project: 'incasso' },
         ] },
         bzk: { naam: 'Ministerie van BZK', users: [
-          { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder', project: 'vergaderen' },
+          { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder' },
           { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'betalen' },
           { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service' },
           { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc', project: 'incasso' },
@@ -5376,7 +5379,7 @@
                   ${actief ? '' : '<nldd-tag color="critical" text="geen toegang"></nldd-tag>'}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
-                  ${u.project ? '<span class="dienst-chip dienst-project">Project: ' + u.project + '</span>' : ''}
+                  ${u.rol === 'organisatiebeheerder' ? '<span class="dienst-chip dienst-project">Alle projecten</span>' : (u.project ? '<span class="dienst-chip dienst-project">Project: ' + u.project + '</span>' : '')}
                 </div>
               </div>
               <p class="gb-toegang-inline"><strong>Toegang:</strong> <span class="gb-toeg"></span></p>
@@ -5418,7 +5421,8 @@
         const zichtbaar = org.users.filter(u => {
           if (fr !== 'alle' && u.rol !== fr) return false;
           if (fd !== 'alle' && dienstVan(u) !== fd) return false;
-          if (fp !== 'alle' && u.project !== fp) return false;
+          // Een organisatiebeheerder heeft toegang tot alle projecten en past dus op elk projectfilter.
+          if (fp !== 'alle' && u.rol !== 'organisatiebeheerder' && u.project !== fp) return false;
           return true;
         });
         if (leegP) leegP.toggleAttribute('hidden', zichtbaar.length > 0);
@@ -5432,6 +5436,7 @@
       const form = root.querySelector('#gb-uitnodig-form');
       const fRol = root.querySelector('#gbf-rol');
       const fDienstField = root.querySelector('#gbf-dienst-field');
+      const fProjectField = root.querySelector('#gbf-project-field');
       const fProject = root.querySelector('#gbf-project');
       const fProjectNieuwField = root.querySelector('#gbf-project-nieuw-field');
       const fProjectNieuw = root.querySelector('#gbf-project-nieuw');
@@ -5454,7 +5459,13 @@
       function toonNieuwProject() { if (fProjectNieuwField) fProjectNieuwField.toggleAttribute('hidden', fProject.value !== '__nieuw'); }
       if (fProject) fProject.addEventListener('change', toonNieuwProject);
       toonNieuwProject();
-      function toonDienstVeld() { fDienstField.toggleAttribute('hidden', fRol.value === 'organisatiebeheerder'); }
+      function toonDienstVeld() {
+        const isBeheerder = fRol.value === 'organisatiebeheerder';
+        // Een organisatiebeheerder heeft alle diensten en alle projecten: die velden vervallen.
+        fDienstField.toggleAttribute('hidden', isBeheerder);
+        if (fProjectField) fProjectField.toggleAttribute('hidden', isBeheerder);
+        if (isBeheerder && fProjectNieuwField) fProjectNieuwField.setAttribute('hidden', '');
+      }
       fRol.addEventListener('change', toonDienstVeld);
       toonDienstVeld();
       root.querySelector('#gb-uitnodigen').addEventListener('click', () => { form.toggleAttribute('hidden'); if (!form.hasAttribute('hidden')) root.querySelector('#gbf-naam').focus(); });
@@ -5463,8 +5474,9 @@
         const naam = (root.querySelector('#gbf-naam').value || '').trim() || 'Nieuwe gebruiker';
         const email = (root.querySelector('#gbf-email').value || '').trim() || 'nieuw@' + (org.naam === 'Ministerie van BZK' ? 'rijksoverheid.nl' : 'kvk.nl');
         const rol = fRol.value;
-        // Project: bestaand gekozen, of een nieuw aangemaakt project.
-        let project = fProject ? fProject.value : '';
+        // Project: bestaand gekozen, of een nieuw aangemaakt project. Een organisatiebeheerder
+        // heeft standaard toegang tot alle projecten en krijgt dus geen enkel project toegewezen.
+        let project = (rol === 'organisatiebeheerder') ? '' : (fProject ? fProject.value : '');
         if (project === '__nieuw') project = ((fProjectNieuw && fProjectNieuw.value) || '').trim();
         if (project && PROJECTEN.indexOf(project) < 0) { PROJECTEN.push(project); vulProjecten(); }
         const nieuw = { naam: naam, email: email, rol: rol };
