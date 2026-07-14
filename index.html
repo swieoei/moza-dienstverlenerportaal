@@ -93,6 +93,17 @@
     .log-td-actie { white-space: normal; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.92rem; line-height: 1.35; }
     .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
     .log-rij-detail > td { background: rgba(0,0,0,.03); }
+    /* Parent-child: uitklapbare regel met per-kanaal / per-stap uitkomst. */
+    .log-parent .lg-caret { flex: 0 0 auto; width: 18px; height: 18px; transition: transform .15s ease; color: var(--context-muted-foreground-color, #5a5a5a); }
+    .log-parent[aria-expanded="true"] .lg-caret { transform: rotate(90deg); }
+    .log-parent { cursor: pointer; }
+    .log-kind > td { background: rgba(0,0,0,.025); border-bottom: 1px solid var(--context-border-color, #eee); padding-top: 7px; padding-bottom: 7px; }
+    .log-kind .lg-kind-geb { display: flex; align-items: center; gap: 8px; padding-left: 26px; min-width: 0; }
+    .log-kind .lg-kind-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lg-kind-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
+    .lg-kind-dot--afgeleverd { background: #2a8a4a; }
+    .lg-kind-dot--niet { background: #a3120a; }
+    .lg-kind-dot--stap { background: #6a7180; }
     .log-rij-detail .lg-bsn-form { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
     .log-periode-rij { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .log-periode-rij nldd-dropdown { min-width: 200px; }
@@ -549,7 +560,7 @@
                           <nldd-tag color="success" text="binnen norm"></nldd-tag>
                           <ul class="afl-lijst">
                             <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
-                            <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors</li>
+                            <li>waarvan <strong class="js-afl-err">17</strong> via een alternatief kanaal afgeleverd</li>
                           </ul>
                           <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                         </nldd-container>
@@ -872,7 +883,7 @@
                         <nldd-tag color="success" text="binnen norm"></nldd-tag>
                         <ul class="afl-lijst">
                           <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
-                          <li>waarvan <strong class="js-afl-err">17</strong> succesvol met errors</li>
+                          <li>waarvan <strong class="js-afl-err">17</strong> via een alternatief kanaal afgeleverd</li>
                         </ul>
                         <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
                       </nldd-container>
@@ -1511,8 +1522,6 @@
                           <span class="muted-note">Status:</span>
                           <div class="log-checks" id="log-status-checks">
                             <div class="log-check" data-val="succesvol"><nldd-checkbox accessible-label="Succesvol"></nldd-checkbox><span>Succesvol</span></div>
-                            <div class="log-check" data-val="hersteld"><nldd-checkbox accessible-label="Hersteld"></nldd-checkbox><span>Hersteld</span></div>
-                            <div class="log-check" data-val="errors"><nldd-checkbox accessible-label="Met errors"></nldd-checkbox><span>Met errors</span></div>
                             <div class="log-check" data-val="mislukt"><nldd-checkbox accessible-label="Mislukt"></nldd-checkbox><span>Mislukt</span></div>
                           </div>
                         </div>
@@ -5504,21 +5513,21 @@
 
       const STAT = {
         succesvol: { color: 'success', label: 'succesvol' },
-        hersteld: { color: 'accent', label: 'hersteld' },
-        errors: { color: 'warning', label: 'succesvol met errors' },
         mislukt: { color: 'critical', label: 'mislukt' },
         apikey: { color: 'neutral', label: 'API key' },
       };
+      // Vaste stappenreeks voor contactherstel (parent-child onder een 'E-mailadres onbekend of ongeldig').
+      const HERSTEL_STAPPEN = ['Contactherstel-brief geïnitieerd', 'Contactherstel-brieven geprint', 'Brieven klaar voor verzending'];
+      const herstelKinderen = (aantal) => HERSTEL_STAPPEN.slice(0, aantal).map(label => ({ label: label, uitkomst: 'stap' }));
 
       let teller = 0;
       const LOG = [
         { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'template', titel: 'E-mail mislukt - Fietsenwinkel De Trapper', detail: 'Jaarlijkse opgave Handelsregister · onbekende template in de verzendapplicatie', opmerking: 'Template onbekend. Controleer de ingestelde template in uw verzendapplicatie.', tijd: 'Vandaag 08:15' },
-        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbereikbaar (bounce)', tijd: 'Vandaag 07:50' },
-        { id: ++teller, type: 'notificatie', status: 'hersteld', titel: 'E-mail afgeleverd - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd na contactherstel', opmerking: 'Contactherstel succesvol: e-mailadres hersteld', tijd: 'Vandaag 08:40' },
-        { id: ++teller, type: 'notificatie', status: 'hersteld', titel: 'E-mail afgeleverd - Boekhandel Het Verhaal', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', opmerking: 'BSN-nummer hersteld', tijd: 'Vandaag 08:05' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - Loodgietersbedrijf De Kraan', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via e-mail', opmerking: 'Push notificatie niet aangekomen, e-mail wel', tijd: 'Vandaag 08:38' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - IJssalon Bella', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via push', opmerking: 'SMS en e-mail niet aangekomen, push notificatie wel', tijd: 'Vandaag 08:22' },
-        { id: ++teller, type: 'notificatie', status: 'errors', titel: 'Notificatie afgeleverd - Drukkerij De Pers', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via SMS', opmerking: 'WhatsApp notificatie niet aangekomen, SMS wel', tijd: 'Vandaag 08:12' },
+        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'E-mail mislukt - Schildersbedrijf Kleurrijk', detail: 'Jaarlijkse opgave Handelsregister · e-mailadres onbekend of ongeldig', kinderen: herstelKinderen(2), tijd: 'Vandaag 07:50' },
+        { id: ++teller, type: 'notificatie', status: 'mislukt', actie: 'bsn', titel: 'Notificatie mislukt - Kapsalon Knip & Vorm', detail: 'Jaarlijkse opgave Handelsregister · BSN-nummer niet herkend', kinderen: [{ label: 'Onbekend BSN-nummer gerapporteerd', uitkomst: 'stap' }], tijd: 'Vandaag 08:05' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie afgeleverd - Loodgietersbedrijf De Kraan', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via e-mail', kinderen: [{ label: 'Push', uitkomst: 'niet' }, { label: 'E-mail', uitkomst: 'afgeleverd' }], tijd: 'Vandaag 08:38' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie afgeleverd - IJssalon Bella', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via push', kinderen: [{ label: 'SMS', uitkomst: 'niet' }, { label: 'E-mail', uitkomst: 'niet' }, { label: 'Push', uitkomst: 'afgeleverd' }], tijd: 'Vandaag 08:22' },
+        { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatie afgeleverd - Drukkerij De Pers', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd via SMS', kinderen: [{ label: 'Signal', uitkomst: 'niet' }, { label: 'SMS', uitkomst: 'afgeleverd' }], tijd: 'Vandaag 08:12' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'Notificatiebatch afgeleverd - Jaarlijkse opgave Handelsregister', detail: '1.180 van 1.180 ondernemers afgeleverd', tijd: 'Vandaag 09:05' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Bakkerij De Korenbloem', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:03' },
         { id: ++teller, type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - Café De Brug', detail: 'Jaarlijkse opgave Handelsregister · afgeleverd', tijd: 'Vandaag 09:02' },
@@ -5555,8 +5564,7 @@
         if (item.type === 'notificatie') {
           if (types.indexOf('notificatie') < 0) return false;
           const stats = checkedVals(statusChecks);
-          // Filter op de eigen status: 'Succesvol' toont alleen puur succesvolle berichten,
-          // 'Hersteld' alleen de herstelde (die tonen daarnaast wel beide statustags).
+          // Filter op status: 'Succesvol' (incl. deels via alternatief kanaal) of 'Mislukt'.
           return stats.length === 0 ? true : stats.indexOf(item.status) >= 0;
         }
         return true;
@@ -5565,20 +5573,42 @@
       function icoon(it) {
         if (it.type === 'apikey') return 'key';
         if (it.status === 'mislukt') return 'dismiss';
-        if (it.status === 'errors') return 'arrow-2-counter-clockwise';
         return 'check-mark';
       }
 
-      // Een logboekregel in de tabel. Mislukte notificaties krijgen een actieknop; die
-      // klapt zo nodig een correctie-/herverzendrij onder de regel uit.
+      // Een kindregel onder een parent: per kanaal (afgeleverd/niet) of per processtap.
+      function kindRij(kind, parentId) {
+        const tr = document.createElement('tr');
+        tr.className = 'log-kind';
+        tr.dataset.parent = String(parentId);
+        tr.hidden = true;
+        const afg = kind.uitkomst === 'afgeleverd';
+        const isKanaal = kind.uitkomst === 'afgeleverd' || kind.uitkomst === 'niet';
+        const tekst = isKanaal ? (kind.label + (afg ? ' - afgeleverd' : ' - niet afgeleverd')) : kind.label;
+        tr.innerHTML =
+          '<td class="log-td-tijd"></td>' +
+          '<td class="log-td-geb"><div class="lg-kind-geb"><span class="lg-kind-dot lg-kind-dot--' + kind.uitkomst + '"></span><span class="lg-kind-label"></span></div></td>' +
+          '<td class="log-td-status"></td>' +
+          '<td class="log-td-actie"></td>';
+        const lab = tr.querySelector('.lg-kind-label');
+        lab.textContent = tekst; lab.title = tekst;
+        if (isKanaal) {
+          tr.querySelector('.log-td-status').innerHTML =
+            '<nldd-tag color="' + (afg ? 'success' : 'critical') + '" text="' + (afg ? 'afgeleverd' : 'niet afgeleverd') + '"></nldd-tag>';
+        }
+        return tr;
+      }
+
+      // Een logboekregel in de tabel. Regels met deelresultaten (kinderen) zijn uitklapbaar:
+      // per kanaal (wel/niet afgeleverd) of per processtap van het contactherstel.
       function rij(it) {
-        const st = STAT[it.status] || STAT.apikey;
         const tr = document.createElement('tr');
         tr.className = 'log-rij';
+        const heeftKinderen = Array.isArray(it.kinderen) && it.kinderen.length > 0;
         tr.innerHTML = `
           <td class="log-td-tijd"></td>
           <td class="log-td-geb">
-            <div class="log-geb-titel"><nldd-icon class="lg-icon" size="18"></nldd-icon><span class="lg-titel"></span></div>
+            <div class="log-geb-titel">${heeftKinderen ? '<nldd-icon class="lg-caret" name="caret-right" size="18"></nldd-icon>' : ''}<nldd-icon class="lg-icon" size="18"></nldd-icon><span class="lg-titel"></span></div>
             <div class="log-geb-detail lg-detail"></div>
           </td>
           <td class="log-td-status"><nldd-tag class="lg-status"></nldd-tag></td>
@@ -5589,22 +5619,28 @@
         titelEl.textContent = it.titel; titelEl.title = it.titel;       // volledige tekst via tooltip
         detailEl.textContent = it.detail; detailEl.title = it.detail;   // (titel/detail staan op 1 regel)
         tr.querySelector('.lg-icon').setAttribute('name', icoon(it));
-        // Een hersteld bericht is óók succesvol afgeleverd: toon beide statussen.
         const statusCel = tr.querySelector('.log-td-status');
-        const statuses = it.status === 'hersteld' ? ['succesvol', 'hersteld'] : [it.status];
-        statusCel.innerHTML = '<div class="inline">' + statuses.map(s => {
-          const m = STAT[s] || STAT.apikey;
-          return '<nldd-tag color="' + m.color + '" text="' + m.label + '"></nldd-tag>';
-        }).join('') + '</div>';
+        const m = STAT[it.status] || STAT.apikey;
+        statusCel.innerHTML = '<div class="inline"><nldd-tag color="' + m.color + '" text="' + m.label + '"></nldd-tag></div>';
 
-        // Opmerking i.p.v. actieknop: wat wordt er (automatisch) gedaan / is hersteld.
+        // Opmerking: wat wordt er (automatisch) gedaan, of hoeveel kanalen zijn afgeleverd.
         const opmCel = tr.querySelector('.log-td-actie');
         let opm = '';
         if (it.opmerking) opm = it.opmerking;
         else if (it.status === 'mislukt' && it.actie === 'bsn') opm = 'Correctieverzoek BSN-nummer aangevraagd';
-        else if (it.status === 'mislukt' && it.actie === 'retry') opm = 'E-mailadres incorrect - contactherstel-brief wordt verstuurd om het e-mailadres te corrigeren';
+        else if (it.status === 'mislukt' && it.actie === 'retry') opm = 'Contactherstel-brief wordt verstuurd om het e-mailadres te corrigeren';
+        else if (heeftKinderen && it.kinderen.some(k => k.uitkomst === 'afgeleverd' || k.uitkomst === 'niet')) {
+          const afg = it.kinderen.filter(k => k.uitkomst === 'afgeleverd').length;
+          opm = afg + ' van ' + it.kinderen.length + ' kanalen afgeleverd';
+        }
         if (opm) { opmCel.textContent = opm; opmCel.title = opm; }
         else opmCel.innerHTML = `<span class="log-geen-actie">-</span>`;
+
+        if (heeftKinderen) {
+          tr.classList.add('log-parent');
+          tr.setAttribute('aria-expanded', 'false');
+          tr.dataset.rijId = String(it.id);
+        }
         return tr;
       }
 
@@ -5628,7 +5664,18 @@
             </tr></thead>
             <tbody></tbody>`;
           const tbody = tabel.querySelector('tbody');
-          items.forEach(it => tbody.appendChild(rij(it)));
+          items.forEach(it => {
+            tbody.appendChild(rij(it));
+            if (Array.isArray(it.kinderen)) it.kinderen.forEach(k => tbody.appendChild(kindRij(k, it.id)));
+          });
+          // Uitklappen/inklappen van een parent-regel.
+          tbody.addEventListener('click', e => {
+            const parent = e.target.closest('.log-parent');
+            if (!parent) return;
+            const open = parent.getAttribute('aria-expanded') === 'true';
+            parent.setAttribute('aria-expanded', open ? 'false' : 'true');
+            tbody.querySelectorAll('.log-kind[data-parent="' + parent.dataset.rijId + '"]').forEach(k => { k.hidden = open; });
+          });
           wrap.appendChild(tabel);
           lijst.appendChild(wrap);
         }
@@ -5655,16 +5702,17 @@
         toonMislukt() {
           zetCheck(typeChecks, 'notificatie', true);
           zetCheck(typeChecks, 'apikey', false);
-          ['succesvol', 'errors'].forEach(v => zetCheck(statusChecks, v, false));
+          zetCheck(statusChecks, 'succesvol', false);
           zetCheck(statusChecks, 'mislukt', true);
           setPeriode('vandaag');
           render();
         },
+        // Deelresultaten (kanalen deels afgeleverd) zijn nu 'succesvol' met uitklapbare kanalen.
         toonErrors() {
           zetCheck(typeChecks, 'notificatie', true);
           zetCheck(typeChecks, 'apikey', false);
-          ['succesvol', 'mislukt'].forEach(v => zetCheck(statusChecks, v, false));
-          zetCheck(statusChecks, 'errors', true);
+          zetCheck(statusChecks, 'mislukt', false);
+          zetCheck(statusChecks, 'succesvol', true);
           setPeriode('vandaag');
           render();
         },
@@ -5673,7 +5721,7 @@
         // van vandaag, dus het logboek opent ook op periode = vandaag.
         toonPeriode(p) {
           ['notificatie', 'apikey'].forEach(v => zetCheck(typeChecks, v, false));
-          ['succesvol', 'errors', 'mislukt'].forEach(v => zetCheck(statusChecks, v, false));
+          ['succesvol', 'mislukt'].forEach(v => zetCheck(statusChecks, v, false));
           setPeriode(p || 'vandaag');
           render();
         },
@@ -5706,18 +5754,18 @@
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - p**.b**@logius.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - m**.d**@belastingdienst.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
           { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - r**.b**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'errors', titel: 'E-mail afgeleverd - e**.j**@kvk.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'Afgeleverd na 2e poging; 1e poging mislukt door tijdelijke storing', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - k**.m**@rvo.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'E-mailadres onbekend of ongeldig - controleer het adres', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', titel: 'E-mail mislukt - s**.k**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'Tijdelijk geweigerd (postvak vol) - wordt automatisch opnieuw geprobeerd', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - e**.j**@kvk.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'Afgeleverd na 2e poging (1e poging mislukt door tijdelijke storing)', tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'Notificatie mislukt - k**.m**@rvo.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk · e-mailadres onbekend of ongeldig', kinderen: herstelKinderen(3), tijd: 'Zojuist' },
+          { type: 'notificatie', status: 'mislukt', actie: 'bsn', titel: 'Notificatie mislukt - s**.k**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk · BSN-nummer niet herkend', kinderen: [{ label: 'Onbekend BSN-nummer gerapporteerd', uitkomst: 'stap' }], tijd: 'Zojuist' },
         ].map(b => Object.assign({ id: ++teller }, b));
         LOG.unshift(...batch);
-        if (window.__mozaTellers) { window.__mozaTellers.verzonden += 7; window.__mozaTellers.metErrors += 1; } // 7 verzonden, 1 succesvol met errors
+        if (window.__mozaTellers) { window.__mozaTellers.verzonden += 7; } // 7 verzonden
         // Zet de weergave op Notificaties zodat de batch meteen zichtbaar is.
         const notifCb = typeChecks.querySelector('.log-check[data-val="notificatie"] nldd-checkbox');
         if (notifCb) notifCb.setAttribute('checked', '');
         statusChecks.querySelectorAll('nldd-checkbox').forEach(cb => cb.removeAttribute('checked'));
         render();
-        meld('success', 'Demobatch verstuurd: 7 e-mails - 5 geslaagd (waarvan 1 na een 2e poging) en 2 mislukt. De 2 mislukte vragen om actie.');
+        meld('success', 'Demobatch verstuurd: 7 e-mails - 5 geslaagd (waarvan 1 na een 2e poging) en 2 mislukt (contactherstel en BSN-correctie lopen).');
       });
 
       render();
