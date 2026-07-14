@@ -1578,6 +1578,18 @@
                       <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
                     </nldd-title>
                     <div class="svc-grid">
+                      <!-- Berichtendienst (plek 3 in het dienstenaanbod, nog niet afgenomen) -->
+                      <nldd-card class="mp-tile">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>Berichtendienst</h2></nldd-title>
+                          <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
+                          <div class="row-actions">
+                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst"></nldd-button>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+
                       <!-- DigiD -->
                       <nldd-card class="mp-tile">
                         <nldd-container padding="16" gap="12">
@@ -4459,6 +4471,15 @@
               { label: 'Actuele contactgegevens', waarde: '87%', context: 'Van de bevraagde profielen zijn de contactgegevens minder dan 12 maanden geleden geverifieerd.', tag: { color: 'success', text: 'stabiel' } },
               { label: 'Groei bevragingen', waarde: '+9%', context: '17.100 bevragingen deze maand, tegenover 15.680 in de vorige maand.', tag: { color: 'accent', text: 'vs. vorige maand' } },
             ],
+          },
+        },
+        berichtendienst: {
+          naam: 'Berichtendienst',
+          desc: 'Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.',
+          rvProd: {
+            tech: ['Digikoppeling- of REST-koppelvlak met PKIoverheid-certificaat', 'Berichten conform het geldende berichtenformaat (metadata en bijlagen)', 'Ketentest tegen de acceptatieomgeving van de Berichtenbox afgerond'],
+            proces: ['Aansluitproces bij de beheerorganisatie doorlopen', 'Beheer- en incidentproces ingericht met een contactpunt voor storingen', 'Go-live-moment ingepland met de beheerorganisatie'],
+            business: ['Aansluitovereenkomst ondertekend', 'Verwerkersafspraken en DPIA afgerond', 'Kosten per bericht akkoord'],
           },
         },
         digid: {
