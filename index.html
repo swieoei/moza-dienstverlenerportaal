@@ -73,14 +73,16 @@
     .log-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
     /* Logboek als tabel - opmaak in lijn met de nldd-table van 'Audit en logboek' */
     .log-tabel-wrap { overflow-x: auto; }
-    .log-tabel { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 1rem; table-layout: fixed; }
+    /* min-width groot genoeg dat alle kolommen leesbaar blijven; op smalle schermen scrollt de
+       tabel horizontaal binnen .log-tabel-wrap i.p.v. dat kolommen samenvallen. */
+    .log-tabel { width: 100%; min-width: 660px; border-collapse: collapse; font-size: 1rem; table-layout: fixed; }
     .log-tabel th, .log-tabel td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--context-border-color, #e3e3e3); vertical-align: middle; }
-    .log-tabel thead th { font-weight: 700; white-space: nowrap; }
-    .log-tabel .log-td-tijd, .log-tabel .log-th-tijd { width: 120px; white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
+    .log-tabel thead th { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .log-tabel .log-td-tijd, .log-tabel .log-th-tijd { width: 100px; white-space: nowrap; color: var(--context-muted-foreground-color, #5a5a5a); }
     .log-tabel .log-th-tijd { color: inherit; }
-    .log-tabel .log-td-status, .log-tabel .log-th-status { width: 190px; }
+    .log-tabel .log-td-status, .log-tabel .log-th-status { width: 166px; }
     .log-tabel .log-td-status .inline { display: flex; flex-wrap: wrap; gap: 4px; }
-    .log-tabel .log-td-actie, .log-tabel .log-th-actie { width: 220px; }
+    .log-tabel .log-td-actie, .log-tabel .log-th-actie { width: 168px; }
     .log-tabel .log-td-geb { overflow: hidden; }
     /* Icoon met vaste afmeting: nooit bepalend voor de rijhoogte (de tekst bepaalt die). */
     .log-geb-titel { display: flex; align-items: center; gap: 8px; font-weight: 600; min-width: 0; }
