@@ -5042,11 +5042,15 @@
               svg += `<text x="${x(i)}" y="${bottom + 20}" text-anchor="middle" class="an-xlab">${m}</text>`;
             });
             const endLabels = [];
+            // Dempingsfactor: elke lijn gebruikt maar een deel van de hoogte (gecentreerd),
+            // zodat de maandverschillen visueel dichter bij elkaar liggen en de grafiek rustiger oogt.
+            const AMPLITUDE = 0.55;
+            const pad = ph * (1 - AMPLITUDE) / 2;
             an.series.filter(s => actief[s.key]).forEach(s => {
               const d = s.data.slice(startIdx);
               const mn = Math.min.apply(null, d), mx = Math.max.apply(null, d);
               const rng = (mx - mn) || 1;
-              const y = v => bottom - ph * ((v - mn) / rng);
+              const y = v => (bottom - pad) - (ph - 2 * pad) * ((v - mn) / rng);
               const pts = d.map((v, i) => x(i) + ',' + y(v).toFixed(1)).join(' ');
               svg += `<polyline points="${pts}" fill="none" stroke="${s.kleur}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
               d.forEach((v, i) => { svg += `<circle cx="${x(i)}" cy="${y(v).toFixed(1)}" r="3" fill="${s.kleur}"/>`; });
