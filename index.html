@@ -1726,6 +1726,30 @@
                     <!-- API keys worden beheerd bij de dienst zelf (subpagina "API keys" in het menu) -->
                     <nldd-banner id="dp-keys-verwijzing" variant="neutral" text="" hidden></nldd-banner>
 
+                    <!-- Demo-omschrijving en beperkingen (alleen zichtbaar in demo-fase) -->
+                    <div id="dp-demo" hidden>
+                      <nldd-card>
+                        <nldd-container padding="16" gap="12">
+                          <div class="between">
+                            <nldd-title size="5">
+                              <h3>Over de demo-omgeving</h3>
+                              <p slot="subtitle">Vrijblijvend uitproberen met fictieve gegevens</p>
+                            </nldd-title>
+                            <nldd-tag color="accent" text="demo"></nldd-tag>
+                          </div>
+                          <nldd-rich-text><p id="dp-demo-intro">-</p></nldd-rich-text>
+                          <div>
+                            <div class="lt-label" style="margin-bottom: 6px;">Wat de demo wel en niet doet</div>
+                            <nldd-rich-text><ul class="svc-caps" id="dp-demo-beperkingen"></ul></nldd-rich-text>
+                          </div>
+                          <nldd-banner variant="neutral" text="Klaar om echt live te gaan? Bekijk hieronder de aansluitvoorwaarden en vraag de productieversie aan."></nldd-banner>
+                          <div class="row-actions">
+                            <nldd-button id="dp-demo-naar-prod" variant="primary" end-icon="arrow-down" text="Naar de productievoorwaarden"></nldd-button>
+                          </div>
+                        </nldd-container>
+                      </nldd-card>
+                    </div>
+
                     <!-- Productieversie aanvragen (alleen zichtbaar in demo-fase) -->
                     <div id="dp-prod" hidden>
                       <nldd-card>
@@ -4561,6 +4585,15 @@
         proces: ['Zelfservice: vandaag starten, geen aansluitproces', 'Support op basis van best effort (geen SLA)'],
         business: ['Kosteloos', 'Geen overeenkomst nodig - de demovoorwaarden gelden'],
       };
+      // Beperkingen van de demo (ter illustratie op de dienstpagina - de functionaliteit
+      // wordt hier NIET daadwerkelijk beperkt; dit beschrijft alleen wat een demo inhoudt).
+      const DEMO_BEPERKINGEN = [
+        'Beperkte doelgroep: alleen uw eigen testgebruikers, niet de echte burgers of ondernemers',
+        'Geen echte persoonsgegevens: uitsluitend fictieve burger- en ondernemersdata',
+        'Sandbox-koppelvlakken: losgekoppeld van de productieregisters en echte kanalen',
+        'Best-effort support, geen SLA of gegarandeerde beschikbaarheid',
+        'Kosteloos en vrijblijvend: geen aansluitovereenkomst nodig',
+      ];
 
       const DIENSTEN = MP_DIENSTEN = {
         notificatiedienst: {
@@ -4754,6 +4787,16 @@
         const verwijzing = root.querySelector('#dp-keys-verwijzing');
         verwijzing.setAttribute('text', 'De API-keys van deze dienst beheert u via het menu: ' + dienst.naam + ' > API keys.');
         verwijzing.removeAttribute('hidden');
+        // Demo-omschrijving en beperkingen (alleen ter illustratie; beperkt de dienst niet echt).
+        const demoBlok = root.querySelector('#dp-demo');
+        if (dienst.status === 'demo') {
+          root.querySelector('#dp-demo-intro').textContent =
+            'U gebruikt ' + dienst.naam + ' nu in de demo-omgeving. Zo test u de dienst vrijblijvend en end-to-end, zonder aansluitproces en zonder risico voor echte gebruikers. De demo laat zien hoe de dienst werkt en is niet bedoeld voor productiegebruik.';
+          fillList('dp-demo-beperkingen', dienst.demoBeperkingen || DEMO_BEPERKINGEN);
+          demoBlok.removeAttribute('hidden');
+        } else {
+          demoBlok.setAttribute('hidden', '');
+        }
         const prod = root.querySelector('#dp-prod');
         if (dienst.status === 'demo' && dienst.rvProd) {
           fillList('dp-rv-tech', dienst.rvProd.tech);
@@ -4770,6 +4813,11 @@
       window.__mpOpenDienst = openDienst;
       // Naar de go-live-takenlijst: 'Maak uw service live'.
       root.querySelector('#dp-prod-aanvraag').addEventListener('click', () => showView('livegaan', 'Maak uw service live'));
+      // CTA in het demo-blok: scroll naar de productievoorwaarden op dezelfde pagina.
+      root.querySelector('#dp-demo-naar-prod').addEventListener('click', () => {
+        const prod = root.querySelector('#dp-prod');
+        if (prod) prod.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     })();
 
     // ====================== Maak uw service live (go-live checklist) ======================
