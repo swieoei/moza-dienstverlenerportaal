@@ -27,14 +27,16 @@
          zodat alle eigen CSS (muted tekst, randen, oppervlakken) meebeweegt met licht/donker.
          DS-componenten zetten hun eigen context op hun host en overschrijven dit binnen hun subtree. */
       --context-foreground-color: var(--primitives-color-neutral-900);
-      --context-muted-foreground-color: var(--primitives-color-neutral-600);
+      /* Muted/secundaire tekst (tijd, opmerking, gebeurtenis-omschrijving e.d.) op neutral-700
+         zodat het in dark lichter is en meer contrast heeft (in light navenant iets donkerder). */
+      --context-muted-foreground-color: var(--primitives-color-neutral-700);
       --context-border-color: var(--primitives-color-neutral-300);
       --context-base-background-color: var(--primitives-color-neutral-50);
       /* Standaard tekstkleur van de DS-content (o.a. nldd-title) in dark iets helderder
          voor meer contrast; light-mode blijft de normale neutral-900 (donkere tekst). */
       --semantics-content-color: light-dark(oklch(0.261 0.015 257.4), oklch(0.97 0.008 257.4));
       /* Eigen aliassen voor gebruik in de app-CSS */
-      --app-muted: var(--primitives-color-neutral-600);
+      --app-muted: var(--primitives-color-neutral-700);
       --app-border: var(--primitives-color-neutral-300);
       --app-surface: light-dark(#f3f5f7, #2a3140);
       --app-accent: light-dark(#154273, #8fb8e0);
