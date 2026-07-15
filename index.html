@@ -13,7 +13,10 @@
   <script type="module" src="https://esm.sh/@nldd/design-system@0.8.64/sidebar-section"></script>
 
   <style>
-    /* Alleen layout-lijm; geen component-styling - die komt volledig uit het design system. */
+    /* NLDD-first (migratie jul 2026): alle layout en componenten komen uit @nldd/design-system
+       (nldd-container/-card/-list/-table enz.). Wat hieronder aan CSS staat is uitsluitend
+       (1) DS-tokenkoppeling voor licht/donker en (2) de GEISOLEERDE UITZONDERINGEN uit het
+       migratiebesluit van 15 jul 2026 - functionaliteit zonder NLDD-equivalent. Niet uitbreiden. */
     html, body { margin: 0; padding: 0; height: 100%; }
     /* NLDD DS-lettertype: het design system laadt 'RijksSans' (tekst) en 'JetBrains Mono' (code).
        De token --typography-font-family-base is niet globaal gedefinieerd, dus valt de body zonder
@@ -45,13 +48,19 @@
     body { font-family: var(--font-base); background: var(--context-base-background-color, #fff); }
     #app { display: flex; flex-direction: column; height: 100vh; }
     nldd-app-view { flex: 1 1 auto; min-height: 0; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-    .js-kpi-actie-card { cursor: pointer; transition: box-shadow .15s ease; }
-    .js-kpi-actie-card:hover, .js-kpi-actie-card:focus-visible { box-shadow: 0 2px 12px rgba(0,0,0,.14); outline: none; }
     /* Views tonen/verbergen via het hidden-attribuut (NLDD-migratie fase 1);
        .view/.stack/.inline/.between/.row-actions zijn nu inerte JS-hooks op nldd-container. */
-    .lang-grid { display: flex; flex-wrap: wrap; gap: 16px 32px; }
-    .lang-opt { display: flex; align-items: center; gap: 8px; }
+
+    /* ============================================================================
+       GEISOLEERDE UITZONDERINGEN (migratiebesluit 15 jul 2026)
+       Alles hieronder heeft geen NLDD-equivalent en blijft bewust behouden:
+       klik-affordances op tegels/kaarten, menu-mechaniek, dienst-chips, ribbons,
+       logboektabel met parent-child, papieren previews, markdown-editor,
+       analytics-grafiek, presentatiemodus en de flags-dialog. Niet uitbreiden;
+       nieuw werk bouwt op nldd-componenten.
+       ============================================================================ */
+    .js-kpi-actie-card { cursor: pointer; transition: box-shadow .15s ease; }
+    .js-kpi-actie-card:hover, .js-kpi-actie-card:focus-visible { box-shadow: 0 2px 12px rgba(0,0,0,.14); outline: none; }
 
     /* Zijnavigatie: children springen in via nldd-spacer-cell in de start-slot */
     /* Paginatitel: prominente h1 bovenaan de content, uitgelijnd met de bovenkant van het menu */
@@ -62,7 +71,6 @@
     .sb-trigger { display: none; margin-bottom: 12px; }
     nldd-sidebar-section[collapsed] .sb-trigger { display: block; }
     /* Marktplaats: tegels + dienstpagina's */
-    .svc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
     .svc-caps { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
     .svc-caps li { line-height: 1.45; }
     .mp-tile[data-svc] { cursor: pointer; }
@@ -87,7 +95,6 @@
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .muted-note { color: var(--app-muted); font-size: 0.85rem; margin: 0; }
     /* API-key rollen: meervoudige keuze via checkboxes */
-    .rol-groep { display: flex; flex-direction: column; gap: 10px; }
     .rol-optie { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
     .rol-optie nldd-checkbox { flex: none; margin-top: 2px; }
     .rol-tekst { line-height: 1.35; }
@@ -97,7 +104,6 @@
     /* Contactherstel via fysieke post: uitklapbaar herstelblok binnen een kaart */
     .ch-herstel { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-top: 4px; }
     /* Logboek: gelaagd filter - statusfilter genest binnen 'Notificaties' */
-    .log-filterblok { display: flex; flex-direction: column; gap: 10px; }
     .log-substatus { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-inline-start: 8px; display: flex; flex-direction: column; gap: 6px; }
     .log-checks { display: flex; gap: 20px; flex-wrap: wrap; }
     .log-check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -122,7 +128,6 @@
     .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .log-td-actie { white-space: normal; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.92rem; line-height: 1.35; }
     .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
-    .log-rij-detail > td { background: var(--app-subtle-fill); }
     /* Parent-child: uitklapbare regel met per-kanaal / per-stap uitkomst. */
     .log-parent .lg-caret { flex: 0 0 auto; width: 18px; height: 18px; transition: transform .15s ease; color: var(--context-muted-foreground-color, #5a5a5a); }
     .log-parent[aria-expanded="true"] .lg-caret { transform: rotate(90deg); }
@@ -133,11 +138,7 @@
     .lg-kind-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
     .lg-kind-dot--afgeleverd { background: #2a8a4a; }
     .lg-kind-dot--niet { background: #a3120a; }
-    .lg-kind-dot--voltooid { background: #2a8a4a; }
-    .lg-kind-dot--bezig { background: #d97706; }
-    .lg-kind-dot--todo { background: #6a7180; }
     .lg-kind-dot--stap { background: #6a7180; }
-    .log-rij-detail .lg-bsn-form { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
     .log-periode-rij { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .log-periode-rij nldd-dropdown { min-width: 200px; }
     .log-periode-custom { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
@@ -151,15 +152,10 @@
     .log-substatus-inline .muted-note { margin: 0; }
     .log-datum { padding: 8px 10px; border: 1px solid var(--context-border-color, #b3b3b3); border-radius: 8px; font: inherit; }
     /* Afleverstatus: uitgesplitst in succesvol / niet afgeleverd met concrete aantallen */
-    .afl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
     /* Tiletitel: percentage + omschrijving op 1 regel (kleur volgt het thema via inherit) */
     .afl-titel { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; color: inherit; line-height: 1.15; }
     .afl-titel .afl-pct { font-size: 1.5rem; font-weight: 800; }
     .afl-titel .afl-desc { font-size: 1.1rem; font-weight: 700; }
-    .afl-lijst { margin: 4px 0 0; padding-inline-start: 18px; display: flex; flex-direction: column; gap: 6px; color: inherit; opacity: 0.82; font-size: 0.95rem; line-height: 1.45; }
-    .afl-lijst strong { font-weight: 700; }
-    .afl-actie { margin: 8px 0 0; }
-    .afl-link { display: inline-block; }
     /* Flags (feature-toggles) */
     .flags-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
     .flags-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
@@ -172,36 +168,16 @@
     .flag-off { display: none !important; }
     .rol-verborgen { display: none !important; }
     /* E-mailpreview met huisstijl */
-    .tb-preview-dialog { background: var(--context-base-background-color, #fff); color: inherit; border-radius: 12px; padding: 20px; max-width: 640px; width: 100%; max-height: 90vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
-    .tb-mail { border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 8px; overflow: hidden; margin-top: 12px; background: #fff; color: #1a1a1a; }
-    .tb-mail-header { padding: 16px 20px; color: #fff; font-weight: 700; font-size: 1.1rem; }
-    .tb-mail-body { padding: 20px; }
-    .tb-mail-meta { font-size: 0.85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 12px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 2px; }
-    .tb-mail-tekst { white-space: pre-wrap; line-height: 1.5; }
-    .tb-mail-footer { white-space: pre-wrap; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ececec; color: #555; font-size: 0.9rem; }
     /* Voorbeeld per kanaal */
     .tbp-kanalen { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
     .tbp-kanaal-label { font-size: 0.75rem; font-weight: 700; color: var(--app-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
     .tbp-pre { white-space: pre-wrap; }
-    .tbp-bbox { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
-    .tbp-bbox-header { padding: 12px 18px; color: #fff; font-weight: 700; }
-    .tbp-bbox-body { padding: 16px 18px; }
-    .tbp-bbox-meta { font-size: .85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 10px; margin-bottom: 12px; }
-    .tbp-bbox-onderwerp { font-weight: 700; margin-bottom: 4px; }
-    .tbp-bbox-kort { color: #555; font-size: 0.92rem; margin-bottom: 10px; }
-    .tbp-bbox-body .tbp-pre { line-height: 1.5; }
     .tbp-mail { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
     .tbp-mail-header { padding: 14px 18px; color: #fff; font-weight: 700; }
     .tbp-mail-body { padding: 16px 18px; }
     .tbp-mail-meta { font-size: .85rem; color: #444; border-bottom: 1px solid #ececec; padding-bottom: 10px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 2px; }
     .tbp-mail-body .tbp-pre { line-height: 1.5; }
     .tbp-mail-footer { margin-top: 16px; padding-top: 10px; border-top: 1px solid #ececec; color: #555; font-size: .9rem; }
-    .tbp-brief { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
-    .tbp-brief-band { height: 8px; }
-    .tbp-brief-body { padding: 20px; line-height: 1.5; }
-    .tbp-brief-afz { font-weight: 600; }
-    .tbp-brief-aan { margin: 16px 0; color: #333; }
-    .tbp-brief-onderwerp { margin: 0 0 12px; }
     .tbp-push { border: 1px solid #e3e3e3; border-radius: 14px; background: #f3f4f6; color: #1a1a1a; padding: 12px 14px; max-width: 380px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
     .tbp-push-app { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: #555; margin-bottom: 6px; }
     .tbp-push-icon { width: 20px; height: 20px; border-radius: 5px; color: #fff; font-weight: 700; font-size: .75rem; display: inline-flex; align-items: center; justify-content: center; }
@@ -284,20 +260,10 @@
     .app-toast.is-open { opacity: 1; transform: translateX(-50%) translateY(0); }
     /* Maak uw service live: verzwaarde go-live-voorwaarden per blok */
     .live-eyebrow { margin: 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--app-muted); }
-    .live-blokken { display: flex; flex-direction: column; gap: 30px; }
-    .live-blok-kop { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--context-border-color, #ccc); padding-bottom: 8px; margin-bottom: 2px; }
-    .live-blok-tel { font-size: 0.85rem; font-weight: 600; color: var(--app-muted); white-space: nowrap; }
-    .live-cond { display: flex; align-items: flex-start; gap: 14px; padding: 14px 2px; border-bottom: 1px solid var(--context-border-color, #e3e3e3); }
-    .live-cond-ic { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px; }
+    /* Statuskleur op conditie-iconen (geïsoleerde uitzondering: semantische kleur, geen DS-token) */
     .live-cond-ic--voltooid { color: light-dark(#2a8a4a, #5cc98a); }
     .live-cond-ic--behandeling { color: light-dark(#b45309, #f0a04b); }
     .live-cond-ic--todo { color: light-dark(#c0392b, #f08a7e); }
-    .live-cond-txt { flex: 1 1 auto; min-width: 0; }
-    .live-cond-kop { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-    .live-cond-kop nldd-link { font-weight: 600; }
-    .live-cond-desc { display: block; color: var(--app-muted); font-size: 0.9rem; margin-top: 3px; line-height: 1.4; }
-    .live-cond-geldig { display: block; color: light-dark(#b45309, #f0a04b); font-size: 0.82rem; font-weight: 600; margin-top: 4px; }
-    .live-cond-status { flex: 0 0 auto; white-space: nowrap; }
     .live-consent { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; line-height: 1.45; }
     .live-consent nldd-checkbox { flex: none; margin-top: 1px; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
@@ -317,7 +283,6 @@
     .an-svg .an-xlab { font-size: 12px; fill: var(--app-muted); }
     .an-svg .an-endlab { font-size: 12px; font-weight: 600; }
     .an-noot { font-size: 0.8rem; color: var(--app-muted); margin: 0; }
-    .an-rapporten { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
     .an-rap-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .an-rap-waarde { font-size: 1.7rem; font-weight: 700; color: var(--app-accent); line-height: 1.1; }
     .an-rap-label { font-weight: 600; }
@@ -328,28 +293,18 @@
     .an-rap-meer { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--app-accent); margin-top: 2px; }
     .an-rap-meer nldd-icon { width: 1em; height: 1em; flex: 0 0 auto; }
     /* Verfijnde analyse: filterbalk */
-    .vfa-filters { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
-    .vfa-filters nldd-form-field { flex: 1 1 200px; min-width: 180px; }
-    .vfa-filters nldd-dropdown { width: 100%; }
     #vfa-tabel .log-tabel { min-width: 420px; }
     .gb-kaart { border-inline-start: 4px solid #d6dce2; }
     .gb-kaart.rand-notificatiedienst { border-inline-start-color: #d52b1e; }
     .gb-kaart.rand-profieldienst { border-inline-start-color: #007bc7; }
-    .gb-filterbalk { display: flex; gap: 16px; align-items: flex-end; }
-    .gb-filterbalk nldd-form-field { flex: 1 1 0; min-width: 0; }
-    .gb-filterbalk nldd-dropdown { width: 100%; }
     /* Compacte gebruikerskaarten */
-    .gb-cards { display: flex; flex-direction: column; gap: 10px; }
     .gb-toegang-inline { font-size: 0.85rem; color: var(--app-muted); }
     .gb-toegang-inline strong { color: inherit; }
     .gb-kaart--geen { opacity: 0.62; border-inline-start-color: #b0b6bd !important; }
     .gb-edit { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--context-border-color, #e3e3e3); max-width: 440px; }
     .gb-edit nldd-dropdown { width: 100%; }
     /* Voorkeurskanaal: prioriteit per kanaal */
-    .prio-lijst { display: flex; flex-direction: column; gap: 8px; }
-    .prio-rij { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     .prio-kanaal { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
-    .prio-rij nldd-dropdown { min-width: 180px; }
     /* Uitklapbare zijnav: caret naast de status-tag van een parent */
     .nav-parent-end { display: inline-flex; align-items: center; gap: 8px; }
     .nav-caret { color: var(--app-muted); flex: 0 0 auto; }
@@ -357,22 +312,9 @@
     /* Klikbare overzichtstegels (naar subpagina's) */
     .nav-tile { cursor: pointer; }
     .nav-tile:hover, .nav-tile:focus-visible { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
-    .rv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     /* Contactherstel: afleverbalk in één oogopslag (layout-lijm) */
-    .deliver-bar { display: flex; height: 16px; border-radius: 8px; overflow: hidden; background: var(--context-border-color, #e3e3e3); }
-    .deliver-bar > span { display: block; height: 100%; }
-    .deliver-bar .seg-ok { background: #39870c; }
-    .deliver-bar .seg-warn { background: #e17000; min-width: 6px; }
-    .deliver-bar .seg-attn { background: #d52b1e; min-width: 6px; }
-    .deliver-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--app-muted); }
-    .deliver-legend span { display: inline-flex; align-items: center; gap: 6px; }
-    .deliver-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
     /* Footer met presentatie-link (patroon zoals bg.rijks.app) */
-    .app-footer { display: flex; align-items: center; gap: 20px; padding: 12px 24px; border-top: 1px solid var(--context-border-color, #e3e3e3); background: var(--context-base-background-color, #fff); flex-wrap: wrap; }
-    .app-footer a { color: var(--app-accent); text-decoration: none; font-size: 0.9rem; cursor: pointer; }
-    .app-footer a:hover { text-decoration: underline; }
-    .app-footer .muted { color: var(--app-muted); font-size: 0.85rem; }
     .spacer { flex: 1 1 auto; }
 
     /* Presentatiemodus - look & feel zoals bg.rijks.app (Begane Grond) */
@@ -385,9 +327,6 @@
     .slide-title { font-family: var(--font-base); font-weight: 700; color: #fff; margin: 0; line-height: 1.05; font-size: clamp(2.4rem, 5.2vw, 4.6rem); }
     .slide-lead { font-size: clamp(1.25rem, 2.2vw, 1.9rem); line-height: 1.45; color: #fff; margin: 0; max-width: 60ch; font-weight: 600; }
     .slide-body { font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.6; color: rgba(255,255,255,0.92); margin: 0; max-width: 64ch; }
-    .slide-list { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; max-width: 72ch; }
-    .slide-list li { position: relative; padding-left: 28px; font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.5; color: rgba(255,255,255,0.92); }
-    .slide-list li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 9px; height: 9px; border-radius: 50%; background: #8fb8e0; }
     .kerntaken { display: flex; flex-direction: column; gap: 20px; max-width: 82ch; }
     .kt { display: flex; gap: 18px; align-items: flex-start; }
     .kt nldd-icon { color: #8fb8e0; flex: 0 0 auto; line-height: 1; }
@@ -598,30 +537,30 @@
                        alleen tot een andere dienst toegang hebben. -->
                   <nldd-container class="stack" gap="16" data-dienst="notificatiedienst">
                     <nldd-title size="4"><h2>Aflevering notificaties vandaag</h2></nldd-title>
-                    <div class="afl-grid">
+                    <nldd-container class="afl-grid" layout="grid" gap="16">
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
                           <div class="afl-titel"><span class="afl-pct js-afl-ok-pct">98,4%</span><span class="afl-desc">Succesvol afgeleverd</span></div>
                           <nldd-tag color="success" text="binnen norm"></nldd-tag>
-                          <ul class="afl-lijst">
+                          <nldd-rich-text><ul class="afl-lijst">
                             <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
                             <li>waarvan <strong class="js-afl-err">17</strong> via een alternatief kanaal afgeleverd</li>
-                          </ul>
-                          <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
+                          </ul></nldd-rich-text>
+                          <nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
                         </nldd-container>
                       </nldd-card>
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
                           <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                           <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
-                          <ul class="afl-lijst">
+                          <nldd-rich-text><ul class="afl-lijst">
                             <li class="js-afl-li-template"></li>
                             <li class="js-afl-li-retry"></li>
-                          </ul>
-                          <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
+                          </ul></nldd-rich-text>
+                          <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
                         </nldd-container>
                       </nldd-card>
-                    </div>
+                    </nldd-container>
                   </nldd-container>
 
                   <nldd-title size="4"><h2>Andere activiteiten</h2></nldd-title>
@@ -670,14 +609,14 @@
                     </nldd-table-row>
                   </nldd-table>
 
-                  <div class="kpi-grid">
+                  <nldd-container class="kpi-grid" layout="grid" gap="16">
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
                         <nldd-title size="2"><h2>6</h2><p slot="subtitle">Actieve koppelingen</p></nldd-title>
                         <nldd-tag color="neutral" text="2 API-keys verlopen binnenkort"></nldd-tag>
                       </nldd-container>
                     </nldd-card>
-                  </div>
+                  </nldd-container>
                 </nldd-container>
               </section>
 
@@ -690,7 +629,7 @@
                     supporting-text="Een overheidsbrede dienst die antwoord geeft op de vraag: hoe wil de burger of ondernemer benaderd worden en welke gegevens horen daarbij?">
                   </nldd-banner>
 
-                  <div class="svc-grid">
+                  <nldd-container class="svc-grid" layout="grid" gap="16">
                     <!-- API keys -->
                     <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="apikeys-profieldienst" data-nav-title="API keys" aria-label="Naar API keys">
                       <nldd-container padding="16" gap="12">
@@ -726,7 +665,7 @@
                         <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek-profieldienst" data-nav-title="Logboek" data-periode="vandaag"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
-                  </div>
+                  </nldd-container>
 
                   <nldd-title size="4"><h2>Wat de profieldienst doet</h2></nldd-title>
                   <nldd-list variant="box">
@@ -832,56 +771,56 @@
                           </nldd-container>
 
                           <nldd-title size="6"><h3>Voorkeurskanalen</h3><p slot="subtitle">Geef per kanaal de prioriteit; er wordt via het hoogst geprioriteerde beschikbare kanaal genotificeerd</p></nldd-title>
-                          <div class="prio-lijst" id="kanaal-prio">
-                            <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Berichtenbox (MijnOverheid)</span>
+                          <nldd-container class="prio-lijst" gap="8" id="kanaal-prio">
+                            <nldd-container class="prio-rij" layout="wrap" gap="12" vertical-alignment="center">
+                              <span class="prio-kanaal"><nldd-icon name="inbox" size="20"></nldd-icon> Berichtenbox (MijnOverheid)</span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                               <nldd-dropdown>
                                 <select class="prio-select" data-kanaal="berichtenbox" aria-label="Prioriteit Berichtenbox">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
-                            </div>
-                            <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span>
+                            </nldd-container>
+                            <nldd-container class="prio-rij" layout="wrap" gap="12" vertical-alignment="center">
+                              <span class="prio-kanaal"><nldd-icon name="envelope" size="20"></nldd-icon> E-mail</span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                               <nldd-dropdown>
                                 <select class="prio-select" data-kanaal="email" aria-label="Prioriteit e-mail">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
-                            </div>
-                            <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="bell" size="20"></nldd-icon> Push (MijnOverheid-app)</span>
+                            </nldd-container>
+                            <nldd-container class="prio-rij" layout="wrap" gap="12" vertical-alignment="center">
+                              <span class="prio-kanaal"><nldd-icon name="bell" size="20"></nldd-icon> Push (MijnOverheid-app)</span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                               <nldd-dropdown>
                                 <select class="prio-select" data-kanaal="push" aria-label="Prioriteit push">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
-                            </div>
-                            <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="message-rectangle-text" size="20"></nldd-icon> SMS</span>
+                            </nldd-container>
+                            <nldd-container class="prio-rij" layout="wrap" gap="12" vertical-alignment="center">
+                              <span class="prio-kanaal"><nldd-icon name="message-rectangle-text" size="20"></nldd-icon> SMS</span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                               <nldd-dropdown>
                                 <select class="prio-select" data-kanaal="sms" aria-label="Prioriteit SMS">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
-                            </div>
-                            <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="app" size="20"></nldd-icon> WhatsApp / Signal</span>
+                            </nldd-container>
+                            <nldd-container class="prio-rij" layout="wrap" gap="12" vertical-alignment="center">
+                              <span class="prio-kanaal"><nldd-icon name="app" size="20"></nldd-icon> WhatsApp / Signal</span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                               <nldd-dropdown>
                                 <select class="prio-select" data-kanaal="whatsapp" aria-label="Prioriteit WhatsApp of Signal">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
-                            </div>
-                            <div class="prio-rij">
-                              <span class="prio-kanaal"><nldd-icon name="mail" size="20"></nldd-icon> Brief (post)</span>
+                            </nldd-container>
+                            <nldd-container class="prio-rij" layout="wrap" gap="12" vertical-alignment="center">
+                              <span class="prio-kanaal"><nldd-icon name="mail" size="20"></nldd-icon> Brief (post)</span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                               <nldd-dropdown>
                                 <select class="prio-select" data-kanaal="post" aria-label="Prioriteit brief (post)">
                                   <option value="1">1e keuze</option><option value="2">2e keuze</option><option value="3">3e keuze</option><option value="4">4e keuze</option><option value="5">5e keuze</option><option value="0">Niet gebruiken</option>
                                 </select>
                               </nldd-dropdown>
-                            </div>
-                          </div>
+                            </nldd-container>
+                          </nldd-container>
 
                           <nldd-form-field label="E-mailadres">
                             <nldd-text-field id="ct-email"></nldd-text-field>
@@ -921,32 +860,32 @@
                   </nldd-rich-text>
 
                   <nldd-title size="5"><h3>Aflevering notificaties vandaag</h3></nldd-title>
-                  <div class="afl-grid">
+                  <nldd-container class="afl-grid" layout="grid" gap="16">
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
                         <div class="afl-titel"><span class="afl-pct js-afl-ok-pct">98,4%</span><span class="afl-desc">Succesvol afgeleverd</span></div>
                         <nldd-tag color="success" text="binnen norm"></nldd-tag>
-                        <ul class="afl-lijst">
+                        <nldd-rich-text><ul class="afl-lijst">
                           <li><strong class="js-afl-ok-abs">1.228</strong> van de <strong class="js-afl-total">1.248</strong> notificaties</li>
                           <li>waarvan <strong class="js-afl-err">17</strong> via een alternatief kanaal afgeleverd</li>
-                        </ul>
-                        <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
+                        </ul></nldd-rich-text>
+                        <nldd-link class="afl-link" data-afl-link="errors" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
                       </nldd-container>
                     </nldd-card>
                     <nldd-card>
                       <nldd-container padding="16" gap="8">
                         <div class="afl-titel"><span class="afl-pct js-afl-fail-pct">1,6%</span><span class="afl-desc">Niet afgeleverd</span></div>
                         <nldd-tag color="critical" text="herstelacties ingediend"></nldd-tag>
-                        <ul class="afl-lijst">
+                        <nldd-rich-text><ul class="afl-lijst">
                           <li class="js-afl-li-bsn"></li>
                           <li class="js-afl-li-retry"></li>
-                        </ul>
-                        <p class="afl-actie"><nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link></p>
+                        </ul></nldd-rich-text>
+                        <nldd-link class="afl-link" data-afl-link="mislukt" href="#" end-icon="arrow-right" text="Bekijk logboek"></nldd-link>
                       </nldd-container>
                     </nldd-card>
-                  </div>
+                  </nldd-container>
 
-                  <div class="svc-grid">
+                  <nldd-container class="svc-grid" layout="grid" gap="16">
                     <!-- Berichten -->
                     <nldd-card class="nav-tile" role="button" tabindex="0" data-nav-view="berichten" data-nav-title="Berichten" aria-label="Naar Berichten">
                       <nldd-container padding="16" gap="12">
@@ -982,7 +921,7 @@
                         <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar notificatie-instellingen" data-nav-view="notificatie-instellingen" data-nav-title="Notificatie-instellingen"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
-                  </div>
+                  </nldd-container>
 
                   <!-- Wervende CTA: van demo naar productie -->
                   <nldd-card>
@@ -1016,7 +955,7 @@
                               <nldd-text-field data-nk-naam placeholder="Bijv. Zaaksysteem KvK"></nldd-text-field>
                             </nldd-form-field>
                             <nldd-form-field label="Rol / functionaliteit (één of meer)">
-                              <div class="rol-groep" data-nk-rollen></div>
+                              <nldd-container class="rol-groep" gap="8" data-nk-rollen></nldd-container>
                             </nldd-form-field>
                             <nldd-form-field label="Geldigheidsduur">
                               <nldd-segmented-control data-nk-duur value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
@@ -1082,7 +1021,7 @@
                               <nldd-text-field data-nk-naam placeholder="Bijv. Backoffice KvK"></nldd-text-field>
                             </nldd-form-field>
                             <nldd-form-field label="Rol / functionaliteit (één of meer)">
-                              <div class="rol-groep" data-nk-rollen></div>
+                              <nldd-container class="rol-groep" gap="8" data-nk-rollen></nldd-container>
                             </nldd-form-field>
                             <nldd-form-field label="Geldigheidsduur">
                               <nldd-segmented-control data-nk-duur value="90" type="radio" width="full" accessible-label="Geldigheidsduur">
@@ -1572,7 +1511,7 @@
                       <h3>Afgenomen door uw organisatie</h3>
                       <p slot="subtitle">Open een dienst voor de API-key en het beheer</p>
                     </nldd-title>
-                    <div class="svc-grid">
+                    <nldd-container class="svc-grid" layout="grid" gap="16">
                       <!-- Notificatiedienst (afgenomen: demo) -->
                       <nldd-card class="mp-tile mp-tile--on" data-svc="notificatiedienst" role="button" tabindex="0" aria-label="Notificatiedienst openen">
                         <nldd-container padding="16" gap="12">
@@ -1596,13 +1535,13 @@
                           <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
                         </nldd-container>
                       </nldd-card>
-                    </div>
+                    </nldd-container>
 
                     <nldd-title size="5">
                       <h3>Beschikbaar om te koppelen</h3>
                       <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
                     </nldd-title>
-                    <div class="svc-grid">
+                    <nldd-container class="svc-grid" layout="grid" gap="16">
                       <!-- Berichtendienst (plek 3 in het dienstenaanbod, binnenkort beschikbaar) -->
                       <div class="mp-tile-wrap mp-binnenkort">
                         <nldd-card class="mp-tile">
@@ -1665,7 +1604,7 @@
                           </nldd-container>
                         </nldd-container>
                       </nldd-card>
-                    </div>
+                    </nldd-container>
                   </nldd-container>
                 </div>
 
@@ -1690,7 +1629,7 @@
                     </nldd-card>
 
                     <nldd-title size="5"><h3>2. Randvoorwaarden</h3></nldd-title>
-                    <div class="rv-grid">
+                    <nldd-container class="rv-grid" layout="grid" gap="16">
                       <nldd-card>
                         <nldd-container padding="16" gap="8">
                           <nldd-title size="6"><h4>Technisch</h4></nldd-title>
@@ -1709,7 +1648,7 @@
                           <nldd-rich-text><ul class="svc-caps" id="kp-rv-business"></ul></nldd-rich-text>
                         </nldd-container>
                       </nldd-card>
-                    </div>
+                    </nldd-container>
 
                     <nldd-container class="row-actions" layout="wrap" gap="8">
                       <nldd-button id="kp-aanvraag" variant="primary" start-icon="paper-plane" text="Koppeling aanvragen"></nldd-button>
@@ -1765,7 +1704,7 @@
                             <h3>Productieversie aanvragen</h3>
                             <p slot="subtitle">Aansluitvoorwaarden voor de overstap van demo naar productie</p>
                           </nldd-title>
-                          <div class="rv-grid">
+                          <nldd-container class="rv-grid" layout="grid" gap="16">
                             <nldd-card>
                               <nldd-container padding="16" gap="8">
                                 <nldd-title size="6"><h4>Technisch</h4></nldd-title>
@@ -1784,7 +1723,7 @@
                                 <nldd-rich-text><ul class="svc-caps" id="dp-rv-business"></ul></nldd-rich-text>
                               </nldd-container>
                             </nldd-card>
-                          </div>
+                          </nldd-container>
                           <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button id="dp-prod-aanvraag" variant="primary" start-icon="paper-plane" text="Productieversie aanvragen"></nldd-button>
                           </nldd-container>
@@ -1953,7 +1892,7 @@
                     </nldd-card>
                   </div>
 
-                  <div class="gb-filterbalk">
+                  <nldd-container class="gb-filterbalk" layout="grid" column-count="3" sm-column-count="1" gap="16">
                     <nldd-form-field label="Filter op rol">
                       <nldd-dropdown>
                         <select id="gb-filter-rol" aria-label="Filter op rol">
@@ -1978,9 +1917,9 @@
                         <select id="gb-filter-project" aria-label="Filter op project"></select>
                       </nldd-dropdown>
                     </nldd-form-field>
-                  </div>
+                  </nldd-container>
                   <nldd-banner id="gb-melding" variant="success" text="" hidden></nldd-banner>
-                  <div class="gb-cards" id="gb-lijst"></div>
+                  <nldd-container class="gb-cards" gap="12" id="gb-lijst"></nldd-container>
                   <p class="muted-note" id="gb-leeg" hidden>Geen gebruikers voor dit filter.</p>
                 </nldd-container>
               </section>
@@ -2220,7 +2159,7 @@
                     </nldd-container>
                   </nldd-card>
 
-                  <div class="vfa-filters">
+                  <nldd-container class="vfa-filters" layout="grid" column-count="3" sm-column-count="1" gap="12">
                     <nldd-form-field label="Periode">
                       <nldd-dropdown><select id="vfa-periode" aria-label="Periode">
                         <option value="3">Laatste 3 maanden</option>
@@ -2244,7 +2183,7 @@
                         <option value="segment">Per ondernemerssegment</option>
                       </select></nldd-dropdown>
                     </nldd-form-field>
-                  </div>
+                  </nldd-container>
 
                   <nldd-title size="6"><h3>Uitsplitsing</h3></nldd-title>
                   <div id="vfa-tabel"></div>
@@ -2263,7 +2202,7 @@
                   <nldd-banner variant="accent" text="Wat er verandert als u live gaat: uw dienst verstuurt straks echte notificaties aan ondernemers, via het kanaal van hun voorkeur (e-mail, sms, push of Signal) met terugval op een alternatief kanaal. De beperkingen van de proefmodus vervallen en uw organisatie is verantwoordelijk voor elke verzending. Livegang kan niet met één klik ongedaan worden gemaakt. Rond eerst alle voorwaarden hieronder af; daarna beoordelen wij uw verzoek."></nldd-banner>
                   <nldd-banner variant="neutral" text="Alleen de notificatiedienst. Deze voorwaarden gelden voor het afnemen van de notificatiedienst, die u zelfstandig kunt afnemen."></nldd-banner>
 
-                  <div id="live-blokken" class="live-blokken"></div>
+                  <nldd-container id="live-blokken" gap="32"></nldd-container>
 
                   <nldd-card>
                     <nldd-container padding="16" gap="8">
@@ -4878,37 +4817,41 @@
         ]},
       ];
 
+      // Conditie als nldd-list-item: statusicoon (start), titel + omschrijving (text-cell),
+      // vereist-/verklaringtags en de statustag rechts (end-cell).
       function condEl(c) {
         const st = STAT[c.status] || STAT.todo;
-        const row = document.createElement('div'); row.className = 'live-cond';
+        const item = document.createElement('nldd-list-item');
+        const icCell = document.createElement('nldd-icon-cell'); icCell.setAttribute('slot', 'start');
         const ic = document.createElement('nldd-icon');
-        ic.className = 'live-cond-ic live-cond-ic--' + c.status;
+        ic.className = 'live-cond-ic--' + c.status;
         ic.setAttribute('name', st.icon);
-        row.appendChild(ic);
-        const txt = document.createElement('div'); txt.className = 'live-cond-txt';
-        const kop = document.createElement('div'); kop.className = 'live-cond-kop';
-        const link = document.createElement('nldd-link'); link.setAttribute('href', '#'); link.setAttribute('text', c.titel);
-        kop.appendChild(link);
-        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); kop.appendChild(t); });
-        txt.appendChild(kop);
-        const desc = document.createElement('span'); desc.className = 'live-cond-desc'; desc.textContent = c.desc; txt.appendChild(desc);
-        if (c.geldig) { const g = document.createElement('span'); g.className = 'live-cond-geldig'; g.textContent = c.geldig; txt.appendChild(g); }
-        row.appendChild(txt);
-        const sw = document.createElement('div'); sw.className = 'live-cond-status';
+        icCell.appendChild(ic);
+        item.appendChild(icCell);
+        const tc = document.createElement('nldd-text-cell');
+        tc.setAttribute('text', '**' + c.titel + '**');
+        tc.setAttribute('supporting-text', c.desc + (c.geldig ? ' — ' + c.geldig : ''));
+        item.appendChild(tc);
+        const end = document.createElement('nldd-cell'); end.setAttribute('slot', 'end');
+        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); end.appendChild(t); });
         const stag = document.createElement('nldd-tag'); stag.setAttribute('color', st.tag.color); stag.setAttribute('text', st.tag.text);
-        sw.appendChild(stag);
-        row.appendChild(sw);
-        return row;
+        end.appendChild(stag);
+        item.appendChild(end);
+        return item;
       }
       BLOKKEN.forEach(b => {
-        const wrap = document.createElement('div'); wrap.className = 'live-blok';
+        const wrap = document.createElement('nldd-container'); wrap.setAttribute('gap', '8');
         const voltooid = b.condities.filter(c => c.status === 'voltooid').length;
-        const kop = document.createElement('div'); kop.className = 'live-blok-kop';
+        const kop = document.createElement('nldd-container');
+        kop.setAttribute('layout', 'wrap'); kop.setAttribute('gap', '8'); kop.setAttribute('vertical-alignment', 'center');
         const titel = document.createElement('nldd-title'); titel.setAttribute('size', '5');
         const h3 = document.createElement('h3'); h3.textContent = b.titel; titel.appendChild(h3);
-        const tel = document.createElement('span'); tel.className = 'live-blok-tel'; tel.textContent = voltooid + ' van ' + b.condities.length + ' voltooid';
-        kop.appendChild(titel); kop.appendChild(tel); wrap.appendChild(kop);
-        b.condities.forEach(c => wrap.appendChild(condEl(c)));
+        const spacer = document.createElement('nldd-spacer'); spacer.setAttribute('size', 'flexible'); spacer.setAttribute('direction', 'horizontal');
+        const tel = document.createElement('span'); tel.className = 'muted-note'; tel.textContent = voltooid + ' van ' + b.condities.length + ' voltooid';
+        kop.appendChild(titel); kop.appendChild(spacer); kop.appendChild(tel); wrap.appendChild(kop);
+        const lijst = document.createElement('nldd-list'); lijst.setAttribute('variant', 'box');
+        b.condities.forEach(c => lijst.appendChild(condEl(c)));
+        wrap.appendChild(lijst);
         blokkenEl.appendChild(wrap);
       });
 
@@ -5213,7 +5156,7 @@
             </nldd-card>
 
             <nldd-title size="5"><h3>Rapportages</h3></nldd-title>
-            <div class="an-rapporten" data-an-rapporten></div>
+            <nldd-container class="an-rapporten" layout="grid" gap="12" data-an-rapporten></nldd-container>
 
             <nldd-title size="5"><h3>Rapportage samenstellen en downloaden</h3></nldd-title>
             <nldd-list variant="box" data-rp-lijst></nldd-list>
