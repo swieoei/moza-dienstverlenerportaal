@@ -3987,7 +3987,7 @@
           item.innerHTML =
             '<nldd-icon-cell slot="start"><nldd-icon name="' + (t.status === 'concept' ? 'pencil' : 'file-text') + '"></nldd-icon></nldd-icon-cell>' +
             '<nldd-text-cell text="' + titelCel + '"></nldd-text-cell>' +
-            '<nldd-cell slot="end"><nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</nldd-container></nldd-cell>';
+            '<nldd-cell slot="end"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</nldd-cell>';
           item.addEventListener('click', () => openDetail(t.id, false));
           lijst.appendChild(item);
         });
