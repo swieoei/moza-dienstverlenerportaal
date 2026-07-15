@@ -19,7 +19,24 @@
        De token --typography-font-family-base is niet globaal gedefinieerd, dus valt de body zonder
        expliciete fallback terug op system-ui. Daarom RijksSans in de fallback, zodat alle
        eigen-CSS-tekst hetzelfde lettertype gebruikt als de nldd-componenten. */
-    :root { --font-base: var(--typography-font-family-base, "RijksSans", system-ui, sans-serif); --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+    :root {
+      --font-base: var(--typography-font-family-base, "RijksSans", system-ui, sans-serif);
+      --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      /* Dark/light: het NLDD-palet draait op color-scheme + light-dark(). De --context-* tokens
+         zijn niet globaal gedefinieerd, dus koppelen we ze aan de themabewuste neutrale primitives
+         zodat alle eigen CSS (muted tekst, randen, oppervlakken) meebeweegt met licht/donker.
+         DS-componenten zetten hun eigen context op hun host en overschrijven dit binnen hun subtree. */
+      --context-foreground-color: var(--primitives-color-neutral-900);
+      --context-muted-foreground-color: var(--primitives-color-neutral-600);
+      --context-border-color: var(--primitives-color-neutral-300);
+      --context-base-background-color: var(--primitives-color-neutral-50);
+      /* Eigen aliassen voor gebruik in de app-CSS */
+      --app-muted: var(--primitives-color-neutral-600);
+      --app-border: var(--primitives-color-neutral-300);
+      --app-surface: light-dark(#f3f5f7, #2a3140);
+      --app-accent: light-dark(#154273, #8fb8e0);
+      --app-subtle-fill: light-dark(rgba(0,0,0,0.03), rgba(255,255,255,0.05));
+    }
     body { font-family: var(--font-base); background: var(--context-base-background-color, #fff); }
     #app { display: flex; flex-direction: column; height: 100vh; }
     nldd-app-view { flex: 1 1 auto; min-height: 0; }
@@ -64,10 +81,10 @@
     }
     .svc-status { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; }
     .svc-status--on { color: #39870c; font-weight: 600; }
-    .svc-status--off { color: #5a5a5a; }
-    .mp-key { font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: #f3f5f7; border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
+    .svc-status--off { color: var(--app-muted); }
+    .mp-key { font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.03em; padding: 10px 14px; background: var(--app-surface); border: 1px solid var(--context-border-color, #e3e3e3); border-radius: 6px; overflow-wrap: anywhere; flex: 1 1 auto; min-width: 220px; }
     .mp-keyrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .muted-note { color: #5a5a5a; font-size: 0.85rem; margin: 0; }
+    .muted-note { color: var(--app-muted); font-size: 0.85rem; margin: 0; }
     /* API-key rollen: meervoudige keuze via checkboxes */
     .rol-groep { display: flex; flex-direction: column; gap: 10px; }
     .rol-optie { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
@@ -75,7 +92,7 @@
     .rol-tekst { line-height: 1.35; }
     .rol-tekst strong { display: block; }
     .k-rollen { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-    .k-rollen .k-rollen-label { font-size: 0.85rem; color: #5a5a5a; margin-inline-end: 2px; }
+    .k-rollen .k-rollen-label { font-size: 0.85rem; color: var(--app-muted); margin-inline-end: 2px; }
     /* Contactherstel via fysieke post: uitklapbaar herstelblok binnen een kaart */
     .ch-herstel { border-inline-start: 3px solid #007bc7; padding-inline-start: 12px; margin-top: 4px; }
     /* Logboek: gelaagd filter - statusfilter genest binnen 'Notificaties' */
@@ -104,12 +121,12 @@
     .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .log-td-actie { white-space: normal; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.92rem; line-height: 1.35; }
     .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
-    .log-rij-detail > td { background: rgba(0,0,0,.03); }
+    .log-rij-detail > td { background: var(--app-subtle-fill); }
     /* Parent-child: uitklapbare regel met per-kanaal / per-stap uitkomst. */
     .log-parent .lg-caret { flex: 0 0 auto; width: 18px; height: 18px; transition: transform .15s ease; color: var(--context-muted-foreground-color, #5a5a5a); }
     .log-parent[aria-expanded="true"] .lg-caret { transform: rotate(90deg); }
     .log-parent { cursor: pointer; }
-    .log-kind > td { background: rgba(0,0,0,.025); border-bottom: 1px solid var(--context-border-color, #eee); padding-top: 7px; padding-bottom: 7px; }
+    .log-kind > td { background: var(--app-subtle-fill); border-bottom: 1px solid var(--context-border-color, #eee); padding-top: 7px; padding-bottom: 7px; }
     .log-kind .lg-kind-geb { display: flex; align-items: center; gap: 8px; padding-left: 26px; min-width: 0; }
     .log-kind .lg-kind-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .lg-kind-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
@@ -163,7 +180,7 @@
     .tb-mail-footer { white-space: pre-wrap; margin-top: 20px; padding-top: 12px; border-top: 1px solid #ececec; color: #555; font-size: 0.9rem; }
     /* Voorbeeld per kanaal */
     .tbp-kanalen { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
-    .tbp-kanaal-label { font-size: 0.75rem; font-weight: 700; color: #5a5a5a; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .tbp-kanaal-label { font-size: 0.75rem; font-weight: 700; color: var(--app-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
     .tbp-pre { white-space: pre-wrap; }
     .tbp-bbox { border: 1px solid #e3e3e3; border-radius: 8px; overflow: hidden; background: #fff; color: #1a1a1a; }
     .tbp-bbox-header { padding: 12px 18px; color: #fff; font-weight: 700; }
@@ -190,7 +207,7 @@
     .tbp-push-nu { margin-left: auto; }
     .tbp-push-titel { font-weight: 700; }
     .tbp-push-tekst { color: #333; }
-    .tbp-sms-van { font-size: .8rem; color: #5a5a5a; margin-bottom: 4px; }
+    .tbp-sms-van { font-size: .8rem; color: var(--app-muted); margin-bottom: 4px; }
     .tbp-bubble { display: inline-block; padding: 10px 14px; border-radius: 16px; max-width: 85%; line-height: 1.4; color: #1a1a1a; }
     .tbp-bubble-sms { background: #e5e5ea; border-bottom-left-radius: 4px; }
     .tbp-bubble-whats { background: #dcf8c6; border-bottom-left-radius: 4px; }
@@ -220,7 +237,7 @@
     .rte-mode { border: none; background: transparent; color: #5a5a5a; font: inherit; font-size: 0.85rem; padding: 5px 12px; cursor: pointer; }
     .rte-mode.is-actief { background: #e7eef7; color: #154273; font-weight: 600; }
     .rte-area { min-height: 160px; padding: 12px 14px; outline: none; line-height: 1.5; white-space: pre-wrap; color: #1a1a1a; }
-    .rte-area:empty::before { content: attr(data-placeholder); color: var(--context-muted-foreground-color, #8a8a8a); }
+    .rte-area:empty::before { content: attr(data-placeholder); color: #8a8a8a; }
     .rte-area h2 { font-size: 1.4rem; margin: .5em 0 .3em; }
     .rte-area h3 { font-size: 1.2rem; margin: .5em 0 .3em; }
     .rte-area h4 { font-size: 1.05rem; margin: .5em 0 .3em; }
@@ -286,22 +303,22 @@
     .an-top nldd-form-field { min-width: 220px; }
     .an-toggles { display: flex; flex-wrap: wrap; gap: 8px 18px; }
     .an-toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.9rem; }
-    .an-toggle input { accent-color: #154273; width: 15px; height: 15px; cursor: pointer; }
+    .an-toggle input { accent-color: var(--app-accent); width: 15px; height: 15px; cursor: pointer; }
     .an-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
     .an-chart { width: 100%; overflow-x: auto; }
     .an-svg { width: 100%; height: auto; min-width: 460px; display: block; }
-    .an-svg .an-xlab { font-size: 12px; fill: #5a6470; }
+    .an-svg .an-xlab { font-size: 12px; fill: var(--app-muted); }
     .an-svg .an-endlab { font-size: 12px; font-weight: 600; }
-    .an-noot { font-size: 0.8rem; color: #5a6470; margin: 0; }
+    .an-noot { font-size: 0.8rem; color: var(--app-muted); margin: 0; }
     .an-rapporten { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
     .an-rap-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .an-rap-waarde { font-size: 1.7rem; font-weight: 700; color: #154273; line-height: 1.1; }
+    .an-rap-waarde { font-size: 1.7rem; font-weight: 700; color: var(--app-accent); line-height: 1.1; }
     .an-rap-label { font-weight: 600; }
-    .an-rap-context { font-size: 0.88rem; color: #4f5b66; }
+    .an-rap-context { font-size: 0.88rem; color: var(--app-muted); }
     /* Klikbare rapportagetegel -> verfijnde analyse */
     .an-rap-card { cursor: pointer; }
     .an-rap-card:hover { outline: 2px solid #154273; outline-offset: 2px; border-radius: 8px; }
-    .an-rap-meer { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: #154273; margin-top: 2px; }
+    .an-rap-meer { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--app-accent); margin-top: 2px; }
     .an-rap-meer nldd-icon { width: 1em; height: 1em; flex: 0 0 auto; }
     /* Verfijnde analyse: filterbalk */
     .vfa-filters { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
@@ -316,7 +333,7 @@
     .gb-filterbalk nldd-dropdown { width: 100%; }
     /* Compacte gebruikerskaarten */
     .gb-cards { display: flex; flex-direction: column; gap: 10px; }
-    .gb-toegang-inline { font-size: 0.85rem; color: #444; }
+    .gb-toegang-inline { font-size: 0.85rem; color: var(--app-muted); }
     .gb-toegang-inline strong { color: inherit; }
     .gb-kaart--geen { opacity: 0.62; border-inline-start-color: #b0b6bd !important; }
     .gb-edit { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--context-border-color, #e3e3e3); max-width: 440px; }
@@ -328,7 +345,7 @@
     .prio-rij nldd-dropdown { min-width: 180px; }
     /* Uitklapbare zijnav: caret naast de status-tag van een parent */
     .nav-parent-end { display: inline-flex; align-items: center; gap: 8px; }
-    .nav-caret { color: #5a5a5a; flex: 0 0 auto; }
+    .nav-caret { color: var(--app-muted); flex: 0 0 auto; }
     .nav-caret, .nav-parent-end nldd-icon { width: 18px; height: 18px; }
     /* Klikbare overzichtstegels (naar subpagina's) */
     .nav-tile { cursor: pointer; }
@@ -340,15 +357,15 @@
     .deliver-bar .seg-ok { background: #39870c; }
     .deliver-bar .seg-warn { background: #e17000; min-width: 6px; }
     .deliver-bar .seg-attn { background: #d52b1e; min-width: 6px; }
-    .deliver-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: #5a5a5a; }
+    .deliver-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--app-muted); }
     .deliver-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .deliver-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
 
     /* Footer met presentatie-link (patroon zoals bg.rijks.app) */
     .app-footer { display: flex; align-items: center; gap: 20px; padding: 12px 24px; border-top: 1px solid var(--context-border-color, #e3e3e3); background: var(--context-base-background-color, #fff); flex-wrap: wrap; }
-    .app-footer a { color: #154273; text-decoration: none; font-size: 0.9rem; cursor: pointer; }
+    .app-footer a { color: var(--app-accent); text-decoration: none; font-size: 0.9rem; cursor: pointer; }
     .app-footer a:hover { text-decoration: underline; }
-    .app-footer .muted { color: #5a5a5a; font-size: 0.85rem; }
+    .app-footer .muted { color: var(--app-muted); font-size: 0.85rem; }
     .spacer { flex: 1 1 auto; }
 
     /* Presentatiemodus - look & feel zoals bg.rijks.app (Begane Grond) */
