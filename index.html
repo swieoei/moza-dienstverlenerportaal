@@ -289,14 +289,22 @@
     /* Eenvoudige toast (bv. voor 'binnenkort beschikbaar') */
     .app-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(8px); z-index: 1200; max-width: 90vw; background: #1a1a1a; color: #fff; padding: 12px 18px; border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.28); font-size: 0.95rem; opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
     .app-toast.is-open { opacity: 1; transform: translateX(-50%) translateY(0); }
-    /* Maak uw service live: go-live-takenlijst */
-    .live-intro-lijst { margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: 4px; }
-    .live-taken { border-top: 1px solid var(--context-border-color, #ececec); }
-    .live-taak { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 2px; border-bottom: 1px solid var(--context-border-color, #ececec); }
-    .live-taak-titel { font-weight: 600; }
-    .live-status { white-space: nowrap; }
-    .live-done { display: inline-flex; align-items: center; gap: 8px; color: #39870c; font-weight: 700; }
-    .live-check { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #39870c; color: #fff; font-size: 0.8rem; line-height: 1; }
+    /* Maak uw service live: verzwaarde go-live-voorwaarden per blok */
+    .live-eyebrow { margin: 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--app-muted); }
+    .live-blokken { display: flex; flex-direction: column; gap: 30px; }
+    .live-blok-kop { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--context-border-color, #ccc); padding-bottom: 8px; margin-bottom: 2px; }
+    .live-blok-tel { font-size: 0.85rem; font-weight: 600; color: var(--app-muted); white-space: nowrap; }
+    .live-cond { display: flex; align-items: flex-start; gap: 14px; padding: 14px 2px; border-bottom: 1px solid var(--context-border-color, #e3e3e3); }
+    .live-cond-ic { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px; }
+    .live-cond-ic--voltooid { color: light-dark(#2a8a4a, #5cc98a); }
+    .live-cond-ic--behandeling { color: light-dark(#b45309, #f0a04b); }
+    .live-cond-ic--todo { color: light-dark(#c0392b, #f08a7e); }
+    .live-cond-txt { flex: 1 1 auto; min-width: 0; }
+    .live-cond-kop { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+    .live-cond-kop nldd-link { font-weight: 600; }
+    .live-cond-desc { display: block; color: var(--app-muted); font-size: 0.9rem; margin-top: 3px; line-height: 1.4; }
+    .live-cond-geldig { display: block; color: light-dark(#b45309, #f0a04b); font-size: 0.82rem; font-weight: 600; margin-top: 4px; }
+    .live-cond-status { flex: 0 0 auto; white-space: nowrap; }
     .live-consent { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; line-height: 1.45; }
     .live-consent nldd-checkbox { flex: none; margin-top: 1px; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
@@ -2258,51 +2266,50 @@
                   <div class="inline">
                     <nldd-button id="live-terug" variant="secondary" start-icon="arrow-left" text="Terug naar de dienst"></nldd-button>
                   </div>
-                  <nldd-title size="4"><h2>Maak uw service live</h2></nldd-title>
-                  <nldd-rich-text>
-                    <p>Verwijder de beperkingen van de <nldd-link href="#" text="proefmodus"></nldd-link> en maak uw service live:</p>
-                    <ol class="live-intro-lijst">
-                      <li>Voltooi de taken op deze pagina.</li>
-                      <li>Selecteer 'Stuur een verzoek om live te gaan'.</li>
-                    </ol>
-                    <p>Het kan tot één werkdag duren om een service live te maken. We controleren namelijk of de service voldoet aan onze <nldd-link href="#" text="gebruiksvoorwaarden"></nldd-link>.</p>
-                  </nldd-rich-text>
+                  <p class="live-eyebrow">Notificatiedienst · Proefmodus → Productie</p>
 
-                  <nldd-title size="5"><h3>Uw service</h3></nldd-title>
-                  <nldd-banner id="live-bevestig" variant="success" text="" hidden></nldd-banner>
-                  <div class="live-taken" id="live-taken">
-                    <div class="live-taak" data-taak="overeenkomst" data-done="false">
-                      <nldd-link class="live-taak-titel" href="#" text="Upload de overeenkomst"></nldd-link>
-                      <span class="live-status"></span>
-                    </div>
-                    <div class="live-taak" data-taak="volume" data-done="false">
-                      <nldd-link class="live-taak-titel" href="#" text="Vertel ons hoeveel berichten u verwacht te verzenden"></nldd-link>
-                      <span class="live-status"></span>
-                    </div>
-                    <div class="live-taak" data-taak="teamlid" data-done="true">
-                      <nldd-link class="live-taak-titel" href="#" text="Geef een ander teamlid de toestemming 'instellingen beheren'"></nldd-link>
-                      <span class="live-status"></span>
-                    </div>
-                    <div class="live-taak" data-taak="antwoordmail" data-done="false" data-naar="afzender">
-                      <nldd-link class="live-taak-titel" href="#" text="Stel antwoordadressen in voor uw kanalen"></nldd-link>
-                      <span class="live-status"></span>
-                    </div>
-                  </div>
+                  <nldd-banner variant="accent" text="Wat er verandert als u live gaat: uw dienst verstuurt straks echte notificaties aan ondernemers, via het kanaal van hun voorkeur (e-mail, sms, push of Signal) met terugval op een alternatief kanaal. De beperkingen van de proefmodus vervallen en uw organisatie is verantwoordelijk voor elke verzending. Livegang kan niet met één klik ongedaan worden gemaakt. Rond eerst alle voorwaarden hieronder af; daarna beoordelen wij uw verzoek."></nldd-banner>
+                  <nldd-banner variant="neutral" text="Alleen de notificatiedienst. Deze voorwaarden gelden voor het afnemen van de notificatiedienst, die u zelfstandig kunt afnemen."></nldd-banner>
 
-                  <nldd-title size="5"><h3>Uw organisatie</h3></nldd-title>
-                  <nldd-rich-text>
-                    <p>Wanneer u ons een verzoek stuurt om live te gaan, vragen we u de naam van de openbare-sectororganisatie die verantwoordelijk is voor uw service.</p>
-                  </nldd-rich-text>
-                  <div class="live-consent" id="live-consent-rij">
-                    <nldd-checkbox id="live-consent-cb" accessible-label="Ik ga akkoord met de gegevensverwerkings- en financiële overeenkomst"></nldd-checkbox>
-                    <span>Ik ga akkoord met de <nldd-link href="#" text="gegevensverwerkings- en financiële overeenkomst"></nldd-link>.</span>
-                  </div>
+                  <div id="live-blokken" class="live-blokken"></div>
 
-                  <nldd-divider></nldd-divider>
-                  <p class="muted-note" id="live-note">U moet alle taken voltooien en de overeenkomst accepteren voordat u een verzoek kunt verzenden om live te gaan.</p>
-                  <div class="row-actions">
-                    <nldd-button id="live-send" variant="primary" start-icon="paper-plane" text="Stuur een verzoek om live te gaan" disabled></nldd-button>
-                  </div>
+                  <nldd-card>
+                    <nldd-container padding="16" gap="8">
+                      <nldd-title size="5"><h3>Hoe wij uw verzoek beoordelen</h3></nldd-title>
+                      <nldd-rich-text>
+                        <p>Wij voeren een inhoudelijke toets uit, geen automatische controle. Reken op <strong>5 tot 10 werkdagen</strong>. Wij toetsen:</p>
+                        <ul>
+                          <li>of de wettelijke grondslag past bij het soort notificaties en de ondernemers;</li>
+                          <li>of contactgegevens en kanaalvoorkeur uit de profieldienst alleen voor dit doel worden gebruikt (doelbinding, dataminimalisatie);</li>
+                          <li>of de vereiste verklaringen zijn afgegeven, waaronder de eigen verantwoordelijkheid van de afnemer voor de inhoud;</li>
+                          <li>of de DPIA de risico's afdekt en de maatregelen aansluiten op de beveiligingsbaseline;</li>
+                          <li>of de onafhankelijke beveiligingsbeoordeling actueel is en de bevindingen zijn opgevolgd;</li>
+                          <li>of de verantwoordelijkheid en het mandaat aantoonbaar belegd zijn.</li>
+                        </ul>
+                      </nldd-rich-text>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <nldd-card>
+                    <nldd-container padding="16" gap="12">
+                      <nldd-title size="5"><h3>Verklaring en verzoek om live te gaan</h3></nldd-title>
+                      <nldd-rich-text><p>U dient dit verzoek in namens uw organisatie. Uw naam en functie worden vastgelegd bij het verzoek.</p></nldd-rich-text>
+                      <div class="live-consent" id="live-consent-rij">
+                        <nldd-checkbox id="live-consent-cb" accessible-label="Ik verklaar te voldoen aan de voorwaarden"></nldd-checkbox>
+                        <span>Ik verklaar, gemachtigd namens de verwerkingsverantwoordelijke organisatie, dat het gebruik van de notificatiedienst voldoet aan de <nldd-link href="#" text="gebruiksvoorwaarden"></nldd-link> en aan de <nldd-link href="#" text="gegevensverwerkings- en financiële overeenkomst"></nldd-link>, dat mijn organisatie zelf verantwoordelijk is voor en voldoet aan de inhoudseisen voor de notificaties, en dat de aangeleverde onderbouwing juist en volledig is.</span>
+                      </div>
+                      <nldd-form-field label="Naam en functie">
+                        <nldd-text-field id="live-naam" placeholder="Voor- en achternaam, functie"></nldd-text-field>
+                      </nldd-form-field>
+                      <div class="row-actions">
+                        <nldd-button id="live-send" variant="primary" start-icon="paper-plane" text="Stuur verzoek om live te gaan" disabled></nldd-button>
+                      </div>
+                      <p class="muted-note" id="live-note">Bevestig de verklaring en vul uw naam en functie in om het verzoek te versturen.</p>
+                      <nldd-banner id="live-bevestig" variant="success" text="" hidden></nldd-banner>
+                    </nldd-container>
+                  </nldd-card>
+
+                  <nldd-banner variant="warning" text="Na livegang: de beveiligingsbaseline, de onafhankelijke beveiligingsbeoordeling en de toegankelijkheidsborging moeten jaarlijks opnieuw worden aangeleverd of bevestigd. Een verlopen beveiligingsbeoordeling zet de dienst terug naar proefmodus totdat een actuele beoordeling is aangeleverd. Wij herinneren de contactpersoon 30 dagen voor de vervaldatum. Bij grote wijzigingen in gegevens of kanalen wordt de dienst opnieuw beoordeeld."></nldd-banner>
                 </div>
               </section>
 
@@ -4828,66 +4835,111 @@
       });
     })();
 
-    // ====================== Maak uw service live (go-live checklist) ======================
-    // Takenlijst voor de overstap naar productie. Voltooide criteria krijgen een groene
-    // check; het verzoek kan pas worden verstuurd als alle taken voltooid zijn.
+    // ====================== Maak uw service live (verzwaarde go-live-voorwaarden) ======================
+    // Voorwaarden per blok, elk met een status (voltooid / in behandeling / nog te doen).
+    // Statussen zijn voorbeeldwaarden; het verzoek is verstuurbaar na de verklaring + naam.
     (function () {
       const root = document.querySelector('section[data-view="livegaan"]');
       if (!root) return;
-      const taken = Array.from(root.querySelectorAll('.live-taak'));
       const sendBtn = root.querySelector('#live-send');
-      const note = root.querySelector('#live-note');
       const bevestig = root.querySelector('#live-bevestig');
       const consentRij = root.querySelector('#live-consent-rij');
       const consentCb = root.querySelector('#live-consent-cb');
+      const naam = root.querySelector('#live-naam');
+      const blokkenEl = root.querySelector('#live-blokken');
 
-      function statusHTML(done) {
-        return done
-          ? '<span class="live-done"><span class="live-check" aria-hidden="true">&#10003;</span> Voltooid</span>'
-          : '<nldd-tag color="neutral" text="Niet voltooid"></nldd-tag>';
-      }
-      function renderStatus() {
-        let alle = true;
-        taken.forEach(t => {
-          const done = t.dataset.done === 'true';
-          if (!done) alle = false;
-          t.querySelector('.live-status').innerHTML = statusHTML(done);
-        });
-        if (consentCb && !consentCb.checked) alle = false; // overeenkomst accepteren is verplicht
-        if (sendBtn) sendBtn.toggleAttribute('disabled', !alle);
-        if (note) note.toggleAttribute('hidden', alle);
-      }
+      const STAT = {
+        voltooid:    { icon: 'check-mark-circle', tag: { color: 'success', text: 'Voltooid' } },
+        behandeling: { icon: 'clock', tag: { color: 'warning', text: 'In behandeling' } },
+        todo:        { icon: 'exclamation-circle', tag: { color: 'critical', text: 'Nog te doen' } },
+      };
+      const VEREIST = { color: 'critical', text: 'Vereist' };
+      const VERKLARING = { color: 'neutral', text: 'Verklaring afnemer' };
 
-      // Consent-checkbox: klik op de regel toggelt de checkbox; de link opent de overeenkomst.
+      const BLOKKEN = [
+        { titel: '1. Operationele gereedheid', condities: [
+          { titel: 'Stel de kanalen en de standaard afzender per kanaal in', desc: 'Welke van de kanalen e-mail, sms, push en Signal deze dienst gebruikt, en onder welke afzendernaam ondernemers de notificatie zien.', status: 'voltooid' },
+          { titel: 'Stel het antwoord-e-mailadres in en verifieer het afzenderprofiel', desc: 'Een gecontroleerd antwoordadres voor e-mail, en een geverifieerd afzenderprofiel voor sms en Signal.', status: 'voltooid' },
+          { titel: 'Richt API-keys in met een beperkte rol en geldigheid', desc: 'Elke applicatie een eigen key, met de minimale rol en een vervaldatum (standaard 90 dagen).', status: 'voltooid' },
+          { titel: 'Geef het verwachte verzendvolume op', desc: 'Nodig voor de capaciteitsafspraken en het monitoren van de aflevering.', status: 'voltooid' },
+        ]},
+        { titel: '2. Inhoud en aflevering van notificaties', condities: [
+          { titel: 'Richt templates in per taal en per kanaal', desc: 'Lange tekst voor e-mail, korte tekst (~160 tekens) voor push, sms en Signal. U schrijft in het Nederlands; de inhoud wordt vertaald.', status: 'voltooid' },
+          { titel: 'Lever elke ondernemer de notificatie in zijn voorkeurstaal', desc: 'De voorkeurstaal komt uit de profieldienst en wordt automatisch toegepast.', status: 'voltooid' },
+          { titel: 'Verklaar dat u voldoet aan de inhoudseisen', desc: 'U bent zelf verantwoordelijk voor de kwaliteit, juistheid en begrijpelijkheid van de inhoud - en, waar u notificeert over officiële berichten, voor het vermelden van aard, rechtsgevolg en termijn. De dienst toetst de inhoud niet; u verklaart hieraan te voldoen.', status: 'todo', tags: [VERKLARING] },
+          { titel: 'Stel logging van verzending, afleverstatus en raadpleging beschikbaar', desc: 'Voor aantoonbaarheid en storingsanalyse. Logboekgegevens worden bewaard conform de vastgestelde termijn; de audit trail blijft 10 jaar bewaard.', status: 'voltooid' },
+        ]},
+        { titel: '3. Rechtmatigheid en gegevensbescherming', condities: [
+          { titel: 'Onderteken de gegevensverwerkingsovereenkomst', desc: 'Verwerkersafspraken tussen uw organisatie en de dienst.', status: 'voltooid' },
+          { titel: 'Leg de wettelijke grondslag vast', desc: 'Op welke grondslag notificeert u ondernemers en verwerkt u hun gegevens?', status: 'todo', tags: [VEREIST] },
+          { titel: 'Voeg de uitgevoerde DPIA toe', desc: 'Gegevensbeschermingseffectbeoordeling voor deze verwerking en kanalen.', status: 'behandeling', tags: [VEREIST] },
+          { titel: 'Onderbouw doelbinding en dataminimalisatie', desc: 'Gebruik van contactgegevens en kanaalvoorkeur uit de profieldienst blijft beperkt tot dit doel. Vraag zo min mogelijk.', status: 'todo' },
+        ]},
+        { titel: '4. Beveiliging en toegankelijkheid', condities: [
+          { titel: 'Bevestig de beveiligingsbaseline', desc: 'Uw eigen bevestiging dat de dienst aan de vastgestelde beveiligingseisen voldoet.', status: 'voltooid', geldig: 'Geldig tot 1 juli 2027 - jaarlijkse herbevestiging vereist' },
+          { titel: 'Lever de onafhankelijke beveiligingsbeoordeling aan', desc: 'Onafhankelijke toets door een erkende beoordelaar, vereist omdat de dienst persoonsgegevens op servers opslaat of verstuurt. Toetst opzet, versleuteling, opslag en toegangsbeheer. Dit is geen zelfbevestiging.', status: 'behandeling', tags: [VEREIST], geldig: 'Beoordeling niet ouder dan 12 maanden - jaarlijks te herhalen' },
+          { titel: 'Borg toegankelijke en begrijpelijke notificaties', desc: 'E-mail voldoet aan WCAG 2.2 (niveau AA); korte teksten voor push, sms en Signal zijn begrijpelijk en volledig.', status: 'behandeling' },
+        ]},
+        { titel: '5. Verantwoordelijkheid', condities: [
+          { titel: 'Benoem de verwerkingsverantwoordelijke organisatie', desc: 'De openbare-sectororganisatie die verantwoordelijk is voor de dienst.', status: 'voltooid' },
+          { titel: 'Wijs minimaal twee beheerders aan', desc: 'Een organisatiebeheerder en een dienstbeheerder, zodat beheer nooit bij één persoon ligt.', status: 'voltooid' },
+          { titel: 'Wijs een verantwoordelijk contactpersoon aan', desc: 'Met mandaat om namens de organisatie te verklaren en te reageren op incidenten en storingen.', status: 'todo', tags: [VEREIST] },
+        ]},
+      ];
+
+      function condEl(c) {
+        const st = STAT[c.status] || STAT.todo;
+        const row = document.createElement('div'); row.className = 'live-cond';
+        const ic = document.createElement('nldd-icon');
+        ic.className = 'live-cond-ic live-cond-ic--' + c.status;
+        ic.setAttribute('name', st.icon);
+        row.appendChild(ic);
+        const txt = document.createElement('div'); txt.className = 'live-cond-txt';
+        const kop = document.createElement('div'); kop.className = 'live-cond-kop';
+        const link = document.createElement('nldd-link'); link.setAttribute('href', '#'); link.setAttribute('text', c.titel);
+        kop.appendChild(link);
+        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); kop.appendChild(t); });
+        txt.appendChild(kop);
+        const desc = document.createElement('span'); desc.className = 'live-cond-desc'; desc.textContent = c.desc; txt.appendChild(desc);
+        if (c.geldig) { const g = document.createElement('span'); g.className = 'live-cond-geldig'; g.textContent = c.geldig; txt.appendChild(g); }
+        row.appendChild(txt);
+        const sw = document.createElement('div'); sw.className = 'live-cond-status';
+        const stag = document.createElement('nldd-tag'); stag.setAttribute('color', st.tag.color); stag.setAttribute('text', st.tag.text);
+        sw.appendChild(stag);
+        row.appendChild(sw);
+        return row;
+      }
+      BLOKKEN.forEach(b => {
+        const wrap = document.createElement('div'); wrap.className = 'live-blok';
+        const voltooid = b.condities.filter(c => c.status === 'voltooid').length;
+        const kop = document.createElement('div'); kop.className = 'live-blok-kop';
+        const titel = document.createElement('nldd-title'); titel.setAttribute('size', '5');
+        const h3 = document.createElement('h3'); h3.textContent = b.titel; titel.appendChild(h3);
+        const tel = document.createElement('span'); tel.className = 'live-blok-tel'; tel.textContent = voltooid + ' van ' + b.condities.length + ' voltooid';
+        kop.appendChild(titel); kop.appendChild(tel); wrap.appendChild(kop);
+        b.condities.forEach(c => wrap.appendChild(condEl(c)));
+        blokkenEl.appendChild(wrap);
+      });
+
+      // Verzoek is verstuurbaar zodra de verklaring is bevestigd en naam/functie is ingevuld.
+      function naamWaarde() { return ((naam && naam.value) || '').trim(); }
+      function update() { if (sendBtn) sendBtn.toggleAttribute('disabled', !(consentCb && consentCb.checked && naamWaarde().length > 0)); }
+
       if (consentRij && consentCb) {
         consentRij.addEventListener('click', e => {
           if (e.target.closest('nldd-link')) { e.preventDefault(); return; }
-          if (e.target.closest('nldd-checkbox')) return; // checkbox handelt zichzelf af
+          if (e.target.closest('nldd-checkbox')) return;
           const input = consentCb.shadowRoot && consentCb.shadowRoot.querySelector('input');
           if (input) input.click(); else consentCb.toggleAttribute('checked');
         });
-        consentCb.addEventListener('change', renderStatus);
+        consentCb.addEventListener('change', update);
       }
-
-      taken.forEach(t => {
-        const link = t.querySelector('.live-taak-titel');
-        if (link) link.addEventListener('click', e => {
-          e.preventDefault();
-          if (t.dataset.done === 'true') return; // al voltooid
-          t.dataset.done = 'true';
-          renderStatus();
-          if (bevestig) {
-            bevestig.setAttribute('variant', 'success');
-            bevestig.setAttribute('text', 'Taak voltooid: ' + (link.getAttribute('text') || '') + '.');
-            bevestig.removeAttribute('hidden');
-          }
-        });
-      });
+      if (naam) { naam.addEventListener('input', update); naam.addEventListener('change', update); }
 
       if (sendBtn) sendBtn.addEventListener('click', () => {
         if (sendBtn.hasAttribute('disabled')) return;
         bevestig.setAttribute('variant', 'success');
-        bevestig.setAttribute('text', 'Verzoek om live te gaan verstuurd. De beheerorganisatie controleert of de service voldoet aan de gebruiksvoorwaarden en neemt binnen één werkdag contact op.');
+        bevestig.setAttribute('text', 'Verzoek om live te gaan verstuurd. Wij toetsen uw verzoek inhoudelijk en nemen binnen 5 tot 10 werkdagen contact op met de aangewezen contactpersoon.');
         bevestig.removeAttribute('hidden');
       });
 
@@ -4897,7 +4949,7 @@
         else showView('marktplaats', 'Dienstenaanbod');
       });
 
-      renderStatus();
+      update();
     })();
 
     // ====================== API-keys-beheer in de dienstviews ======================
