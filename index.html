@@ -136,9 +136,14 @@
     .log-kind .lg-kind-geb { display: flex; align-items: center; gap: 8px; padding-left: 26px; min-width: 0; }
     .log-kind .lg-kind-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .lg-kind-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
+    /* Stipkleuren per uitkomst; --voltooid/--bezig/--todo worden dynamisch opgebouwd
+       ('lg-kind-dot--' + uitkomst), dus laten staan ook al matcht een tekstzoektocht ze niet. */
     .lg-kind-dot--afgeleverd { background: #2a8a4a; }
     .lg-kind-dot--niet { background: #a3120a; }
     .lg-kind-dot--stap { background: #6a7180; }
+    .lg-kind-dot--voltooid { background: #2a8a4a; }
+    .lg-kind-dot--bezig { background: light-dark(#b45309, #f0a04b); }
+    .lg-kind-dot--todo { background: #6a7180; }
     .log-periode-rij { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
     .log-periode-rij nldd-dropdown { min-width: 200px; }
     .log-periode-custom { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
@@ -1100,27 +1105,27 @@
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
                           <nldd-text-cell text="**Nieuwe regelgeving vanaf 1 januari 2027** - Alle ondernemers"></nldd-text-cell>
-                          <nldd-cell slot="end"><nldd-tag color="accent" text="ingepland"></nldd-tag></nldd-cell>
+                          <nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell><nldd-tag color="accent" text="ingepland"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="bell"></nldd-icon></nldd-icon-cell>
                           <nldd-text-cell text="**Herinnering: aanvulling zaak ZA-2026-0481** - Brouwer Installatietechniek · reminder bij zaak"></nldd-text-cell>
-                          <nldd-cell slot="end"><nldd-tag color="warning" text="reminder"></nldd-tag></nldd-cell>
+                          <nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell><nldd-tag color="warning" text="reminder"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="arrow-2-counter-clockwise"></nldd-icon></nldd-icon-cell>
                           <nldd-text-cell text="**Jaarlijkse opgave Handelsregister** - Alle ondernemers · jaarlijks"></nldd-text-cell>
-                          <nldd-cell slot="end"><nldd-tag color="neutral" text="terugkerend"></nldd-tag></nldd-cell>
+                          <nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell><nldd-tag color="neutral" text="terugkerend"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="message-rectangle-text"></nldd-icon></nldd-icon-cell>
                           <nldd-text-cell text="Wijziging Handelsregisterwet - afscherming woonadres · 16 jun 2026"></nldd-text-cell>
-                          <nldd-cell slot="end"><nldd-tag color="success" text="verzonden"></nldd-tag></nldd-cell>
+                          <nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell><nldd-tag color="success" text="verzonden"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="pencil"></nldd-icon></nldd-icon-cell>
                           <nldd-text-cell text="Welkomstbericht nieuwe inschrijving - concept"></nldd-text-cell>
-                          <nldd-cell slot="end"><nldd-tag color="neutral" text="concept"></nldd-tag></nldd-cell>
+                          <nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell><nldd-tag color="neutral" text="concept"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                       </nldd-list>
                       <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
@@ -3987,7 +3992,7 @@
           item.innerHTML =
             '<nldd-icon-cell slot="start"><nldd-icon name="' + (t.status === 'concept' ? 'pencil' : 'file-text') + '"></nldd-icon></nldd-icon-cell>' +
             '<nldd-text-cell text="' + titelCel + '"></nldd-text-cell>' +
-            '<nldd-cell slot="end"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</nldd-cell>';
+            '<nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell max-width="14rem"><nldd-container layout="wrap" gap="4" vertical-alignment="center"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</nldd-container></nldd-cell>';
           item.addEventListener('click', () => openDetail(t.id, false));
           lijst.appendChild(item);
         });
@@ -4796,13 +4801,13 @@
         { titel: '2. Inhoud en aflevering van notificaties', condities: [
           { titel: 'Richt templates in per taal en per kanaal', desc: 'Lange tekst voor e-mail, korte tekst (~160 tekens) voor push, sms en Signal. U schrijft in het Nederlands; de inhoud wordt vertaald.', status: 'voltooid' },
           { titel: 'Lever elke ondernemer de notificatie in zijn voorkeurstaal', desc: 'De voorkeurstaal komt uit de profieldienst en wordt automatisch toegepast.', status: 'voltooid' },
-          { titel: 'Verklaar dat u voldoet aan de inhoudseisen', desc: 'U bent zelf verantwoordelijk voor de kwaliteit, juistheid en begrijpelijkheid van de inhoud - en, waar u notificeert over officiële berichten, voor het vermelden van aard, rechtsgevolg en termijn. De dienst toetst de inhoud niet; u verklaart hieraan te voldoen.', status: 'todo', tags: [VERKLARING] },
+          { titel: 'Verklaar dat u voldoet aan de inhoudseisen', desc: 'U bent zelf verantwoordelijk voor de kwaliteit, juistheid en begrijpelijkheid van de inhoud - en, waar u notificeert over officiële berichten, voor het vermelden van aard, rechtsgevolg en termijn. De dienst toetst de inhoud niet; u verklaart hieraan te voldoen.', status: 'todo', tags: [VERKLARING], upload: true },
           { titel: 'Stel logging van verzending, afleverstatus en raadpleging beschikbaar', desc: 'Voor aantoonbaarheid en storingsanalyse. Logboekgegevens worden bewaard conform de vastgestelde termijn; de audit trail blijft 10 jaar bewaard.', status: 'voltooid' },
         ]},
         { titel: '3. Rechtmatigheid en gegevensbescherming', condities: [
           { titel: 'Onderteken de gegevensverwerkingsovereenkomst', desc: 'Verwerkersafspraken tussen uw organisatie en de dienst.', status: 'voltooid' },
           { titel: 'Leg de wettelijke grondslag vast', desc: 'Op welke grondslag notificeert u ondernemers en verwerkt u hun gegevens?', status: 'todo', tags: [VEREIST] },
-          { titel: 'Voeg de uitgevoerde DPIA toe', desc: 'Gegevensbeschermingseffectbeoordeling voor deze verwerking en kanalen.', status: 'behandeling', tags: [VEREIST] },
+          { titel: 'Voeg de uitgevoerde DPIA toe', desc: 'Gegevensbeschermingseffectbeoordeling voor deze verwerking en kanalen.', status: 'behandeling', tags: [VEREIST], upload: true },
           { titel: 'Onderbouw doelbinding en dataminimalisatie', desc: 'Gebruik van contactgegevens en kanaalvoorkeur uit de profieldienst blijft beperkt tot dit doel. Vraag zo min mogelijk.', status: 'todo' },
         ]},
         { titel: '4. Beveiliging en toegankelijkheid', condities: [
@@ -4813,12 +4818,30 @@
         { titel: '5. Verantwoordelijkheid', condities: [
           { titel: 'Benoem de verwerkingsverantwoordelijke organisatie', desc: 'De openbare-sectororganisatie die verantwoordelijk is voor de dienst.', status: 'voltooid' },
           { titel: 'Wijs minimaal twee beheerders aan', desc: 'Een organisatiebeheerder en een dienstbeheerder, zodat beheer nooit bij één persoon ligt.', status: 'voltooid' },
-          { titel: 'Wijs een verantwoordelijk contactpersoon aan', desc: 'Met mandaat om namens de organisatie te verklaren en te reageren op incidenten en storingen.', status: 'todo', tags: [VEREIST] },
+          { titel: 'Wijs een verantwoordelijk contactpersoon aan', desc: 'Met mandaat om namens de organisatie te verklaren en te reageren op incidenten en storingen.', status: 'todo', tags: [VEREIST], upload: true },
         ]},
       ];
 
+      // Verborgen bestandskiezer, gedeeld door alle upload-condities.
+      const bestandInput = document.createElement('input');
+      bestandInput.type = 'file';
+      bestandInput.accept = '.pdf,.doc,.docx';
+      bestandInput.hidden = true;
+      root.appendChild(bestandInput);
+      let uploadDoel = null;
+      bestandInput.addEventListener('change', () => {
+        const f = bestandInput.files && bestandInput.files[0];
+        if (f && uploadDoel) {
+          uploadDoel.bestand = f.name;
+          uploadDoel.status = 'voltooid';
+          renderBlokken();
+        }
+        bestandInput.value = '';
+        uploadDoel = null;
+      });
+
       // Conditie als nldd-list-item: statusicoon (start), titel + omschrijving (text-cell),
-      // vereist-/verklaringtags en de statustag rechts (end-cell).
+      // vereist-/verklaringtags, statustag en (waar van toepassing) een uploadknop rechts.
       function condEl(c) {
         const st = STAT[c.status] || STAT.todo;
         const item = document.createElement('nldd-list-item');
@@ -4830,30 +4853,50 @@
         item.appendChild(icCell);
         const tc = document.createElement('nldd-text-cell');
         tc.setAttribute('text', '**' + c.titel + '**');
-        tc.setAttribute('supporting-text', c.desc + (c.geldig ? ' — ' + c.geldig : ''));
+        tc.setAttribute('supporting-text', c.desc + (c.geldig ? ' — ' + c.geldig : '') + (c.bestand ? ' — Document ontvangen: ' + c.bestand : ''));
         item.appendChild(tc);
-        const end = document.createElement('nldd-cell'); end.setAttribute('slot', 'end');
-        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); end.appendChild(t); });
+        // Tags (en evt. uploadknop) in een wrappende container binnen een gewone cell,
+        // met een spacer-cell als kolomruimte (geen slot="end"; zie NLDD-richtlijn).
+        const spacer = document.createElement('nldd-spacer-cell'); spacer.setAttribute('size', '16');
+        item.appendChild(spacer);
+        const end = document.createElement('nldd-cell');
+        end.setAttribute('max-width', '14rem'); // begrenst de wrap-container, anders claimt die max-content
+        const groep = document.createElement('nldd-container');
+        groep.setAttribute('layout', 'wrap'); groep.setAttribute('gap', '4'); groep.setAttribute('vertical-alignment', 'center');
+        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); groep.appendChild(t); });
         const stag = document.createElement('nldd-tag'); stag.setAttribute('color', st.tag.color); stag.setAttribute('text', st.tag.text);
-        end.appendChild(stag);
+        groep.appendChild(stag);
+        if (c.upload) {
+          const up = document.createElement('nldd-button');
+          up.setAttribute('variant', 'secondary');
+          up.setAttribute('start-icon', 'arrow-up-tray');
+          up.setAttribute('text', c.bestand ? 'Ander document uploaden' : 'Document uploaden');
+          up.addEventListener('click', () => { uploadDoel = c; bestandInput.click(); });
+          groep.appendChild(up);
+        }
+        end.appendChild(groep);
         item.appendChild(end);
         return item;
       }
-      BLOKKEN.forEach(b => {
-        const wrap = document.createElement('nldd-container'); wrap.setAttribute('gap', '8');
-        const voltooid = b.condities.filter(c => c.status === 'voltooid').length;
-        const kop = document.createElement('nldd-container');
-        kop.setAttribute('layout', 'wrap'); kop.setAttribute('gap', '8'); kop.setAttribute('vertical-alignment', 'center');
-        const titel = document.createElement('nldd-title'); titel.setAttribute('size', '5');
-        const h3 = document.createElement('h3'); h3.textContent = b.titel; titel.appendChild(h3);
-        const spacer = document.createElement('nldd-spacer'); spacer.setAttribute('size', 'flexible'); spacer.setAttribute('direction', 'horizontal');
-        const tel = document.createElement('span'); tel.className = 'muted-note'; tel.textContent = voltooid + ' van ' + b.condities.length + ' voltooid';
-        kop.appendChild(titel); kop.appendChild(spacer); kop.appendChild(tel); wrap.appendChild(kop);
-        const lijst = document.createElement('nldd-list'); lijst.setAttribute('variant', 'box');
-        b.condities.forEach(c => lijst.appendChild(condEl(c)));
-        wrap.appendChild(lijst);
-        blokkenEl.appendChild(wrap);
-      });
+      function renderBlokken() {
+        blokkenEl.textContent = '';
+        BLOKKEN.forEach(b => {
+          const wrap = document.createElement('nldd-container'); wrap.setAttribute('gap', '8');
+          const voltooid = b.condities.filter(c => c.status === 'voltooid').length;
+          const kop = document.createElement('nldd-container');
+          kop.setAttribute('layout', 'wrap'); kop.setAttribute('gap', '8'); kop.setAttribute('vertical-alignment', 'center');
+          const titel = document.createElement('nldd-title'); titel.setAttribute('size', '5');
+          const h3 = document.createElement('h3'); h3.textContent = b.titel; titel.appendChild(h3);
+          const spacer = document.createElement('nldd-spacer'); spacer.setAttribute('size', 'flexible'); spacer.setAttribute('direction', 'horizontal');
+          const tel = document.createElement('span'); tel.className = 'muted-note'; tel.textContent = voltooid + ' van ' + b.condities.length + ' voltooid';
+          kop.appendChild(titel); kop.appendChild(spacer); kop.appendChild(tel); wrap.appendChild(kop);
+          const lijst = document.createElement('nldd-list'); lijst.setAttribute('variant', 'box');
+          b.condities.forEach(c => lijst.appendChild(condEl(c)));
+          wrap.appendChild(lijst);
+          blokkenEl.appendChild(wrap);
+        });
+      }
+      renderBlokken();
 
       // Verzoek is verstuurbaar zodra de verklaring is bevestigd en naam/functie is ingevuld.
       function naamWaarde() { return ((naam && naam.value) || '').trim(); }
@@ -5315,7 +5358,7 @@
             item.innerHTML = `
               <nldd-icon-cell slot="start"><nldd-icon name="file-text"></nldd-icon></nldd-icon-cell>
               <nldd-text-cell></nldd-text-cell>
-              <nldd-cell slot="end"><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>`;
+              <nldd-spacer-cell size="16"></nldd-spacer-cell><nldd-cell><nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Download"></nldd-button></nldd-cell>`;
             item.querySelector('nldd-text-cell').setAttribute('text', '**' + r.naam + '** - ' + r.periode + ' · ' + r.formaat);
             lijst.appendChild(item);
           });
