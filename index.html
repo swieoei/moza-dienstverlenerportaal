@@ -125,6 +125,8 @@
     /* Titel en detail elk op 1 regel (ellipsis, volledige tekst via tooltip) - uniforme rijhoogte. */
     .log-geb-detail { color: var(--context-muted-foreground-color, #5a5a5a); margin-top: 2px; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .log-td-actie { white-space: normal; color: var(--context-muted-foreground-color, #5a5a5a); font-size: 0.92rem; line-height: 1.35; }
+    /* Logboektabel: muted tekst (tijd, gebeurtenis-omschrijving, opmerking) nog iets lichter. */
+    .log-tabel .log-td-tijd, .log-tabel .log-geb-detail, .log-tabel .log-td-actie { color: var(--primitives-color-neutral-800); }
     .log-geen-actie { color: var(--context-muted-foreground-color, #9a9a9a); }
     .log-rij-detail > td { background: var(--app-subtle-fill); }
     /* Parent-child: uitklapbare regel met per-kanaal / per-stap uitkomst. */
