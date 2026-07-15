@@ -48,14 +48,10 @@
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
     .js-kpi-actie-card { cursor: pointer; transition: box-shadow .15s ease; }
     .js-kpi-actie-card:hover, .js-kpi-actie-card:focus-visible { box-shadow: 0 2px 12px rgba(0,0,0,.14); outline: none; }
-    .view { display: none; }
-    .view.is-active { display: block; }
-    .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .stack { display: flex; flex-direction: column; gap: 16px; }
-    .inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    /* Views tonen/verbergen via het hidden-attribuut (NLDD-migratie fase 1);
+       .view/.stack/.inline/.between/.row-actions zijn nu inerte JS-hooks op nldd-container. */
     .lang-grid { display: flex; flex-wrap: wrap; gap: 16px 32px; }
     .lang-opt { display: flex; align-items: center; gap: 8px; }
-    .between { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 
     /* Zijnavigatie: children springen in via nldd-spacer-cell in de start-slot */
     /* Paginatitel: prominente h1 bovenaan de content, uitgelijnd met de bovenkant van het menu */
@@ -312,8 +308,6 @@
     .dienst-alle { color: #4f5b66; background: #eef1f4; border-color: #d6dce2; }
     .dienst-project { color: #4b3a86; background: #eee9f8; border-color: #d3c8ee; }
     /* Analytics en rapportages */
-    .an-top { align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-    .an-top nldd-form-field { min-width: 220px; }
     .an-toggles { display: flex; flex-wrap: wrap; gap: 8px 18px; }
     .an-toggle { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.9rem; }
     .an-toggle input { accent-color: var(--app-accent); width: 15px; height: 15px; cursor: pointer; }
@@ -598,11 +592,11 @@
 
 
               <!-- ====================== DASHBOARD ====================== -->
-              <section class="view is-active" data-view="dashboard">
-                <div class="stack">
+              <section class="view" data-view="dashboard">
+                <nldd-container class="stack" gap="16">
                   <!-- Afleverstatus hoort bij de notificatiedienst: verborgen voor gebruikers die
                        alleen tot een andere dienst toegang hebben. -->
-                  <div class="stack" data-dienst="notificatiedienst">
+                  <nldd-container class="stack" gap="16" data-dienst="notificatiedienst">
                     <nldd-title size="4"><h2>Aflevering notificaties vandaag</h2></nldd-title>
                     <div class="afl-grid">
                       <nldd-card>
@@ -628,7 +622,7 @@
                         </nldd-container>
                       </nldd-card>
                     </div>
-                  </div>
+                  </nldd-container>
 
                   <nldd-title size="4"><h2>Andere activiteiten</h2></nldd-title>
                   <nldd-table columns="minmax(200px,1.6fr) minmax(150px,1fr) 140px 130px" accessible-label="Andere activiteiten">
@@ -684,12 +678,12 @@
                       </nldd-container>
                     </nldd-card>
                   </div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== PROFIELDIENST ====================== -->
-              <section class="view" data-view="profieldienst">
-                <div class="stack">
+              <section class="view" hidden data-view="profieldienst">
+                <nldd-container class="stack" gap="16">
                   <nldd-banner
                     variant="accent"
                     text="Profieldienst."
@@ -702,7 +696,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>API keys</h3></nldd-title>
                         <nldd-rich-text><p>Beheer de keys waarmee applicaties de profieldienst aanroepen, elk met een eigen rol en geldigheid.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar API keys" data-nav-view="apikeys-profieldienst" data-nav-title="API keys"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar API keys" data-nav-view="apikeys-profieldienst" data-nav-title="API keys"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
 
@@ -711,7 +705,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Analytics en rapportages</h3></nldd-title>
                         <nldd-rich-text><p>Volg de trend over tijd en genereer rapportages over bevragingen, verificaties en voorkeurwijzigingen.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar analytics en rapportages" data-nav-view="rapportage-profieldienst" data-nav-title="Analytics en rapportages"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar analytics en rapportages" data-nav-view="rapportage-profieldienst" data-nav-title="Analytics en rapportages"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
 
@@ -720,7 +714,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Kanaalvoorkeur</h3></nldd-title>
                         <nldd-rich-text><p>Zoek een ondernemer en stel per kanaal de prioriteit in waarmee notificaties worden bezorgd.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar kanaalvoorkeur" data-nav-view="kanaalvoorkeur" data-nav-title="Kanaalvoorkeur"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar kanaalvoorkeur" data-nav-view="kanaalvoorkeur" data-nav-title="Kanaalvoorkeur"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
 
@@ -729,7 +723,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Logboek</h3><p slot="subtitle">Bevragingen, verificaties en voorkeurwijzigingen</p></nldd-title>
                         <nldd-rich-text><p>Bekijk per gebeurtenis wat er in de profieldienst is verwerkt: profielbevragingen, contactgegeven-verificaties en wijzigingen van de kanaalvoorkeur.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek-profieldienst" data-nav-title="Logboek" data-periode="vandaag"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar logboek" data-nav-view="logboek-profieldienst" data-nav-title="Logboek" data-periode="vandaag"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
                   </div>
@@ -758,12 +752,12 @@
                     </nldd-list-item>
                   </nldd-list>
 
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== LOGBOEK - PROFIELDIENST ====================== -->
-              <section class="view" data-view="logboek-profieldienst">
-                <div class="stack">
+              <section class="view" hidden data-view="logboek-profieldienst">
+                <nldd-container class="stack" gap="16">
                   <nldd-title size="4">
                     <h2>Logboek</h2>
                     <p slot="subtitle">Verwerkingen in de profieldienst</p>
@@ -800,14 +794,14 @@
                     </div>
                   </div>
 
-                  <div class="stack" id="pfl-lijst"></div>
+                  <nldd-container class="stack" gap="16" id="pfl-lijst"></nldd-container>
                   <p class="muted-note" id="pfl-leeg" hidden>Geen logboekitems voor dit filter.</p>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== KANAALVOORKEUR (onder Profieldienst) ====================== -->
-              <section class="view" data-view="kanaalvoorkeur">
-                <div class="stack">
+              <section class="view" hidden data-view="kanaalvoorkeur">
+                <nldd-container class="stack" gap="16">
                   <nldd-banner variant="neutral" text="Zoek een ondernemer op BSN en/of KvK-nummer, bekijk de kanaalvoorkeur (Berichtenbox, e-mail, SMS of brief (post)) en pas die aan. De ondernemer wordt automatisch via het gekozen kanaal geïnformeerd. Let op: fictieve gegevens."></nldd-banner>
 
                   <nldd-card>
@@ -819,23 +813,23 @@
                       <nldd-form-field label="KvK-nummer">
                         <nldd-text-field id="zoek-kvk" placeholder="8 cijfers"></nldd-text-field>
                       </nldd-form-field>
-                      <div class="inline">
+                      <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                         <nldd-button id="zoek-btn" variant="primary" start-icon="magnifier" text="Zoeken"></nldd-button>
                         <span class="muted" style="color:#5a5a5a;font-size:.85rem;">Probeer KvK 81234567, 84567123 of 87651234</span>
-                      </div>
+                      </nldd-container>
                     </nldd-container>
                   </nldd-card>
 
                   <nldd-banner id="kanaal-leeg" variant="warning" text="Geen ondernemer gevonden voor deze gegevens. Controleer het BSN of KvK-nummer." hidden></nldd-banner>
 
                   <div id="kanaal-result" hidden>
-                    <div class="stack">
+                    <nldd-container class="stack" gap="16">
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <div class="between">
-                            <nldd-title size="5"><h2 id="res-naam">-</h2><p slot="subtitle" id="res-sub">-</p></nldd-title>
+                          <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                            <nldd-title size="5"><h2 id="res-naam">-</h2><p slot="subtitle" id="res-sub">-</p></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                             <nldd-tag id="res-huidig" color="accent" text="-"></nldd-tag>
-                          </div>
+                          </nldd-container>
 
                           <nldd-title size="6"><h3>Voorkeurskanalen</h3><p slot="subtitle">Geef per kanaal de prioriteit; er wordt via het hoogst geprioriteerde beschikbare kanaal genotificeerd</p></nldd-title>
                           <div class="prio-lijst" id="kanaal-prio">
@@ -905,23 +899,23 @@
                             <nldd-text-field id="ct-post"></nldd-text-field>
                           </nldd-form-field>
 
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button id="kanaal-opslaan" variant="primary" start-icon="check-mark" text="Opslaan en ondernemer informeren"></nldd-button>
                             <nldd-button id="kanaal-annuleer" variant="secondary" text="Annuleren"></nldd-button>
                             <nldd-tag id="kanaal-dirty" color="warning" text="Niet-opgeslagen wijzigingen" hidden></nldd-tag>
-                          </div>
+                          </nldd-container>
                         </nldd-container>
                       </nldd-card>
 
                       <nldd-banner id="kanaal-bevestig" variant="success" text="" hidden></nldd-banner>
-                    </div>
+                    </nldd-container>
                   </div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== NOTIFICATIEDIENST ====================== -->
-              <section class="view" data-view="notificatiedienst">
-                <div class="stack">
+              <section class="view" hidden data-view="notificatiedienst">
+                <nldd-container class="stack" gap="16">
                   <nldd-rich-text>
                     <p>Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.</p>
                   </nldd-rich-text>
@@ -958,7 +952,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Berichten</h3></nldd-title>
                         <nldd-rich-text><p>Stel berichten samen en verstuur ze meertalig aan ondernemers - eenmalig, terugkerend of als reminder bij een zaak.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar berichten" data-nav-view="berichten" data-nav-title="Berichten"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
 
@@ -967,7 +961,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>API keys</h3></nldd-title>
                         <nldd-rich-text><p>Beheer de keys waarmee applicaties de notificatiedienst aanroepen, elk met een eigen rol en geldigheid.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar API keys" data-nav-view="apikeys-notificatiedienst" data-nav-title="API keys"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar API keys" data-nav-view="apikeys-notificatiedienst" data-nav-title="API keys"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
 
@@ -976,7 +970,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Analytics en rapportages</h3></nldd-title>
                         <nldd-rich-text><p>Volg de trend over tijd en genereer rapportages over verzendingen, afleverpercentages en storingen.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar analytics en rapportages" data-nav-view="rapportage-notificatiedienst" data-nav-title="Analytics en rapportages"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar analytics en rapportages" data-nav-view="rapportage-notificatiedienst" data-nav-title="Analytics en rapportages"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
 
@@ -985,7 +979,7 @@
                       <nldd-container padding="16" gap="12">
                         <nldd-title size="5"><h3>Notificatie-instellingen</h3></nldd-title>
                         <nldd-rich-text><p>Stel de kanalen en de standaard afzender per kanaal in voor de notificatiedienst.</p></nldd-rich-text>
-                        <div class="row-actions"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar notificatie-instellingen" data-nav-view="notificatie-instellingen" data-nav-title="Notificatie-instellingen"></nldd-button></div>
+                        <nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button variant="secondary" end-icon="arrow-right" text="Naar notificatie-instellingen" data-nav-view="notificatie-instellingen" data-nav-title="Notificatie-instellingen"></nldd-button></nldd-container>
                       </nldd-container>
                     </nldd-card>
                   </div>
@@ -997,23 +991,23 @@
                       <nldd-rich-text>
                         <p>U gebruikt de notificatiedienst nu in de <strong>demo-omgeving</strong> met fictieve gegevens. Zet de stap naar productie en bereik ondernemers écht op het juiste moment, op het juiste kanaal - betrouwbaar, gemonitord en conform de aansluitvoorwaarden. Onze beheerorganisatie helpt u bij elke stap.</p>
                       </nldd-rich-text>
-                      <div class="row-actions">
+                      <nldd-container class="row-actions" layout="wrap" gap="8">
                         <nldd-button id="nd-prod-knop" variant="primary" end-icon="arrow-right" text="Productieversie aanvragen" data-goto-marktplaats="notificatiedienst"></nldd-button>
-                      </div>
+                      </nldd-container>
                       <nldd-banner id="nd-prod-verwijzing" variant="neutral" text="Alleen een organisatiebeheerder kan de productieversie aanvragen. Neem hiervoor contact op met de organisatiebeheerder van uw organisatie." hidden></nldd-banner>
                     </nldd-container>
                   </nldd-card>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== API KEYS - PROFIELDIENST ====================== -->
-              <section class="view" data-view="apikeys-profieldienst">
-                <div class="stack">
+              <section class="view" hidden data-view="apikeys-profieldienst">
+                <nldd-container class="stack" gap="16">
                   <div class="api-keys-beheer" data-dienst="profieldienst">
-                    <div class="stack">
-                      <div class="inline">
+                    <nldd-container class="stack" gap="16">
+                      <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                         <nldd-button data-nk-open variant="primary" start-icon="plus" text="Nieuwe API-key"></nldd-button>
-                      </div>
+                      </nldd-container>
                       <div data-nk-panel hidden>
                         <nldd-card>
                           <nldd-container padding="16" gap="12">
@@ -1058,28 +1052,28 @@
                               </nldd-container>
                             </div>
 
-                            <div class="row-actions">
+                            <nldd-container class="row-actions" layout="wrap" gap="8">
                               <nldd-button data-nk-aanmaken variant="primary" start-icon="key" text="Key aanmaken"></nldd-button>
                               <nldd-button data-nk-annuleer variant="secondary" text="Annuleren"></nldd-button>
-                            </div>
+                            </nldd-container>
                           </nldd-container>
                         </nldd-card>
                       </div>
                       <nldd-banner data-nk-melding variant="success" text="" hidden></nldd-banner>
-                      <div class="stack" data-keys-lijst></div>
-                    </div>
+                      <nldd-container class="stack" gap="16" data-keys-lijst></nldd-container>
+                    </nldd-container>
                   </div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== API KEYS - NOTIFICATIEDIENST ====================== -->
-              <section class="view" data-view="apikeys-notificatiedienst">
-                <div class="stack">
+              <section class="view" hidden data-view="apikeys-notificatiedienst">
+                <nldd-container class="stack" gap="16">
                   <div class="api-keys-beheer" data-dienst="notificatiedienst">
-                    <div class="stack">
-                      <div class="inline">
+                    <nldd-container class="stack" gap="16">
+                      <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                         <nldd-button data-nk-open variant="primary" start-icon="plus" text="Nieuwe API-key"></nldd-button>
-                      </div>
+                      </nldd-container>
                       <div data-nk-panel hidden>
                         <nldd-card>
                           <nldd-container padding="16" gap="12">
@@ -1124,37 +1118,37 @@
                               </nldd-container>
                             </div>
 
-                            <div class="row-actions">
+                            <nldd-container class="row-actions" layout="wrap" gap="8">
                               <nldd-button data-nk-aanmaken variant="primary" start-icon="key" text="Key aanmaken"></nldd-button>
                               <nldd-button data-nk-annuleer variant="secondary" text="Annuleren"></nldd-button>
-                            </div>
+                            </nldd-container>
                           </nldd-container>
                         </nldd-card>
                       </div>
                       <nldd-banner data-nk-melding variant="success" text="" hidden></nldd-banner>
-                      <div class="stack" data-keys-lijst></div>
-                    </div>
+                      <nldd-container class="stack" gap="16" data-keys-lijst></nldd-container>
+                    </nldd-container>
                   </div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== RAPPORTAGES - PROFIELDIENST ====================== -->
-              <section class="view" data-view="rapportage-profieldienst">
-                <div class="stack">
+              <section class="view" hidden data-view="rapportage-profieldienst">
+                <nldd-container class="stack" gap="16">
                   <div class="rapportage-beheer" data-dienst="profieldienst"></div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== RAPPORTAGES - NOTIFICATIEDIENST ====================== -->
-              <section class="view" data-view="rapportage-notificatiedienst">
-                <div class="stack">
+              <section class="view" hidden data-view="rapportage-notificatiedienst">
+                <nldd-container class="stack" gap="16">
                   <div class="rapportage-beheer" data-dienst="notificatiedienst"></div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== BERICHTEN ====================== -->
-              <section class="view" data-view="berichten">
-                <div class="stack">
+              <section class="view" hidden data-view="berichten">
+                <nldd-container class="stack" gap="16">
                   <nldd-tab-bar id="ber-tabs" accessible-label="Berichten">
                     <nldd-tab-bar-item selected text="Overzicht" icon="bullet-list" data-panel="overzicht"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Nieuw bericht" icon="pencil" data-panel="nieuw"></nldd-tab-bar-item>
@@ -1162,7 +1156,7 @@
 
                   <!-- ---------- Panel: Overzicht ---------- -->
                   <div data-ber-panel="overzicht">
-                    <div class="stack">
+                    <nldd-container class="stack" gap="16">
                       <nldd-list variant="box">
                         <nldd-list-item button>
                           <nldd-icon-cell slot="start"><nldd-icon name="envelope"></nldd-icon></nldd-icon-cell>
@@ -1190,15 +1184,15 @@
                           <nldd-cell slot="end"><nldd-tag color="neutral" text="concept"></nldd-tag></nldd-cell>
                         </nldd-list-item>
                       </nldd-list>
-                      <div class="inline">
+                      <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                         <nldd-button variant="secondary" start-icon="file-box" text="Archief"></nldd-button>
-                      </div>
-                    </div>
+                      </nldd-container>
+                    </nldd-container>
                   </div>
 
                   <!-- ---------- Panel: Nieuw bericht (composer) ---------- -->
                   <div data-ber-panel="nieuw" hidden>
-                    <div class="stack">
+                    <nldd-container class="stack" gap="16">
                       <nldd-banner variant="neutral" text="Stel een bericht samen op basis van een template en kies het type. Vul de vertalingen in die u ondersteunt; elk contact ontvangt automatisch de versie in zijn of haar voorkeurstaal uit de profieldienst."></nldd-banner>
 
                       <!-- 1. Template -->
@@ -1249,24 +1243,24 @@
                                   <nldd-form-field id="spec-email-field" label="E-mailadres(sen)">
                                     <nldd-multi-line-text-field id="spec-email" rows="2" placeholder="naam@bedrijf.nl - meerdere mag, gescheiden door komma, puntkomma of nieuwe regel"></nldd-multi-line-text-field>
                                   </nldd-form-field>
-                                  <div class="inline">
+                                  <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                                     <nldd-button id="spec-add" variant="secondary" start-icon="plus" text="Toevoegen"></nldd-button>
                                     <span class="muted-note" id="spec-hint"></span>
-                                  </div>
+                                  </nldd-container>
 
                                   <!-- Alleen voor ondernemers: toevoegen op BSN of KvK-nummer -->
                                   <div id="spec-bsnkvk" hidden>
                                     <nldd-form-field label="Of voeg toe op BSN of KvK-nummer">
                                       <nldd-multi-line-text-field id="spec-nummer" rows="2" placeholder="9-cijferig BSN of 8-cijferig KvK-nummer - meerdere mag"></nldd-multi-line-text-field>
                                     </nldd-form-field>
-                                    <div class="inline">
+                                    <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                                       <nldd-button id="spec-add-nummer" variant="secondary" start-icon="plus" text="Toevoegen op BSN/KvK"></nldd-button>
                                       <span class="muted-note">Probeer KvK 81234567, 84567123 of 87651234</span>
-                                    </div>
+                                    </nldd-container>
                                   </div>
 
                                   <nldd-banner id="spec-melding" variant="success" text="" hidden></nldd-banner>
-                                  <div class="stack" id="spec-lijst"></div>
+                                  <nldd-container class="stack" gap="16" id="spec-lijst"></nldd-container>
                                 </nldd-container>
                               </div>
                             </nldd-container>
@@ -1346,9 +1340,9 @@
                               <div class="rte" id="rte-brief-wrap" hidden><div class="rte-area" id="body-brief-nl" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Lange tekst brief (post)" data-placeholder="Aangepaste tekst voor de brief (post)..."></div></div>
                               <nldd-form-field label="Korte tekst (push, Signal, SMS)"><nldd-multi-line-text-field id="short-nl" rows="2"></nldd-multi-line-text-field></nldd-form-field>
                               <p class="muted-note">Kort en bondig - push en SMS tonen doorgaans maximaal ~160 tekens.</p>
-                              <div class="inline">
+                              <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                                 <nldd-button id="auto-vertaal" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Automatisch vertalen naar EN, DE en FR"></nldd-button>
-                              </div>
+                              </nldd-container>
                             </nldd-container>
                           </div>
                           <div data-langpane="en" hidden>
@@ -1380,47 +1374,47 @@
                       </nldd-card>
 
                       <!-- 5. Acties -->
-                      <div class="row-actions">
+                      <nldd-container class="row-actions" layout="wrap" gap="8">
                         <nldd-button variant="primary" start-icon="paper-plane" text="Versturen"></nldd-button>
                         <nldd-button variant="secondary" start-icon="calendar-event" text="Inplannen"></nldd-button>
                         <nldd-button variant="secondary" text="Opslaan als concept"></nldd-button>
                         <nldd-button variant="secondary" start-icon="bookmark" text="Opslaan als template"></nldd-button>
-                      </div>
-                    </div>
+                      </nldd-container>
+                    </nldd-container>
                   </div>
 
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== TEMPLATEBIBLIOTHEEK (onder Notificatiedienst) ====================== -->
-              <section class="view" data-view="templates">
+              <section class="view" hidden data-view="templates">
                 <!-- Lijstpagina -->
                 <div id="tb-list-page">
-                  <div class="stack">
+                  <nldd-container class="stack" gap="16">
                     <nldd-banner variant="neutral" text="De standaard notificatieteksten, per handelingsperspectief. Templates zijn meertalig (NL, EN, DE, FR) en kunnen bekeken en bewerkt worden."></nldd-banner>
                     <nldd-banner id="tb-lijstmelding" variant="success" text="" hidden></nldd-banner>
                     <nldd-list id="tb-lijst" variant="box"></nldd-list>
-                    <div class="inline">
+                    <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                       <nldd-button id="tb-nieuw" variant="primary" start-icon="plus" text="Nieuwe template aanmaken"></nldd-button>
-                    </div>
-                  </div>
+                    </nldd-container>
+                  </nldd-container>
                 </div>
 
                 <!-- Detailpagina: template op een aparte pagina -->
                 <div id="tb-detail" hidden>
-                  <div class="stack">
-                    <div class="inline">
+                  <nldd-container class="stack" gap="16">
+                    <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                       <nldd-button id="tb-terug" variant="secondary" start-icon="arrow-left" text="Terug naar templates"></nldd-button>
-                    </div>
+                    </nldd-container>
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
-                        <div class="between">
-                          <nldd-title size="4"><h2 id="tb-d-titel">-</h2></nldd-title>
-                          <div class="inline">
+                        <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                          <nldd-title size="4"><h2 id="tb-d-titel">-</h2></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
+                          <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                             <nldd-tag id="tb-d-tag" color="neutral" text="-"></nldd-tag>
                             <nldd-tag id="tb-d-cat" color="success" text="-" hidden></nldd-tag>
-                          </div>
-                        </div>
+                          </nldd-container>
+                        </nldd-container>
 
                         <nldd-form-field label="Naam template">
                           <nldd-text-field id="tb-d-titelveld" readonly></nldd-text-field>
@@ -1500,26 +1494,26 @@
 
                         <p class="muted-note">Afzenders zijn vooraf ingevuld op basis van de standaard afzender van uw organisatie. <nldd-link id="tb-afz-instellingen" href="#" start-icon="gear" text="Standaard afzenders aanpassen per kanaal"></nldd-link></p>
 
-                        <div class="row-actions">
+                        <nldd-container class="row-actions" layout="wrap" gap="8">
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
                           <nldd-button id="tb-kopie" variant="secondary" start-icon="square-on-square" text="Kopie maken"></nldd-button>
                           <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash-can" text="Verwijderen" destructive></nldd-button>
-                        </div>
+                        </nldd-container>
                         <nldd-banner id="tb-d-melding" variant="success" text="" hidden></nldd-banner>
                       </nldd-container>
                     </nldd-card>
-                  </div>
+                  </nldd-container>
                 </div>
               </section>
 
               <!-- ====================== CONTACTHERSTEL ====================== -->
-              <section class="view" data-view="logboek">
-                <div class="stack">
-                  <div class="between">
-                    <span></span>
+              <section class="view" hidden data-view="logboek">
+                <nldd-container class="stack" gap="16">
+                  <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                    <span></span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                     <nldd-button id="log-demo" variant="secondary" start-icon="paper-plane" text="Demo: batch van 7 e-mails"></nldd-button>
-                  </div>
+                  </nldd-container>
 
                   <nldd-banner variant="neutral" text="Het logboek toont per gebeurtenis de status. Bij een mislukte notificatie zetten we het herstel automatisch in gang - bijvoorbeeld een contactherstel-brief of een BSN-correctieverzoek - en geven dat door; u hoeft zelf niets te doen. Klap een regel uit voor de uitkomst per kanaal of de stappen van het herstel. Let op: fictieve gegevens."></nldd-banner>
 
@@ -1561,17 +1555,17 @@
                   </div>
 
                   <nldd-banner id="log-actie-melding" variant="success" text="" hidden></nldd-banner>
-                  <div class="stack" id="log-lijst"></div>
+                  <nldd-container class="stack" gap="16" id="log-lijst"></nldd-container>
                   <p class="muted-note" id="log-leeg" hidden>Nog geen logboekitems voor dit filter.</p>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== MARKTPLAATS (voorheen API key) ====================== -->
-              <section class="view" data-view="marktplaats">
+              <section class="view" hidden data-view="marktplaats">
 
                 <!-- ---------- Overzicht: dienstentegels ---------- -->
                 <div data-mp-page="overzicht">
-                  <div class="stack">
+                  <nldd-container class="stack" gap="16">
                     <nldd-banner variant="neutral" text="Overheidsbrede diensten voor uw organisatie. Open een afgenomen dienst voor de API-key en het beheer, of koppel een nieuwe dienst - in demovorm of voor productie."></nldd-banner>
 
                     <nldd-title size="5">
@@ -1582,10 +1576,10 @@
                       <!-- Notificatiedienst (afgenomen: demo) -->
                       <nldd-card class="mp-tile mp-tile--on" data-svc="notificatiedienst" role="button" tabindex="0" aria-label="Notificatiedienst openen">
                         <nldd-container padding="16" gap="12">
-                          <div class="between">
-                            <nldd-title size="5"><h2>Notificatiedienst</h2></nldd-title>
+                          <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                            <nldd-title size="5"><h2>Notificatiedienst</h2></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                             <nldd-tag color="accent" text="demo"></nldd-tag>
-                          </div>
+                          </nldd-container>
                           <nldd-rich-text><p>Verstuur notificaties naar ondernemers via één centrale dienst: ontvangerbepaling, verzending, response handling en contactherstel.</p></nldd-rich-text>
                           <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
                         </nldd-container>
@@ -1594,10 +1588,10 @@
                       <!-- Profieldienst (afgenomen: productie) -->
                       <nldd-card class="mp-tile mp-tile--on" data-svc="profieldienst" role="button" tabindex="0" aria-label="Profieldienst openen">
                         <nldd-container padding="16" gap="12">
-                          <div class="between">
-                            <nldd-title size="5"><h2>Profieldienst</h2></nldd-title>
+                          <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                            <nldd-title size="5"><h2>Profieldienst</h2></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                             <nldd-tag color="success" text="productie"></nldd-tag>
-                          </div>
+                          </nldd-container>
                           <nldd-rich-text><p>Weet hoe de burger of ondernemer benaderd wil worden: contactgegevens en voorkeuren uit één overheidsbrede bron.</p></nldd-rich-text>
                           <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
                         </nldd-container>
@@ -1616,9 +1610,9 @@
                             <nldd-title size="5"><h2>Berichtendienst</h2></nldd-title>
                             <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
                             <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                            <div class="row-actions">
+                            <nldd-container class="row-actions" layout="wrap" gap="8">
                               <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst" disabled></nldd-button>
-                            </div>
+                            </nldd-container>
                           </nldd-container>
                         </nldd-card>
                         <span class="mp-binnenkort-ribbon">Binnenkort</span>
@@ -1630,9 +1624,9 @@
                           <nldd-title size="5"><h2>DigiD</h2></nldd-title>
                           <nldd-rich-text><p>Laat burgers veilig inloggen bij uw digitale dienstverlening met hun DigiD.</p></nldd-rich-text>
                           <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digid"></nldd-button>
-                          </div>
+                          </nldd-container>
                         </nldd-container>
                       </nldd-card>
 
@@ -1642,9 +1636,9 @@
                           <nldd-title size="5"><h2>eHerkenning</h2></nldd-title>
                           <nldd-rich-text><p>Laat ondernemers en organisaties veilig en gemachtigd inloggen namens hun bedrijf.</p></nldd-rich-text>
                           <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="eherkenning"></nldd-button>
-                          </div>
+                          </nldd-container>
                         </nldd-container>
                       </nldd-card>
 
@@ -1654,9 +1648,9 @@
                           <nldd-title size="5"><h2>Digimelding &amp; Digilevering</h2></nldd-title>
                           <nldd-rich-text><p>Meld wijzigingen terug aan basisregistraties en ontvang automatisch gebeurtenissen uit die registraties.</p></nldd-rich-text>
                           <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="digimelding"></nldd-button>
-                          </div>
+                          </nldd-container>
                         </nldd-container>
                       </nldd-card>
 
@@ -1666,21 +1660,21 @@
                           <nldd-title size="5"><h2>SBR &amp; e-Factureren</h2></nldd-title>
                           <nldd-rich-text><p>Wissel gestandaardiseerde bedrijfsrapportages en e-facturen uit met de overheid via Digipoort.</p></nldd-rich-text>
                           <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="sbr"></nldd-button>
-                          </div>
+                          </nldd-container>
                         </nldd-container>
                       </nldd-card>
                     </div>
-                  </div>
+                  </nldd-container>
                 </div>
 
                 <!-- ---------- Koppelpagina: dienst afnemen ---------- -->
                 <div data-mp-page="koppelen" hidden>
-                  <div class="stack">
-                    <div class="inline">
+                  <nldd-container class="stack" gap="16">
+                    <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                       <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar dienstenaanbod" data-mp-back></nldd-button>
-                    </div>
+                    </nldd-container>
                     <nldd-title size="3"><h2 id="kp-titel">-</h2><p slot="subtitle">Dienst afnemen</p></nldd-title>
                     <nldd-rich-text><p id="kp-desc">-</p></nldd-rich-text>
 
@@ -1717,23 +1711,23 @@
                       </nldd-card>
                     </div>
 
-                    <div class="row-actions">
+                    <nldd-container class="row-actions" layout="wrap" gap="8">
                       <nldd-button id="kp-aanvraag" variant="primary" start-icon="paper-plane" text="Koppeling aanvragen"></nldd-button>
-                    </div>
+                    </nldd-container>
                     <nldd-banner id="kp-bevestig" variant="success" text="" hidden></nldd-banner>
-                  </div>
+                  </nldd-container>
                 </div>
 
                 <!-- ---------- Dienstpagina: afgenomen dienst beheren ---------- -->
                 <div data-mp-page="dienst" hidden>
-                  <div class="stack">
-                    <div class="inline">
+                  <nldd-container class="stack" gap="16">
+                    <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                       <nldd-button variant="secondary" start-icon="arrow-left" text="Terug naar dienstenaanbod" data-mp-back></nldd-button>
-                    </div>
-                    <div class="between">
-                      <nldd-title size="3"><h2 id="dp-titel">-</h2><p slot="subtitle" id="dp-sub">-</p></nldd-title>
+                    </nldd-container>
+                    <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                      <nldd-title size="3"><h2 id="dp-titel">-</h2><p slot="subtitle" id="dp-sub">-</p></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                       <nldd-tag id="dp-status" color="accent" text="demo"></nldd-tag>
-                    </div>
+                    </nldd-container>
                     <nldd-rich-text><p id="dp-desc">-</p></nldd-rich-text>
 
                     <!-- API keys worden beheerd bij de dienst zelf (subpagina "API keys" in het menu) -->
@@ -1743,22 +1737,22 @@
                     <div id="dp-demo" hidden>
                       <nldd-card>
                         <nldd-container padding="16" gap="12">
-                          <div class="between">
+                          <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
                             <nldd-title size="5">
                               <h3>Over de demo-omgeving</h3>
                               <p slot="subtitle">Vrijblijvend uitproberen met fictieve gegevens</p>
-                            </nldd-title>
+                            </nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                             <nldd-tag color="accent" text="demo"></nldd-tag>
-                          </div>
+                          </nldd-container>
                           <nldd-rich-text><p id="dp-demo-intro">-</p></nldd-rich-text>
                           <div>
                             <div class="lt-label" style="margin-bottom: 6px;">Wat de demo wel en niet doet</div>
                             <nldd-rich-text><ul class="svc-caps" id="dp-demo-beperkingen"></ul></nldd-rich-text>
                           </div>
                           <nldd-banner variant="neutral" text="Klaar om echt live te gaan? Bekijk hieronder de aansluitvoorwaarden en vraag de productieversie aan."></nldd-banner>
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button id="dp-demo-naar-prod" variant="primary" end-icon="arrow-down" text="Naar de productievoorwaarden"></nldd-button>
-                          </div>
+                          </nldd-container>
                         </nldd-container>
                       </nldd-card>
                     </div>
@@ -1791,20 +1785,20 @@
                               </nldd-container>
                             </nldd-card>
                           </div>
-                          <div class="row-actions">
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button id="dp-prod-aanvraag" variant="primary" start-icon="paper-plane" text="Productieversie aanvragen"></nldd-button>
-                          </div>
+                          </nldd-container>
                           <nldd-banner id="dp-prod-bevestig" variant="success" text="" hidden></nldd-banner>
                         </nldd-container>
                       </nldd-card>
                     </div>
-                  </div>
+                  </nldd-container>
                 </div>
               </section>
 
               <!-- ====================== RAPPORTAGES ====================== -->
-              <section class="view" data-view="audit">
-                <div class="stack">
+              <section class="view" hidden data-view="audit">
+                <nldd-container class="stack" gap="16">
                   <nldd-tab-bar id="audit-tabs" accessible-label="Audit en logboek">
                     <nldd-tab-bar-item selected text="Audit trail" icon="check-list" data-panel="audit"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Logboek dataverwerking" icon="folder" data-panel="logboek"></nldd-tab-bar-item>
@@ -1812,11 +1806,11 @@
 
                   <!-- ---------- Panel: Audit trail ---------- -->
                   <div data-audit-panel="audit">
-                    <div class="stack">
+                    <nldd-container class="stack" gap="16">
                       <nldd-banner variant="neutral" text="Onweerlegbaar overzicht van beheeracties in het portaal: wie deed wat en wanneer. Niet te wijzigen of te verwijderen."></nldd-banner>
-                      <div class="inline">
+                      <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                         <nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Exporteren (CSV)"></nldd-button>
-                      </div>
+                      </nldd-container>
                       <nldd-table columns="150px minmax(220px,1.6fr) minmax(140px,1fr) minmax(140px,1fr)" accessible-label="Audit trail">
                         <nldd-table-row slot="header">
                           <nldd-text-cell text="**Tijdstip**"></nldd-text-cell>
@@ -1855,16 +1849,16 @@
                           <nldd-text-cell class="js-huidige-gebruiker" text="Sanne de Boer"></nldd-text-cell>
                         </nldd-table-row>
                       </nldd-table>
-                    </div>
+                    </nldd-container>
                   </div>
 
                   <!-- ---------- Panel: Logboek dataverwerking ---------- -->
                   <div data-audit-panel="logboek" hidden>
-                    <div class="stack">
+                    <nldd-container class="stack" gap="16">
                       <nldd-banner variant="neutral" text="Logboek van verwerkingen van persoonsgegevens (AVG): welke gegevens zijn wanneer en op welke grondslag verwerkt."></nldd-banner>
-                      <div class="inline">
+                      <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                         <nldd-button variant="secondary" start-icon="square-and-arrow-down" text="Exporteren (CSV)"></nldd-button>
-                      </div>
+                      </nldd-container>
                       <nldd-table columns="150px minmax(220px,1.6fr) minmax(150px,1fr) minmax(140px,1fr)" accessible-label="Logboek dataverwerking">
                         <nldd-table-row slot="header">
                           <nldd-text-cell text="**Tijdstip**"></nldd-text-cell>
@@ -1903,21 +1897,21 @@
                           <nldd-text-cell text="Notificatiedienst"></nldd-text-cell>
                         </nldd-table-row>
                       </nldd-table>
-                    </div>
+                    </nldd-container>
                   </div>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== ANALYTICS ====================== -->
               <!-- Analytics is samengevoegd met Rapportages, per dienst (zie rapportage-* views). -->
 
               <!-- ====================== GEBRUIKERSBEHEER ====================== -->
-              <section class="view" data-view="gebruikersbeheer">
-                <div class="stack">
-                  <div class="between">
-                    <nldd-title size="4"><h2>Gebruikersbeheer</h2><p slot="subtitle" id="gb-sub">Beheer wie toegang heeft en met welke rol</p></nldd-title>
+              <section class="view" hidden data-view="gebruikersbeheer">
+                <nldd-container class="stack" gap="16">
+                  <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                    <nldd-title size="4"><h2>Gebruikersbeheer</h2><p slot="subtitle" id="gb-sub">Beheer wie toegang heeft en met welke rol</p></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                     <nldd-button id="gb-uitnodigen" variant="primary" start-icon="plus" text="Gebruiker uitnodigen"></nldd-button>
-                  </div>
+                  </nldd-container>
 
                   <!-- Uitnodig-formulier: gebruiker opzetten en rol configureren -->
                   <div id="gb-uitnodig-form" hidden>
@@ -1951,10 +1945,10 @@
                             </select>
                           </nldd-dropdown>
                         </nldd-form-field>
-                        <div class="row-actions">
+                        <nldd-container class="row-actions" layout="wrap" gap="8">
                           <nldd-button id="gbf-verstuur" variant="primary" start-icon="paper-plane" text="Uitnodiging versturen"></nldd-button>
                           <nldd-button id="gbf-annuleer" variant="secondary" text="Annuleren"></nldd-button>
-                        </div>
+                        </nldd-container>
                       </nldd-container>
                     </nldd-card>
                   </div>
@@ -1988,12 +1982,12 @@
                   <nldd-banner id="gb-melding" variant="success" text="" hidden></nldd-banner>
                   <div class="gb-cards" id="gb-lijst"></div>
                   <p class="muted-note" id="gb-leeg" hidden>Geen gebruikers voor dit filter.</p>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== INSTELLINGEN ORGANISATIE ====================== -->
-              <section class="view" data-view="organisatie">
-                <div class="stack">
+              <section class="view" hidden data-view="organisatie">
+                <nldd-container class="stack" gap="16">
                   <nldd-tab-bar id="inst-tabs" accessible-label="Instellingen">
                     <nldd-tab-bar-item selected text="Organisatie" icon="person-badge-gear" data-panel="org"></nldd-tab-bar-item>
                     <nldd-tab-bar-item text="Mijn profiel" icon="person" data-panel="profiel"></nldd-tab-bar-item>
@@ -2002,7 +1996,7 @@
                   <nldd-banner id="inst-melding" variant="success" text="" hidden></nldd-banner>
 
                   <!-- ===== Tab: Organisatie ===== -->
-                  <div class="stack" data-inst-panel="org">
+                  <nldd-container class="stack" gap="16" data-inst-panel="org">
                     <nldd-title size="5"><h3>Organisatiegegevens</h3></nldd-title>
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
@@ -2036,14 +2030,14 @@
                       </nldd-container>
                     </nldd-card>
 
-                    <div class="row-actions">
+                    <nldd-container class="row-actions" layout="wrap" gap="8">
                       <nldd-button id="inst-org-opslaan" variant="primary" text="Opslaan"></nldd-button>
                       <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                    </div>
-                  </div>
+                    </nldd-container>
+                  </nldd-container>
 
                   <!-- ===== Tab: Mijn profiel ===== -->
-                  <div class="stack" data-inst-panel="profiel" hidden>
+                  <nldd-container class="stack" gap="16" data-inst-panel="profiel" hidden>
                     <nldd-title size="5"><h3>Persoonsgegevens</h3></nldd-title>
                     <nldd-card>
                       <nldd-container padding="16" gap="12">
@@ -2076,19 +2070,19 @@
                         <nldd-form-field label="Wekelijkse samenvatting per e-mail">
                           <nldd-switch></nldd-switch>
                         </nldd-form-field>
-                        <div class="row-actions">
+                        <nldd-container class="row-actions" layout="wrap" gap="8">
                           <nldd-button id="inst-profiel-opslaan" variant="primary" text="Opslaan"></nldd-button>
                           <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                        </div>
+                        </nldd-container>
                       </nldd-container>
                     </nldd-card>
-                  </div>
-                </div>
+                  </nldd-container>
+                </nldd-container>
               </section>
 
               <!-- ====================== NOTIFICATIE-INSTELLINGEN (notificatiedienst) ====================== -->
-              <section class="view" data-view="notificatie-instellingen">
-                <div class="stack">
+              <section class="view" hidden data-view="notificatie-instellingen">
+                <nldd-container class="stack" gap="16">
                   <nldd-banner id="notif-inst-melding" variant="success" text="" hidden></nldd-banner>
                     <nldd-card>
                       <nldd-container padding="16" gap="0">
@@ -2197,24 +2191,25 @@
                         </div>
                       </nldd-container>
                     </nldd-card>
-                  <div class="row-actions">
+                  <nldd-container class="row-actions" layout="wrap" gap="8">
                     <nldd-button id="notif-inst-opslaan" variant="primary" text="Opslaan"></nldd-button>
                     <nldd-button variant="secondary" text="Annuleren"></nldd-button>
-                  </div>
-                </div>
+                  </nldd-container>
+                </nldd-container>
               </section>
 
               <!-- ====================== VERFIJNDE ANALYSE (verdieping per rapportagetegel) ====================== -->
               <!-- Geen menu-item: alleen te openen via de rapportagetegels en via Instellingen -> Organisatie. -->
-              <section class="view" data-view="verfijnde-analyse">
-                <div class="stack">
-                  <div class="inline">
+              <section class="view" hidden data-view="verfijnde-analyse">
+                <nldd-container gap="16">
+                  <nldd-container layout="wrap" gap="8" vertical-alignment="center">
                     <nldd-button id="vfa-terug" variant="secondary" start-icon="arrow-left" text="Terug"></nldd-button>
-                  </div>
-                  <div class="between">
+                  </nldd-container>
+                  <nldd-container layout="row" gap="8" vertical-alignment="center">
                     <nldd-title size="4"><h2 id="vfa-titel">Verfijnde analyse</h2><p slot="subtitle" id="vfa-sub">-</p></nldd-title>
+                    <nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                     <nldd-button id="vfa-download" variant="secondary" start-icon="square-and-arrow-down" text="Download (CSV)"></nldd-button>
-                  </div>
+                  </nldd-container>
                   <nldd-banner variant="neutral" text="Verdieping op deze variabele. Filter verder voor een verfijnde analyse. Deze pagina staat niet in het menu en is te openen via de rapportagetegels en via Instellingen."></nldd-banner>
 
                   <nldd-card id="vfa-kpi-card">
@@ -2254,15 +2249,15 @@
                   <nldd-title size="6"><h3>Uitsplitsing</h3></nldd-title>
                   <div id="vfa-tabel"></div>
                   <nldd-banner id="vfa-melding" variant="success" text="" hidden></nldd-banner>
-                </div>
+                </nldd-container>
               </section>
 
               <!-- ====================== MAAK UW SERVICE LIVE (go-live checklist) ====================== -->
-              <section class="view" data-view="livegaan">
-                <div class="stack">
-                  <div class="inline">
+              <section class="view" hidden data-view="livegaan">
+                <nldd-container class="stack" gap="16">
+                  <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                     <nldd-button id="live-terug" variant="secondary" start-icon="arrow-left" text="Terug naar de dienst"></nldd-button>
-                  </div>
+                  </nldd-container>
                   <p class="live-eyebrow">Notificatiedienst · Proefmodus → Productie</p>
 
                   <nldd-banner variant="accent" text="Wat er verandert als u live gaat: uw dienst verstuurt straks echte notificaties aan ondernemers, via het kanaal van hun voorkeur (e-mail, sms, push of Signal) met terugval op een alternatief kanaal. De beperkingen van de proefmodus vervallen en uw organisatie is verantwoordelijk voor elke verzending. Livegang kan niet met één klik ongedaan worden gemaakt. Rond eerst alle voorwaarden hieronder af; daarna beoordelen wij uw verzoek."></nldd-banner>
@@ -2298,16 +2293,16 @@
                       <nldd-form-field label="Naam en functie">
                         <nldd-text-field id="live-naam" placeholder="Voor- en achternaam, functie"></nldd-text-field>
                       </nldd-form-field>
-                      <div class="row-actions">
+                      <nldd-container class="row-actions" layout="wrap" gap="8">
                         <nldd-button id="live-send" variant="primary" start-icon="paper-plane" text="Stuur verzoek om live te gaan" disabled></nldd-button>
-                      </div>
+                      </nldd-container>
                       <p class="muted-note" id="live-note">Bevestig de verklaring en vul uw naam en functie in om het verzoek te versturen.</p>
                       <nldd-banner id="live-bevestig" variant="success" text="" hidden></nldd-banner>
                     </nldd-container>
                   </nldd-card>
 
                   <nldd-banner variant="warning" text="Na livegang: de beveiligingsbaseline, de onafhankelijke beveiligingsbeoordeling en de toegankelijkheidsborging moeten jaarlijks opnieuw worden aangeleverd of bevestigd. Een verlopen beveiligingsbeoordeling zet de dienst terug naar proefmodus totdat een actuele beoordeling is aangeleverd. Wij herinneren de contactpersoon 30 dagen voor de vervaldatum. Bij grote wijzigingen in gegevens of kanalen wordt de dienst opnieuw beoordeeld."></nldd-banner>
-                </div>
+                </nldd-container>
               </section>
 
             </nldd-container>
@@ -2609,7 +2604,7 @@
     }
 
     function showView(name, title) {
-      views.forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
+      views.forEach(v => v.toggleAttribute('hidden', v.dataset.view !== name));
       navItems.forEach(item => {
         if (item.dataset.view === name) item.setAttribute('selected', '');
         else item.removeAttribute('selected');
@@ -2663,7 +2658,7 @@
       window.__DASH_TITEL = 'Welkom terug, ' + MOZA_USER.naam.split(' ')[0];
       const dashNav = document.querySelector('nldd-list-item[data-view="dashboard"]');
       if (dashNav) dashNav.setAttribute('data-title', window.__DASH_TITEL);
-      if (titlebar && (document.querySelector('.view.is-active') || {}).dataset?.view === 'dashboard') {
+      if (titlebar && (document.querySelector('.view:not([hidden])') || {}).dataset?.view === 'dashboard') {
         titlebar.textContent = window.__DASH_TITEL;
       }
       // Plaatsen waar de eigen naam wordt getoond (bv. audit-acties door de beheerder).
@@ -2703,7 +2698,7 @@
         const prodVerwijzing = document.getElementById('nd-prod-verwijzing');
         if (prodKnop) prodKnop.classList.add('rol-verborgen');
         if (prodVerwijzing) prodVerwijzing.removeAttribute('hidden');
-        const actief = document.querySelector('.view.is-active');
+        const actief = document.querySelector('.view:not([hidden])');
         if (actief && toegestaan.indexOf(actief.dataset.view) < 0) showView('dashboard', 'Dashboard');
       }
     })();
@@ -2921,12 +2916,12 @@
           '<nldd-container gap="12">' +
             '<nldd-title size="6"><h3>Contactherstel via brief (post)</h3><p slot="subtitle">Digitale kanalen onbereikbaar - herstel via een brief naar het geregistreerde adres</p></nldd-title>' +
             '<nldd-form-field label="Postadres (Handelsregister)"><nldd-text-field class="ch-adres"></nldd-text-field></nldd-form-field>' +
-            '<div class="inline"><nldd-button class="ch-check" variant="secondary" start-icon="seal-check-mark" text="Adres controleren"></nldd-button></div>' +
+            '<nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center"><nldd-button class="ch-check" variant="secondary" start-icon="seal-check-mark" text="Adres controleren"></nldd-button></nldd-container>' +
             '<nldd-banner class="ch-melding" variant="warning" text="Adres nog niet gecontroleerd - controleer eerst voordat u verstuurt."></nldd-banner>' +
-            '<div class="row-actions">' +
+            '<nldd-container class="row-actions" layout="wrap" gap="8">' +
               '<nldd-button class="ch-post" variant="primary" start-icon="paper-plane" text="Brief (post) versturen" disabled></nldd-button>' +
               '<nldd-button class="ch-annuleer" variant="secondary" text="Annuleren"></nldd-button>' +
-            '</div>' +
+            '</nldd-container>' +
           '</nldd-container>';
         mainActions.insertAdjacentElement('afterend', panel);
 
@@ -3049,7 +3044,7 @@
         det.className = 'inst-edit';
         det.innerHTML = '<div class="inst-edit-form">' +
           veldLabels.map((lbl, i) => '<nldd-form-field label="' + lbl + '"><nldd-text-field class="inst-edit-veld" data-idx="' + i + '"></nldd-text-field></nldd-form-field>').join('') +
-          '<div class="row-actions"><nldd-button class="inst-edit-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="inst-edit-annuleer" variant="secondary" text="Annuleren"></nldd-button></div>' +
+          '<nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button class="inst-edit-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="inst-edit-annuleer" variant="secondary" text="Annuleren"></nldd-button></nldd-container>' +
           '</div>';
         rij.parentNode.insertBefore(det, rij.nextElementSibling);
         const veldEls = det.querySelectorAll('.inst-edit-veld');
@@ -3329,19 +3324,19 @@
           wrap.innerHTML = `
             <nldd-card>
               <nldd-container padding="16" gap="12">
-                <div class="between">
-                  <nldd-title size="6"><h4></h4><p slot="subtitle" class="s-naam"></p></nldd-title>
-                  <div class="inline">
+                <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                  <nldd-title size="6"><h4></h4><p slot="subtitle" class="s-naam"></p></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
+                  <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                     <nldd-tag class="s-check" text="" hidden></nldd-tag>
                     <nldd-button class="s-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
-                  </div>
-                </div>
+                  </nldd-container>
+                </nldd-container>
                 <nldd-form-field class="s-id-field">
                   <nldd-text-field class="s-id"></nldd-text-field>
                 </nldd-form-field>
-                <div class="row-actions">
+                <nldd-container class="row-actions" layout="wrap" gap="8">
                   <nldd-button class="s-verzoek" variant="secondary" start-icon="paper-plane"></nldd-button>
-                </div>
+                </nldd-container>
                 <nldd-banner class="s-melding" variant="success" text="" hidden></nldd-banner>
               </nldd-container>
             </nldd-card>`;
@@ -4053,7 +4048,7 @@
           item.innerHTML =
             '<nldd-icon-cell slot="start"><nldd-icon name="' + (t.status === 'concept' ? 'pencil' : 'file-text') + '"></nldd-icon></nldd-icon-cell>' +
             '<nldd-text-cell text="' + titelCel + '"></nldd-text-cell>' +
-            '<nldd-cell slot="end"><div class="inline"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</div></nldd-cell>';
+            '<nldd-cell slot="end"><nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center"><nldd-tag color="' + st.color + '" text="' + st.label + '"></nldd-tag>' + catTag + '</nldd-container></nldd-cell>';
           item.addEventListener('click', () => openDetail(t.id, false));
           lijst.appendChild(item);
         });
@@ -4484,14 +4479,14 @@
           wrap.innerHTML = `
             <nldd-card>
               <nldd-container padding="12" gap="8">
-                <div class="between">
-                  <nldd-title size="6"><h4></h4><p slot="subtitle" class="o-contact"></p></nldd-title>
+                <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                  <nldd-title size="6"><h4></h4><p slot="subtitle" class="o-contact"></p></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                   <nldd-tag class="o-type" text=""></nldd-tag>
-                </div>
-                <div class="between">
-                  <nldd-form-field label="Ontvangt notificaties"><nldd-switch class="o-actief"></nldd-switch></nldd-form-field>
+                </nldd-container>
+                <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                  <nldd-form-field label="Ontvangt notificaties"><nldd-switch class="o-actief"></nldd-switch></nldd-form-field><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                   <nldd-button class="o-verwijder" variant="secondary" start-icon="dismiss" text="Verwijderen"></nldd-button>
-                </div>
+                </nldd-container>
               </nldd-container>
             </nldd-card>`;
           const el = wrap.firstElementChild;
@@ -5002,10 +4997,10 @@
           wrap.innerHTML = `
             <nldd-card>
               <nldd-container padding="16" gap="12">
-                <div class="between">
-                  <nldd-title size="5"><h3></h3></nldd-title>
+                <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                  <nldd-title size="5"><h3></h3></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                   <nldd-tag class="k-geldig" color="neutral" text="-"></nldd-tag>
-                </div>
+                </nldd-container>
                 <div class="k-rollen"><span class="k-rollen-label">Rol(len):</span></div>
                 <div class="mp-keyrow">
                   <span class="mp-key k-key"></span>
@@ -5013,10 +5008,10 @@
                   <nldd-button class="k-kopieer" variant="secondary" start-icon="square-on-square" text="Kopiëren"></nldd-button>
                 </div>
                 <p class="muted-note k-adv"></p>
-                <div class="row-actions">
+                <nldd-container class="row-actions" layout="wrap" gap="8">
                   <nldd-button class="k-valideer" variant="secondary" start-icon="seal-check-mark" text="Valideren / testen"></nldd-button>
                   <nldd-button class="k-intrek" variant="destructive" start-icon="trash" text="Intrekken"></nldd-button>
-                </div>
+                </nldd-container>
               </nldd-container>
             </nldd-card>`;
           const el = wrap.firstElementChild;
@@ -5190,10 +5185,10 @@
         if (!dienst || !dienst.rapportages) return;
 
         beheer.innerHTML = `
-          <div class="stack">
+          <nldd-container class="stack" gap="16">
             <nldd-banner variant="neutral" text="Analytics en rapportages over deze dienst. Filter op periode en download."></nldd-banner>
 
-            <div class="between an-top">
+            <nldd-container class="between" layout="wrap" gap="16" vertical-alignment="bottom">
               <nldd-form-field label="Periode">
                 <nldd-dropdown>
                   <select data-an-periode aria-label="Periode">
@@ -5202,9 +5197,9 @@
                     <option value="12">Laatste 12 maanden</option>
                   </select>
                 </nldd-dropdown>
-              </nldd-form-field>
+              </nldd-form-field><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
               <nldd-button data-an-download variant="secondary" start-icon="square-and-arrow-down" text="Download analytics (CSV)"></nldd-button>
-            </div>
+            </nldd-container>
             <nldd-banner data-an-melding variant="success" text="" hidden></nldd-banner>
 
             <nldd-title size="5"><h3>Analytics</h3></nldd-title>
@@ -5223,9 +5218,9 @@
             <nldd-title size="5"><h3>Rapportage samenstellen en downloaden</h3></nldd-title>
             <nldd-list variant="box" data-rp-lijst></nldd-list>
             <nldd-banner data-rp-melding variant="success" text="" hidden></nldd-banner>
-            <div class="inline">
+            <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
               <nldd-button data-rp-open variant="primary" start-icon="plus" text="Nieuwe rapportage samenstellen"></nldd-button>
-            </div>
+            </nldd-container>
             <div data-rp-panel hidden>
               <nldd-card>
                 <nldd-container padding="16" gap="12">
@@ -5249,14 +5244,14 @@
                       <nldd-segmented-control-item value="CSV" text="CSV"></nldd-segmented-control-item>
                     </nldd-segmented-control>
                   </nldd-form-field>
-                  <div class="row-actions">
+                  <nldd-container class="row-actions" layout="wrap" gap="8">
                     <nldd-button data-rp-maak variant="primary" start-icon="file-text" text="Samenstellen"></nldd-button>
                     <nldd-button data-rp-annuleer variant="secondary" text="Annuleren"></nldd-button>
-                  </div>
+                  </nldd-container>
                 </nldd-container>
               </nldd-card>
             </div>
-          </div>`;
+          </nldd-container>`;
 
         // ---------- Analytics: trendgrafiek met aan/uit-variabelen ----------
         if (dienst.analytics) {
@@ -5597,7 +5592,7 @@
             '<option value="Notificatiedienst">Notificatiedienst</option>' +
             '<option value="Profieldienst">Profieldienst</option>' +
           '</select></nldd-dropdown></nldd-form-field>' +
-          '<div class="row-actions"><nldd-button class="gbe-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="gbe-annuleer" variant="secondary" text="Annuleren"></nldd-button></div>';
+          '<nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button class="gbe-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="gbe-annuleer" variant="secondary" text="Annuleren"></nldd-button></nldd-container>';
         const rolSel = edit.querySelector('.gbe-rol');
         const dienstSel = edit.querySelector('.gbe-dienst');
         const dienstField = edit.querySelector('.gbe-dienst-field');
@@ -5628,18 +5623,18 @@
         wrap.innerHTML = `
           <nldd-card class="gb-kaart ${dm ? dm.rand : ''} ${actief ? '' : 'gb-kaart--geen'}">
             <nldd-container padding="12" gap="8">
-              <div class="between">
-                <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title>
-                <div class="inline">
+              <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                <nldd-title size="6"><h3 class="gb-naam"></h3><p slot="subtitle" class="gb-mail"></p></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
+                <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
                   ${jij ? '<nldd-tag color="success" text="u"></nldd-tag>' : ''}
                   ${actief ? '' : '<nldd-tag color="critical" text="geen toegang"></nldd-tag>'}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
                   ${u.rol === 'organisatiebeheerder' ? '<span class="dienst-chip dienst-project">Alle projecten</span>' : (u.project ? '<span class="dienst-chip dienst-project">Project: ' + u.project + '</span>' : '')}
-                </div>
-              </div>
+                </nldd-container>
+              </nldd-container>
               <p class="gb-toegang-inline"><strong>Toegang:</strong> <span class="gb-toeg"></span></p>
-              <div class="row-actions gb-acties"></div>
+              <nldd-container class="row-actions gb-acties" layout="wrap" gap="8"></nldd-container>
             </nldd-container>
           </nldd-card>`;
         const el = wrap.firstElementChild;
@@ -5927,7 +5922,7 @@
         tr.querySelector('.lg-icon').setAttribute('name', icoon(it));
         const statusCel = tr.querySelector('.log-td-status');
         const m = STAT[it.status] || STAT.apikey;
-        statusCel.innerHTML = '<div class="inline"><nldd-tag color="' + m.color + '" text="' + m.label + '"></nldd-tag></div>';
+        statusCel.innerHTML = '<nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center"><nldd-tag color="' + m.color + '" text="' + m.label + '"></nldd-tag></nldd-container>';
 
         // Opmerking: wat wordt er (automatisch) gedaan, of hoeveel kanalen zijn afgeleverd.
         const opmCel = tr.querySelector('.log-td-actie');
@@ -6229,7 +6224,7 @@
           const aan = !!staat[f.key];
           f.elementen().forEach(el => el.classList.toggle('flag-off', !aan));
           if (!aan && f.view && typeof showView === 'function') {
-            const actief = document.querySelector('.view.is-active');
+            const actief = document.querySelector('.view:not([hidden])');
             if (actief && actief.dataset.view === f.view) showView('notificatiedienst', 'Notificatiedienst');
           }
         });
