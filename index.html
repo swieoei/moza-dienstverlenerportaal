@@ -1451,7 +1451,7 @@
                 <nldd-container class="stack" gap="16">
                   <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
                     <span></span><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
-                    <nldd-button id="log-demo" variant="secondary" start-icon="paper-plane" text="Demo: batch van 7 e-mails"></nldd-button>
+                    <nldd-button id="log-demo" variant="secondary" start-icon="paper-plane" text="Live: stuurgroep-batch volgen"></nldd-button>
                   </nldd-container>
 
                   <nldd-banner variant="neutral" text="Het logboek toont per gebeurtenis de status. Bij een mislukte notificatie zetten we het herstel automatisch in gang - bijvoorbeeld een contactherstel-brief of een BSN-correctieverzoek - en geven dat door; u hoeft zelf niets te doen. Klap een regel uit voor de uitkomst per kanaal of de stappen van het herstel. Let op: fictieve gegevens."></nldd-banner>
@@ -5698,8 +5698,9 @@
 
   <script>
     // ====================== Logboek ======================
-    // Filterbare lijst van verzend- en API-key-gebeurtenissen. Een demoknop voegt
-    // een batch van 7 e-mails toe (5 geslaagd waarvan 1 na 2e poging, 2 mislukt).
+    // Filterbare lijst van verzend- en API-key-gebeurtenissen. Het logboek volgt
+    // daarnaast live de echte batch uit de stuurgroep-demo-app (OMC -> NMC):
+    // de knop verbindt, daarna wordt elke 5 seconden de verzendstatus opgehaald.
     // Mislukte notificaties vragen om actie (BSN corrigeren of opnieuw versturen).
     (function () {
       const root = document.querySelector('section[data-view="logboek"]');
@@ -5752,6 +5753,7 @@
       const STAT = {
         succesvol: { color: 'success', label: 'succesvol' },
         mislukt: { color: 'critical', label: 'mislukt' },
+        onderweg: { color: 'warning', label: 'onderweg' },
         apikey: { color: 'neutral', label: 'API key' },
       };
       // Vaste stappenreeks voor contactherstel (parent-child onder een 'E-mailadres onbekend of ongeldig').
@@ -5812,6 +5814,7 @@
       function icoon(it) {
         if (it.type === 'apikey') return 'key';
         if (it.status === 'mislukt') return 'dismiss';
+        if (it.status === 'onderweg') return 'clock';
         return 'check-mark';
       }
 
@@ -5991,26 +5994,82 @@
       wireChecks(typeChecks);
       wireChecks(statusChecks);
 
+      // ---------- Live koppeling met de stuurgroep-demo ----------
+      // Geen dummy-batch meer: het logboek volgt de echte verzending die in de
+      // stuurgroep-demo-app (procesapplicatie + OMC) wordt gestart. De OMC staat
+      // achter SSO Rijk en de browser stuurt de SSO-cookie mee (credentials),
+      // dus live meekijken vereist een actieve SSO-sessie op de demo-app in
+      // dezelfde browser. Lokaal praat het portaal met de lokale OMC (:3333).
+      const lokaalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const STUURGROEP_API = (lokaalDev ? 'http://localhost:3333' : 'https://demo-moza-stuurgroep.rig.prd1.gn2.quattro.rijksapps.nl') + '/api/uitnodigingen';
+      const liveItems = {};  // notificatieId (of rijnummer) -> logboekitem
+      const liveStand = {};  // zelfde sleutel -> laatst verwerkte OMC-status
+
+      function tijdNu() {
+        const d = new Date();
+        return 'Vandaag ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      }
+
+      // Vertaal één OMC-verzending naar een (nieuw of bijgewerkt) logboekitem;
+      // geeft terug of er iets veranderde sinds de vorige poll.
+      function verwerkVerzending(v, i) {
+        const sleutel = v.notificatieId || 'rij-' + i;
+        if (liveStand[sleutel] === v.status) return false;
+        liveStand[sleutel] = v.status;
+        let item = liveItems[sleutel];
+        if (!item) {
+          item = { id: ++teller, type: 'notificatie', tijd: tijdNu() };
+          liveItems[sleutel] = item;
+          LOG.unshift(item);
+          if (window.__mozaTellers) window.__mozaTellers.verzonden += 1;
+        }
+        const wie = ((v.lid && v.lid.naam) || 'Onbekende ontvanger') + (v.lid && v.lid.organisatie ? ' (' + v.lid.organisatie + ')' : '');
+        item.status = v.status === 'afgeleverd' ? 'succesvol' : (v.status === 'mislukt' ? 'mislukt' : 'onderweg');
+        item.titel = (v.status === 'afgeleverd' ? 'E-mail afgeleverd - ' : (v.status === 'mislukt' ? 'Notificatie mislukt - ' : 'E-mail verzonden - ')) + wie;
+        item.detail = 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk · via MijnZaken/OMC' + (v.notificatieId ? ' · ' + v.notificatieId : '');
+        item.opmerking = v.status === 'mislukt' ? (v.fout || 'Bezorging mislukt')
+          : (v.status === 'afgeleverd' ? 'Bezorgbevestiging van de NMC ontvangen'
+          : 'Verzonden via de NMC - wacht op bezorgbevestiging');
+        return true;
+      }
+
+      let liveFoutGemeld = false; // hooguit één melding over een onbereikbare demo-app
+      async function haalLiveStatus(handmatig) {
+        let data;
+        try {
+          const res = await fetch(STUURGROEP_API, { credentials: 'include' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          data = await res.json();
+          liveFoutGemeld = false;
+        } catch (e) {
+          if (handmatig && !liveFoutGemeld) {
+            meld('warning', 'Geen verbinding met de stuurgroep-demo. Log in dezelfde browser eerst in op de demo-app (SSO Rijk) en probeer het opnieuw.');
+            liveFoutGemeld = true;
+          }
+          return;
+        }
+        const verzendingen = (data && data.verzendingen) || [];
+        let gewijzigd = false;
+        verzendingen.forEach((v, i) => { if (verwerkVerzending(v, i)) gewijzigd = true; });
+        if (gewijzigd) render();
+        if (handmatig) {
+          if (verzendingen.length) meld('success', 'Verbonden met de stuurgroep-demo: ' + verzendingen.length + ' verzendingen in beeld. Het logboek ververst vanzelf.');
+          else meld('neutral', 'Verbonden met de stuurgroep-demo, maar er is nog geen batch verstuurd. Start de verzending in de demo-app; het logboek loopt automatisch mee.');
+        }
+      }
+
       root.querySelector('#log-demo').addEventListener('click', () => {
-        // Gepseudonimiseerde stuurgroep-adressen van de Rijksoverheid (7 verschillende ontvangers).
-        const batch = [
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - a**.v**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - p**.b**@logius.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - m**.d**@belastingdienst.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - r**.b**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'succesvol', titel: 'E-mail afgeleverd - e**.j**@kvk.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk', opmerking: 'Afgeleverd na 2e poging (1e poging mislukt door tijdelijke storing)', tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', actie: 'retry', titel: 'Notificatie mislukt - k**.m**@rvo.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk · e-mailadres onbekend of ongeldig', kinderen: herstelKinderen(3), tijd: 'Zojuist' },
-          { type: 'notificatie', status: 'mislukt', actie: 'bsn', titel: 'Notificatie mislukt - s**.k**@rijksoverheid.nl', detail: 'Uitnodiging vergadering Stuurgroep MijnOverheid Zakelijk · BSN-nummer niet herkend', kinderen: [{ label: 'Onbekend BSN-nummer gerapporteerd', uitkomst: 'stap' }], tijd: 'Zojuist' },
-        ].map(b => Object.assign({ id: ++teller }, b));
-        LOG.unshift(...batch);
-        if (window.__mozaTellers) { window.__mozaTellers.verzonden += 7; } // 7 verzonden
         // Zet de weergave op Notificaties zodat de batch meteen zichtbaar is.
         const notifCb = typeChecks.querySelector('.log-check[data-val="notificatie"] nldd-checkbox');
         if (notifCb) notifCb.setAttribute('checked', '');
         statusChecks.querySelectorAll('nldd-checkbox').forEach(cb => cb.removeAttribute('checked'));
+        setPeriode('vandaag');
         render();
-        meld('success', 'Demobatch verstuurd: 7 e-mails - 5 geslaagd (waarvan 1 na een 2e poging) en 2 mislukt (contactherstel en BSN-correctie lopen).');
+        haalLiveStatus(true);
       });
+
+      // Automatisch meelopen zolang het logboek in beeld is (elke 5 seconden).
+      setInterval(() => { if (root.getClientRects().length > 0) haalLiveStatus(false); }, 5000);
 
       render();
     })();
