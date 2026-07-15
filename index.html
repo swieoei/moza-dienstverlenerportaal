@@ -30,6 +30,9 @@
       --context-muted-foreground-color: var(--primitives-color-neutral-600);
       --context-border-color: var(--primitives-color-neutral-300);
       --context-base-background-color: var(--primitives-color-neutral-50);
+      /* Standaard tekstkleur van de DS-content (o.a. nldd-title) in dark iets helderder
+         voor meer contrast; light-mode blijft de normale neutral-900 (donkere tekst). */
+      --semantics-content-color: light-dark(oklch(0.261 0.015 257.4), oklch(0.97 0.008 257.4));
       /* Eigen aliassen voor gebruik in de app-CSS */
       --app-muted: var(--primitives-color-neutral-600);
       --app-border: var(--primitives-color-neutral-300);
