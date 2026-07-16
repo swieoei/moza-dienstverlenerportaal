@@ -1703,28 +1703,10 @@
                         <nldd-container padding="16" gap="12">
                           <nldd-title size="5">
                             <h3>Productieversie aanvragen</h3>
-                            <p slot="subtitle">Aansluitvoorwaarden voor de overstap van demo naar productie</p>
+                            <p slot="subtitle">Dit rondt u af bij de overstap van demo naar productie - de criteria van 'Maak uw service live'</p>
                           </nldd-title>
-                          <nldd-container class="rv-grid" layout="grid" gap="16">
-                            <nldd-card>
-                              <nldd-container padding="16" gap="8">
-                                <nldd-title size="6"><h4>Technisch</h4></nldd-title>
-                                <nldd-rich-text><ul class="svc-caps" id="dp-rv-tech"></ul></nldd-rich-text>
-                              </nldd-container>
-                            </nldd-card>
-                            <nldd-card>
-                              <nldd-container padding="16" gap="8">
-                                <nldd-title size="6"><h4>Procesmatig</h4></nldd-title>
-                                <nldd-rich-text><ul class="svc-caps" id="dp-rv-proces"></ul></nldd-rich-text>
-                              </nldd-container>
-                            </nldd-card>
-                            <nldd-card>
-                              <nldd-container padding="16" gap="8">
-                                <nldd-title size="6"><h4>Business</h4></nldd-title>
-                                <nldd-rich-text><ul class="svc-caps" id="dp-rv-business"></ul></nldd-rich-text>
-                              </nldd-container>
-                            </nldd-card>
-                          </nldd-container>
+                          <!-- Gevuld vanuit de go-live-criteria (window.__mozaGoLiveCriteria): per hoofdcriterium een kaart. -->
+                          <nldd-container id="dp-prod-criteria" layout="grid" gap="16"></nldd-container>
                           <nldd-container class="row-actions" layout="wrap" gap="8">
                             <nldd-button id="dp-prod-aanvraag" variant="primary" start-icon="paper-plane" text="Productieversie aanvragen"></nldd-button>
                           </nldd-container>
@@ -2692,7 +2674,7 @@
       const q = ((e.detail && e.detail.value) || topzoek.value || '').trim();
       if (!q) return;
       const cijfers = q.replace(/\s/g, '');
-      if (/^\d{8,9}$/.test(cijfers)) {
+      if (/^\d{8,9}$/.test(cijfers) && window.__mozaFlags && window.__mozaFlags.aan('kanaalvoorkeur')) {
         showView('kanaalvoorkeur', 'Kanaalvoorkeur');
         setGroepUit('profieldienst', true);
         const bsnV = document.getElementById('zoek-bsn'), kvkV = document.getElementById('zoek-kvk');
@@ -4745,10 +4727,25 @@
           demoBlok.setAttribute('hidden', '');
         }
         const prod = root.querySelector('#dp-prod');
-        if (dienst.status === 'demo' && dienst.rvProd) {
-          fillList('dp-rv-tech', dienst.rvProd.tech);
-          fillList('dp-rv-proces', dienst.rvProd.proces);
-          fillList('dp-rv-business', dienst.rvProd.business);
+        if (dienst.status === 'demo' && window.__mozaGoLiveCriteria) {
+          // Per hoofdcriterium van 'Maak uw service live' een kaart met de bijbehorende punten.
+          const grid = root.querySelector('#dp-prod-criteria');
+          grid.textContent = '';
+          window.__mozaGoLiveCriteria.forEach(crit => {
+            const kaart = document.createElement('nldd-card');
+            const inner = document.createElement('nldd-container');
+            inner.setAttribute('padding', '16'); inner.setAttribute('gap', '8');
+            const titel = document.createElement('nldd-title'); titel.setAttribute('size', '6');
+            const h4 = document.createElement('h4'); h4.textContent = crit.titel; titel.appendChild(h4);
+            inner.appendChild(titel);
+            const rt = document.createElement('nldd-rich-text');
+            const ul = document.createElement('ul'); ul.className = 'svc-caps';
+            crit.punten.forEach(p => { const li = document.createElement('li'); li.textContent = p; ul.appendChild(li); });
+            rt.appendChild(ul);
+            inner.appendChild(rt);
+            kaart.appendChild(inner);
+            grid.appendChild(kaart);
+          });
           root.querySelector('#dp-prod-bevestig').setAttribute('hidden', '');
           prod.removeAttribute('hidden');
         } else {
@@ -4816,6 +4813,8 @@
           { titel: 'Wijs een verantwoordelijk contactpersoon aan', desc: 'Met mandaat om namens de organisatie te verklaren en te reageren op incidenten en storingen.', status: 'todo', upload: true },
         ]},
       ];
+      // Gedeeld met de dienstpagina (tegel 'Productieversie aanvragen'): hoofdcriteria + conditietitels.
+      window.__mozaGoLiveCriteria = BLOKKEN.map(b => ({ titel: b.titel, punten: b.condities.map(c => c.titel) }));
 
       // Verborgen bestandskiezer, gedeeld door alle upload-condities.
       const bestandInput = document.createElement('input');
@@ -6228,7 +6227,17 @@
           desc: 'Berichten samenstellen en versturen binnen de notificatiedienst.',
           standaard: false,
           view: 'berichten',
+          terug: { view: 'notificatiedienst', titel: 'Notificatiedienst' },
           elementen: () => document.querySelectorAll('nldd-list-item[data-view="berichten"], .nav-tile[data-nav-view="berichten"]'),
+        },
+        {
+          key: 'kanaalvoorkeur',
+          label: 'Kanaalvoorkeur',
+          desc: 'Kanaalvoorkeur van een ondernemer opzoeken en aanpassen binnen de profieldienst.',
+          standaard: false,
+          view: 'kanaalvoorkeur',
+          terug: { view: 'profieldienst', titel: 'Profieldienst' },
+          elementen: () => document.querySelectorAll('nldd-list-item[data-view="kanaalvoorkeur"], .nav-tile[data-nav-view="kanaalvoorkeur"]'),
         },
       ];
 
@@ -6242,6 +6251,7 @@
       function bewaar() { try { localStorage.setItem(OPSLAG, JSON.stringify(staat)); } catch (e) {} }
 
       const staat = lees();
+      window.__mozaFlags = { aan: key => !!staat[key] };
 
       function pasToe() {
         FLAGS.forEach(f => {
@@ -6249,7 +6259,7 @@
           f.elementen().forEach(el => el.classList.toggle('flag-off', !aan));
           if (!aan && f.view && typeof showView === 'function') {
             const actief = document.querySelector('.view:not([hidden])');
-            if (actief && actief.dataset.view === f.view) showView('notificatiedienst', 'Notificatiedienst');
+            if (actief && actief.dataset.view === f.view) showView(f.terug.view, f.terug.titel);
           }
         });
       }
@@ -6285,7 +6295,7 @@
       if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) sluitFlags(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay && !overlay.hasAttribute('hidden')) sluitFlags(); });
 
-      pasToe(); // standaard uit → Berichten verborgen bij het laden
+      pasToe(); // standaard uit → gevlagde onderdelen verborgen bij het laden
     })();
   </script>
 </body>
