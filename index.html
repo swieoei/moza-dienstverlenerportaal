@@ -4843,12 +4843,18 @@
       function condEl(c) {
         const st = STAT[c.status] || STAT.todo;
         const item = document.createElement('nldd-list-item');
-        // Icoon bovenaan uitgelijnd, op de regel van de titel (zoals het i-icoon in banners).
+        // Icoon bovenaan uitgelijnd, met wat ademruimte eromheen (zoals het i-icoon in
+        // banners): via de custom-slot van de icon-cell met een container-padding.
         const icCell = document.createElement('nldd-icon-cell');
         icCell.setAttribute('slot', 'start');
         icCell.setAttribute('vertical-alignment', 'top');
-        icCell.setAttribute('icon', st.icon);
         icCell.setAttribute('color', ICOON_KLEUR[c.status] || 'default');
+        const icWrap = document.createElement('nldd-container');
+        icWrap.setAttribute('padding', '4');
+        const icoon = document.createElement('nldd-icon');
+        icoon.setAttribute('name', st.icon);
+        icWrap.appendChild(icoon);
+        icCell.appendChild(icWrap);
         item.appendChild(icCell);
         const tc = document.createElement('nldd-text-cell');
         tc.setAttribute('vertical-alignment', 'top');
@@ -4862,11 +4868,11 @@
           sup.setAttribute('horizontal-alignment', 'left');
           const p = document.createElement('span'); p.textContent = supTekst;
           sup.appendChild(p);
-          const up = document.createElement('nldd-button');
-          up.setAttribute('variant', 'secondary');
+          const up = document.createElement('nldd-link');
+          up.setAttribute('href', '#');
           up.setAttribute('start-icon', 'arrow-up-tray');
           up.setAttribute('text', c.bestand ? 'Ander document uploaden' : 'Document uploaden');
-          up.addEventListener('click', () => { uploadDoel = c; bestandInput.click(); });
+          up.addEventListener('click', (e) => { e.preventDefault(); uploadDoel = c; bestandInput.click(); });
           sup.appendChild(up);
           tc.appendChild(sup);
         } else {
