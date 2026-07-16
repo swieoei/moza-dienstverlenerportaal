@@ -4827,13 +4827,25 @@
       bestandInput.addEventListener('change', () => {
         const f = bestandInput.files && bestandInput.files[0];
         if (f && uploadDoel) {
+          if (uploadDoel.bestandUrl) URL.revokeObjectURL(uploadDoel.bestandUrl);
           uploadDoel.bestand = f.name;
+          uploadDoel.bestandUrl = URL.createObjectURL(f);
           uploadDoel.status = 'voltooid';
           renderBlokken();
         }
         bestandInput.value = '';
         uploadDoel = null;
       });
+
+      // Toon het ontvangen document in een nieuw tabblad. Voor een echt geüpload bestand
+      // is dat het bestand zelf; voor vooraf gevulde demo-documenten een placeholder.
+      function toonDocument(c) {
+        if (!c.bestandUrl) {
+          const blob = new Blob(['Fictief demo-document\n\n' + c.bestand + '\n\nDit is een placeholder in het prototype; in productie opent hier het geuploade document.'], { type: 'text/plain' });
+          c.bestandUrl = URL.createObjectURL(blob);
+        }
+        window.open(c.bestandUrl, '_blank');
+      }
 
       // Conditie als nldd-list-item: statusicoon (start), titel + omschrijving (text-cell),
       // vereist-/verklaringtags, statustag en (waar van toepassing) een uploadknop rechts.
@@ -4844,15 +4856,39 @@
         const tc = document.createElement('nldd-text-cell');
         tc.setAttribute('vertical-alignment', 'top');
         tc.setAttribute('text', '**' + c.titel + '**');
-        const supTekst = c.desc + (c.geldig ? ' — ' + c.geldig : '') + (c.bestand ? ' — Document ontvangen: ' + c.bestand : '');
+        const supTekst = c.desc + (c.geldig ? ' - ' + c.geldig : '');
         if (c.upload) {
-          // Rijke supporting-slot: omschrijving met daaronder (links) de uploadknop.
+          // Rijke supporting-slot: omschrijving, daaronder het ontvangen document
+          // (klikbaar, met verwijderoptie) en de uploadlink.
           const sup = document.createElement('nldd-container');
           sup.setAttribute('slot', 'supporting-text');
           sup.setAttribute('gap', '8');
           sup.setAttribute('horizontal-alignment', 'left');
           const p = document.createElement('span'); p.textContent = supTekst;
           sup.appendChild(p);
+          if (c.bestand) {
+            const docRij = document.createElement('nldd-container');
+            docRij.setAttribute('layout', 'wrap'); docRij.setAttribute('gap', '8'); docRij.setAttribute('vertical-alignment', 'center');
+            const doc = document.createElement('nldd-link');
+            doc.setAttribute('href', '#');
+            doc.setAttribute('start-icon', 'file-text');
+            doc.setAttribute('text', c.bestand);
+            doc.addEventListener('click', (e) => { e.preventDefault(); toonDocument(c); });
+            docRij.appendChild(doc);
+            const del = document.createElement('nldd-icon-button');
+            del.setAttribute('variant', 'neutral-transparent');
+            del.setAttribute('size', 'sm');
+            del.setAttribute('icon', 'trash-can');
+            del.setAttribute('accessible-label', 'Document verwijderen');
+            del.addEventListener('click', () => {
+              if (c.bestandUrl) { URL.revokeObjectURL(c.bestandUrl); c.bestandUrl = null; }
+              c.bestand = null;
+              c.status = 'todo';
+              renderBlokken();
+            });
+            docRij.appendChild(del);
+            sup.appendChild(docRij);
+          }
           const up = document.createElement('nldd-link');
           up.setAttribute('href', '#');
           up.setAttribute('start-icon', 'arrow-up-tray');
