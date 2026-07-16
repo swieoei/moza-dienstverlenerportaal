@@ -1438,7 +1438,7 @@
                           <nldd-button id="tb-bewerk" variant="primary" start-icon="pencil" text="Bewerken"></nldd-button>
                           <nldd-button id="tb-opslaan" variant="primary" start-icon="check-mark" text="Opslaan" hidden></nldd-button>
                           <nldd-button id="tb-kopie" variant="secondary" start-icon="square-on-square" text="Kopie maken"></nldd-button>
-                          <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash-can" text="Verwijderen" destructive></nldd-button>
+                          <nldd-button id="tb-verwijder" variant="secondary" start-icon="trash" text="Verwijderen" destructive></nldd-button>
                         </nldd-container>
                         <nldd-banner id="tb-d-melding" variant="success" text="" hidden></nldd-banner>
                       </nldd-container>
@@ -4878,7 +4878,7 @@
             const del = document.createElement('nldd-icon-button');
             del.setAttribute('variant', 'neutral-transparent');
             del.setAttribute('size', 'sm');
-            del.setAttribute('icon', 'trash-can');
+            del.setAttribute('icon', 'trash');
             del.setAttribute('accessible-label', 'Document verwijderen');
             del.addEventListener('click', () => {
               if (c.bestandUrl) { URL.revokeObjectURL(c.bestandUrl); c.bestandUrl = null; }
@@ -5679,7 +5679,7 @@
             u.actief = true; render(); meld('success', u.naam + ' heeft weer toegang. (demo)');
           }));
         }
-        if (!jij) acties.appendChild(knop('secondary', 'trash-can', 'Verwijderen', () => {
+        if (!jij) acties.appendChild(knop('secondary', 'trash', 'Verwijderen', () => {
           const i = org.users.indexOf(u); if (i >= 0) org.users.splice(i, 1);
           render(); meld('success', u.naam + ' verwijderd. (demo)');
         }, true));
