@@ -4781,11 +4781,10 @@
       const blokkenEl = root.querySelector('#live-blokken');
 
       const STAT = {
-        voltooid:    { icon: 'check-mark-circle', tag: { color: 'success', text: 'Voltooid' } },
-        behandeling: { icon: 'clock', tag: { color: 'warning', text: 'In behandeling' } },
-        todo:        { icon: 'exclamation-circle', tag: { color: 'critical', text: 'Nog te doen' } },
+        voltooid:    { tag: { color: 'success', text: 'Voltooid' } },
+        behandeling: { tag: { color: 'warning', text: 'In behandeling' } },
+        todo:        { tag: { color: 'critical', text: 'Nog te doen' } },
       };
-      const VEREIST = { color: 'critical', text: 'Vereist' };
       const VERKLARING = { color: 'neutral', text: 'Verklaring afnemer' };
 
       const BLOKKEN = [
@@ -4802,19 +4801,19 @@
         ]},
         { titel: '3. Rechtmatigheid en gegevensbescherming', condities: [
           { titel: 'Onderteken de gegevensverwerkingsovereenkomst', desc: 'Verwerkersafspraken tussen uw organisatie en de dienst.', status: 'voltooid' },
-          { titel: 'Leg de wettelijke grondslag vast', desc: 'Op welke grondslag notificeert u ondernemers en verwerkt u hun gegevens?', status: 'todo', tags: [VEREIST] },
-          { titel: 'Voeg de uitgevoerde DPIA toe', desc: 'Gegevensbeschermingseffectbeoordeling voor deze verwerking en kanalen.', status: 'behandeling', tags: [VEREIST], upload: true },
+          { titel: 'Leg de wettelijke grondslag vast', desc: 'Op welke grondslag notificeert u ondernemers en verwerkt u hun gegevens?', status: 'todo' },
+          { titel: 'Voeg de uitgevoerde DPIA toe', desc: 'Gegevensbeschermingseffectbeoordeling voor deze verwerking en kanalen.', status: 'behandeling', bestand: 'DPIA-notificatiedienst-v1.2.pdf', upload: true },
           { titel: 'Onderbouw doelbinding en dataminimalisatie', desc: 'Gebruik van contactgegevens en kanaalvoorkeur uit de profieldienst blijft beperkt tot dit doel. Vraag zo min mogelijk.', status: 'todo' },
         ]},
         { titel: '4. Beveiliging en toegankelijkheid', condities: [
           { titel: 'Bevestig de beveiligingsbaseline', desc: 'Uw eigen bevestiging dat de dienst aan de vastgestelde beveiligingseisen voldoet.', status: 'voltooid', geldig: 'Geldig tot 1 juli 2027 - jaarlijkse herbevestiging vereist' },
-          { titel: 'Lever de onafhankelijke beveiligingsbeoordeling aan', desc: 'Onafhankelijke toets door een erkende beoordelaar, vereist omdat de dienst persoonsgegevens op servers opslaat of verstuurt. Toetst opzet, versleuteling, opslag en toegangsbeheer. Dit is geen zelfbevestiging.', status: 'behandeling', tags: [VEREIST], geldig: 'Beoordeling niet ouder dan 12 maanden - jaarlijks te herhalen' },
+          { titel: 'Lever de onafhankelijke beveiligingsbeoordeling aan', desc: 'Onafhankelijke toets door een erkende beoordelaar, vereist omdat de dienst persoonsgegevens op servers opslaat of verstuurt. Toetst opzet, versleuteling, opslag en toegangsbeheer. Dit is geen zelfbevestiging.', status: 'behandeling', geldig: 'Beoordeling niet ouder dan 12 maanden - jaarlijks te herhalen' },
           { titel: 'Borg toegankelijke en begrijpelijke notificaties', desc: 'E-mail voldoet aan WCAG 2.2 (niveau AA); korte teksten voor push, sms en Signal zijn begrijpelijk en volledig.', status: 'behandeling' },
         ]},
         { titel: '5. Verantwoordelijkheid', condities: [
           { titel: 'Benoem de verwerkingsverantwoordelijke organisatie', desc: 'De openbare-sectororganisatie die verantwoordelijk is voor de dienst.', status: 'voltooid' },
           { titel: 'Wijs minimaal twee beheerders aan', desc: 'Een organisatiebeheerder en een dienstbeheerder, zodat beheer nooit bij één persoon ligt.', status: 'voltooid' },
-          { titel: 'Wijs een verantwoordelijk contactpersoon aan', desc: 'Met mandaat om namens de organisatie te verklaren en te reageren op incidenten en storingen.', status: 'todo', tags: [VEREIST], upload: true },
+          { titel: 'Wijs een verantwoordelijk contactpersoon aan', desc: 'Met mandaat om namens de organisatie te verklaren en te reageren op incidenten en storingen.', status: 'todo', upload: true },
         ]},
       ];
 
@@ -4838,24 +4837,10 @@
 
       // Conditie als nldd-list-item: statusicoon (start), titel + omschrijving (text-cell),
       // vereist-/verklaringtags, statustag en (waar van toepassing) een uploadknop rechts.
-      // Statusicoon-kleur via de DS-kleurvariant van nldd-icon-cell (geen eigen CSS).
-      const ICOON_KLEUR = { voltooid: 'success', behandeling: 'warning', todo: 'critical' };
       function condEl(c) {
         const st = STAT[c.status] || STAT.todo;
         const item = document.createElement('nldd-list-item');
-        // Icoon bovenaan uitgelijnd, met wat ademruimte eromheen (zoals het i-icoon in
-        // banners): via de custom-slot van de icon-cell met een container-padding.
-        const icCell = document.createElement('nldd-icon-cell');
-        icCell.setAttribute('slot', 'start');
-        icCell.setAttribute('vertical-alignment', 'top');
-        icCell.setAttribute('color', ICOON_KLEUR[c.status] || 'default');
-        const icWrap = document.createElement('nldd-container');
-        icWrap.setAttribute('padding', '4');
-        const icoon = document.createElement('nldd-icon');
-        icoon.setAttribute('name', st.icon);
-        icWrap.appendChild(icoon);
-        icCell.appendChild(icWrap);
-        item.appendChild(icCell);
+        // Geen statusicoon links; de statustag rechts vertelt de toestand.
         const tc = document.createElement('nldd-text-cell');
         tc.setAttribute('vertical-alignment', 'top');
         tc.setAttribute('text', '**' + c.titel + '**');
