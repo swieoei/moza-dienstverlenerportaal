@@ -265,10 +265,6 @@
     .app-toast.is-open { opacity: 1; transform: translateX(-50%) translateY(0); }
     /* Maak uw service live: verzwaarde go-live-voorwaarden per blok */
     .live-eyebrow { margin: 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--app-muted); }
-    /* Statuskleur op conditie-iconen (geïsoleerde uitzondering: semantische kleur, geen DS-token) */
-    .live-cond-ic--voltooid { color: light-dark(#2a8a4a, #5cc98a); }
-    .live-cond-ic--behandeling { color: light-dark(#b45309, #f0a04b); }
-    .live-cond-ic--todo { color: light-dark(#c0392b, #f08a7e); }
     .live-consent { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; line-height: 1.45; }
     .live-consent nldd-checkbox { flex: none; margin-top: 1px; }
     /* Gebruikersbeheer: dienst-chip en filterbalk */
@@ -4842,38 +4838,53 @@
 
       // Conditie als nldd-list-item: statusicoon (start), titel + omschrijving (text-cell),
       // vereist-/verklaringtags, statustag en (waar van toepassing) een uploadknop rechts.
+      // Statusicoon-kleur via de DS-kleurvariant van nldd-icon-cell (geen eigen CSS).
+      const ICOON_KLEUR = { voltooid: 'success', behandeling: 'warning', todo: 'critical' };
       function condEl(c) {
         const st = STAT[c.status] || STAT.todo;
         const item = document.createElement('nldd-list-item');
-        const icCell = document.createElement('nldd-icon-cell'); icCell.setAttribute('slot', 'start');
-        const ic = document.createElement('nldd-icon');
-        ic.className = 'live-cond-ic--' + c.status;
-        ic.setAttribute('name', st.icon);
-        icCell.appendChild(ic);
+        // Icoon bovenaan uitgelijnd, op de regel van de titel (zoals het i-icoon in banners).
+        const icCell = document.createElement('nldd-icon-cell');
+        icCell.setAttribute('slot', 'start');
+        icCell.setAttribute('vertical-alignment', 'top');
+        icCell.setAttribute('icon', st.icon);
+        icCell.setAttribute('color', ICOON_KLEUR[c.status] || 'default');
         item.appendChild(icCell);
         const tc = document.createElement('nldd-text-cell');
+        tc.setAttribute('vertical-alignment', 'top');
         tc.setAttribute('text', '**' + c.titel + '**');
-        tc.setAttribute('supporting-text', c.desc + (c.geldig ? ' — ' + c.geldig : '') + (c.bestand ? ' — Document ontvangen: ' + c.bestand : ''));
-        item.appendChild(tc);
-        // Tags (en evt. uploadknop) in een wrappende container binnen een gewone cell,
-        // met een spacer-cell als kolomruimte (geen slot="end"; zie NLDD-richtlijn).
-        const spacer = document.createElement('nldd-spacer-cell'); spacer.setAttribute('size', '16');
-        item.appendChild(spacer);
-        const end = document.createElement('nldd-cell');
-        end.setAttribute('max-width', '14rem'); // begrenst de wrap-container, anders claimt die max-content
-        const groep = document.createElement('nldd-container');
-        groep.setAttribute('layout', 'wrap'); groep.setAttribute('gap', '4'); groep.setAttribute('vertical-alignment', 'center');
-        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); groep.appendChild(t); });
-        const stag = document.createElement('nldd-tag'); stag.setAttribute('color', st.tag.color); stag.setAttribute('text', st.tag.text);
-        groep.appendChild(stag);
+        const supTekst = c.desc + (c.geldig ? ' — ' + c.geldig : '') + (c.bestand ? ' — Document ontvangen: ' + c.bestand : '');
         if (c.upload) {
+          // Rijke supporting-slot: omschrijving met daaronder (links) de uploadknop.
+          const sup = document.createElement('nldd-container');
+          sup.setAttribute('slot', 'supporting-text');
+          sup.setAttribute('gap', '8');
+          sup.setAttribute('horizontal-alignment', 'left');
+          const p = document.createElement('span'); p.textContent = supTekst;
+          sup.appendChild(p);
           const up = document.createElement('nldd-button');
           up.setAttribute('variant', 'secondary');
           up.setAttribute('start-icon', 'arrow-up-tray');
           up.setAttribute('text', c.bestand ? 'Ander document uploaden' : 'Document uploaden');
           up.addEventListener('click', () => { uploadDoel = c; bestandInput.click(); });
-          groep.appendChild(up);
+          sup.appendChild(up);
+          tc.appendChild(sup);
+        } else {
+          tc.setAttribute('supporting-text', supTekst);
         }
+        item.appendChild(tc);
+        // Tags in een wrappende container binnen een gewone cell, met een spacer-cell
+        // als kolomruimte (geen slot="end"; zie NLDD-richtlijn).
+        const spacer = document.createElement('nldd-spacer-cell'); spacer.setAttribute('size', '16');
+        item.appendChild(spacer);
+        const end = document.createElement('nldd-cell');
+        end.setAttribute('max-width', '14rem'); // begrenst de wrap-container, anders claimt die max-content
+        end.setAttribute('vertical-alignment', 'top');
+        const groep = document.createElement('nldd-container');
+        groep.setAttribute('layout', 'wrap'); groep.setAttribute('gap', '4'); groep.setAttribute('vertical-alignment', 'center');
+        (c.tags || []).forEach(tg => { const t = document.createElement('nldd-tag'); t.setAttribute('color', tg.color); t.setAttribute('text', tg.text); groep.appendChild(t); });
+        const stag = document.createElement('nldd-tag'); stag.setAttribute('color', st.tag.color); stag.setAttribute('text', st.tag.text);
+        groep.appendChild(stag);
         end.appendChild(groep);
         item.appendChild(end);
         return item;
