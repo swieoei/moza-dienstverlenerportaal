@@ -433,10 +433,12 @@
                 </nldd-list-item>
 
                 <!-- Profieldienst: uitklapbare parent met API keys en Rapportages als children -->
+                <!-- In productie afgenomen diensten krijgen in het menu geen productie-tag
+                     meer; die status staat alleen nog in het dienstenaanbod. -->
                 <nldd-list-item button data-view="profieldienst" data-title="Profieldienst" data-group="profieldienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="person-badge-gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Profieldienst"></nldd-text-cell>
-                  <nldd-cell slot="end"><span class="nav-parent-end"><nldd-tag color="success" text="productie"></nldd-tag><nldd-icon class="nav-caret" name="caret-right" size="18"></nldd-icon></span></nldd-cell>
+                  <nldd-cell slot="end"><span class="nav-parent-end"><nldd-icon class="nav-caret" name="caret-right" size="18"></nldd-icon></span></nldd-cell>
                 </nldd-list-item>
                 <nldd-list-item button data-view="kanaalvoorkeur" data-title="Kanaalvoorkeur" data-parent="profieldienst" hidden>
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
@@ -495,6 +497,15 @@
                   <nldd-spacer-cell slot="start" size="20"></nldd-spacer-cell>
                   <nldd-icon-cell slot="start"><nldd-icon name="gear"></nldd-icon></nldd-icon-cell>
                   <nldd-text-cell text="Notificatie-instellingen"></nldd-text-cell>
+                </nldd-list-item>
+
+                <!-- Berichtendienst: in productie afgenomen; eigen portaal dat via SSO Rijk
+                     in een nieuw tabblad opent. Alleen voor de organisatiebeheerder. -->
+                <nldd-list-item button id="nav-berichtendienst">
+                  <nldd-icon-cell slot="start"><nldd-icon name="paper-plane"></nldd-icon></nldd-icon-cell>
+                  <nldd-text-cell text="Berichtendienst (via SSO)"></nldd-text-cell>
+                  <nldd-spacer-cell size="flexible"></nldd-spacer-cell>
+                  <nldd-icon-cell><nldd-icon name="square-arrow-right-top" size="18"></nldd-icon></nldd-icon-cell>
                 </nldd-list-item>
 
                 <nldd-list-item button data-view="audit" data-title="Audit en logboek">
@@ -1536,6 +1547,21 @@
                           <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
                         </nldd-container>
                       </nldd-card>
+
+                      <!-- Berichtendienst (afgenomen: productie; eigen portaal, opent via SSO Rijk) -->
+                      <nldd-card class="mp-tile mp-tile--on">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                            <nldd-title size="5"><h2>Berichtendienst</h2></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
+                            <nldd-tag color="success" text="productie"></nldd-tag>
+                          </nldd-container>
+                          <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
+                            <nldd-button variant="secondary" end-icon="square-arrow-right-top" text="Openen via SSO" data-sso-berichtendienst></nldd-button>
+                          </nldd-container>
+                        </nldd-container>
+                      </nldd-card>
                     </nldd-container>
 
                     <nldd-title size="5">
@@ -1543,21 +1569,6 @@
                       <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
                     </nldd-title>
                     <nldd-container class="svc-grid" layout="grid" gap="16">
-                      <!-- Berichtendienst (plek 3 in het dienstenaanbod, binnenkort beschikbaar) -->
-                      <div class="mp-tile-wrap mp-binnenkort">
-                        <nldd-card class="mp-tile">
-                          <nldd-container padding="16" gap="12">
-                            <nldd-title size="5"><h2>Berichtendienst</h2></nldd-title>
-                            <nldd-rich-text><p>Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p></nldd-rich-text>
-                            <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                            <nldd-container class="row-actions" layout="wrap" gap="8">
-                              <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="berichtendienst" disabled></nldd-button>
-                            </nldd-container>
-                          </nldd-container>
-                        </nldd-card>
-                        <span class="mp-binnenkort-ribbon">Binnenkort</span>
-                      </div>
-
                       <!-- DigiD -->
                       <nldd-card class="mp-tile">
                         <nldd-container padding="16" gap="12">
@@ -2537,10 +2548,12 @@
       const actiefItem = navItems.find(i => i.dataset.view === name);
       const parentKey = actiefItem && actiefItem.dataset.parent;
       if (title && titlebar) titlebar.textContent = title;
-      // Statustag (demo/productie) van de dienst naast de paginatitel - ook op subpagina's.
+      // Statustag van de dienst naast de paginatitel - ook op subpagina's. Alleen voor
+      // demo-diensten; in productie afgenomen diensten dragen buiten het dienstenaanbod
+      // geen productie-tag meer.
       const titleTag = document.getElementById('title-tag');
       if (titleTag) {
-        const DIENST_STATUS = { notificatiedienst: { text: 'demo', color: 'accent' }, profieldienst: { text: 'productie', color: 'success' } };
+        const DIENST_STATUS = { notificatiedienst: { text: 'demo', color: 'accent' } };
         const st = DIENST_STATUS[name] || DIENST_STATUS[parentKey];
         if (st) { titleTag.setAttribute('color', st.color); titleTag.setAttribute('text', st.text); titleTag.removeAttribute('hidden'); }
         else titleTag.setAttribute('hidden', '');
@@ -2614,6 +2627,9 @@
           else el.classList.add('rol-verborgen');
         });
         if (org) org.classList.add('rol-verborgen'); // organisatie-instellingen alleen voor de organisatiebeheerder
+        // Het Berichtendienst-portaal (via SSO) staat alleen in het menu van de organisatiebeheerder.
+        const navBd = document.getElementById('nav-berichtendienst');
+        if (navBd) navBd.classList.add('rol-verborgen');
         // Productieversie/go-live aanvragen is voorbehouden aan de organisatiebeheerder;
         // andere rollen krijgen een verwijzing naar die rol.
         const prodKnop = document.getElementById('nd-prod-knop');
@@ -2642,6 +2658,14 @@
       toonToast('Documentatie en ondersteuning wordt binnenkort toegevoegd.');
       if (sbsec && sbsec.collapsed && sbsec.hide) sbsec.hide();
     });
+
+    // Berichtendienst: eigen portaal buiten MOZa, opent via SSO Rijk in een nieuw
+    // tabblad. Zowel vanuit het menu als vanuit het dienstenaanbod.
+    document.querySelectorAll('#nav-berichtendienst, [data-sso-berichtendienst]').forEach(el =>
+      el.addEventListener('click', () => {
+        window.open('berichtendienst.html', '_blank', 'noopener');
+        if (sbsec && sbsec.collapsed && sbsec.hide) sbsec.hide();
+      }));
 
     navwrap.addEventListener('click', (e) => {
       const item = e.target.closest('nldd-list-item');

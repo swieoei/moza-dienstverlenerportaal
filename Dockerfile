@@ -7,6 +7,6 @@ FROM nginxinc/nginx-unprivileged:1.27-alpine
 COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 
 # Alleen de statische site; build-/repo-bestanden blijven buiten het image (.dockerignore).
-COPY index.html login.html sso.html /usr/share/nginx/html/
+COPY index.html login.html sso.html berichtendienst.html /usr/share/nginx/html/
 
 EXPOSE 8080

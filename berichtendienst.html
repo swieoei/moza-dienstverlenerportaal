@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Berichtendienst</title>
+
+  <!-- Echte NLDD design system -->
+  <link rel="stylesheet" href="https://esm.sh/@nldd/design-system@0.8.60/dist/css/settings.css" />
+  <script type="module" src="https://esm.sh/@nldd/design-system@0.8.60"></script>
+
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { font-family: var(--typography-font-family-base, system-ui, sans-serif); background: var(--context-base-background-color, #fff); }
+    #app { display: flex; flex-direction: column; height: 100vh; }
+    nldd-app-view { flex: 1 1 auto; min-height: 0; }
+    .bd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Berichtendienst: eigen portaal buiten MOZa. Bezoekers komen hier via SSO Rijk
+         vanuit het dienstverlenerportaal; terug = tabblad sluiten. -->
+    <nldd-top-navigation-bar
+      logo-title="Rijksoverheid"
+      logo-subtitle="Berichtendienst"
+      website-title="Berichtendienst">
+    </nldd-top-navigation-bar>
+
+    <nldd-app-view background="tinted">
+      <nldd-page>
+        <nldd-simple-section>
+          <nldd-container padding="24" gap="16">
+
+            <nldd-banner id="sso-banner" variant="success" text="U bent aangemeld via SSO Rijk."></nldd-banner>
+
+            <nldd-title size="2">
+              <h1>Berichtendienst</h1>
+              <p slot="subtitle">Plaats officiële berichten rechtstreeks in de Berichtenbox van ondernemers, met leesbevestiging en archivering conform de bewaarplicht.</p>
+            </nldd-title>
+
+            <div class="bd-grid">
+              <nldd-card>
+                <nldd-container padding="16" gap="8">
+                  <nldd-title size="5"><h2>Berichten plaatsen</h2></nldd-title>
+                  <nldd-rich-text><p>Stel een bericht op en plaats het in de Berichtenbox van een of meer ondernemers.</p></nldd-rich-text>
+                </nldd-container>
+              </nldd-card>
+              <nldd-card>
+                <nldd-container padding="16" gap="8">
+                  <nldd-title size="5"><h2>Leesbevestigingen</h2></nldd-title>
+                  <nldd-rich-text><p>Volg per bericht of en wanneer het door de ontvanger is geopend.</p></nldd-rich-text>
+                </nldd-container>
+              </nldd-card>
+              <nldd-card>
+                <nldd-container padding="16" gap="8">
+                  <nldd-title size="5"><h2>Archief</h2></nldd-title>
+                  <nldd-rich-text><p>Raadpleeg geplaatste berichten binnen de wettelijke bewaartermijn.</p></nldd-rich-text>
+                </nldd-container>
+              </nldd-card>
+            </div>
+
+            <nldd-banner variant="neutral" text="Dit portaal valt buiten MOZa. Sluit dit tabblad om terug te keren naar het dienstverlenerportaal. Let op: fictieve gegevens."></nldd-banner>
+
+          </nldd-container>
+        </nldd-simple-section>
+      </nldd-page>
+    </nldd-app-view>
+  </div>
+
+  <script>
+    // De ingelogde gebruiker is bekend uit het dienstverlenerportaal (zelfde origin);
+    // SSO Rijk geeft die identiteit door. Alleen de naam en organisatie tonen.
+    const NAMEN = {
+      sanne:   { naam: 'Sanne de Boer', org: 'Kamer van Koophandel' },
+      robbert: { naam: 'Robbert Bos', org: 'Ministerie van BZK' },
+    };
+    try {
+      const m = NAMEN[localStorage.getItem('moza-user')];
+      if (m) document.getElementById('sso-banner').setAttribute('text',
+        'U bent aangemeld via SSO Rijk als ' + m.naam + ' (' + m.org + ').');
+    } catch (e) {}
+  </script>
+</body>
+</html>
