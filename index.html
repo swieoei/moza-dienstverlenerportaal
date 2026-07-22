@@ -954,6 +954,9 @@
               <!-- ====================== API KEYS - PROFIELDIENST ====================== -->
               <section class="view" hidden data-view="apikeys-profieldienst">
                 <nldd-container class="stack" gap="16">
+                  <!-- Feature flag 'certificaat-auth' (Flags in de footer): flag aan =
+                       certificaten (mTLS) in plaats van API keys; flag uit = alleen API keys. -->
+                  <div class="cert-beheer flag-off" data-cert-flag data-dienst="profieldienst" hidden></div>
                   <div class="api-keys-beheer" data-dienst="profieldienst">
                     <nldd-container class="stack" gap="16">
                       <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
@@ -1020,6 +1023,9 @@
               <!-- ====================== API KEYS - NOTIFICATIEDIENST ====================== -->
               <section class="view" hidden data-view="apikeys-notificatiedienst">
                 <nldd-container class="stack" gap="16">
+                  <!-- Feature flag 'certificaat-auth' (Flags in de footer): flag aan =
+                       certificaten (mTLS) in plaats van API keys; flag uit = alleen API keys. -->
+                  <div class="cert-beheer flag-off" data-cert-flag data-dienst="notificatiedienst" hidden></div>
                   <div class="api-keys-beheer" data-dienst="notificatiedienst">
                     <nldd-container class="stack" gap="16">
                       <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
@@ -5215,6 +5221,292 @@
       });
     })();
 
+    // ====================== Certificaat-authenticatie (feature flag) ======================
+    // Alternatief voor API keys: client-certificaten (mTLS) met PKIoverheid als
+    // vertrouwensanker. Prototype zonder echte crypto: de CSR wordt alleen op vorm
+    // gecontroleerd, uitgifte/vernieuwing/intrekking zijn mock. Aan/uit via de flag
+    // 'certificaat-auth' in de Flags-dialog (footer); flag uit = alleen API keys.
+    (function () {
+      const PROFIELEN = {
+        notificatiedienst: [
+          { id: 'verzenden', label: 'Client-certificaat - Notificaties verzenden', scope: 'schrijven', desc: 'Berichten versturen via de dienst.' },
+          { id: 'lezen', label: 'Client-certificaat - Status en rapportage lezen', scope: 'lezen', desc: 'Afleverstatus en rapportages opvragen.' },
+          { id: 'beheer', label: 'Client-certificaat - Volledig beheer', scope: 'beheer', desc: 'Verzenden, lezen en herstel-acties met één identiteit.' },
+        ],
+        profieldienst: [
+          { id: 'lezen', label: 'Client-certificaat - Profiel lezen', scope: 'lezen', desc: 'Profiel- en contactgegevens opvragen.' },
+          { id: 'schrijven', label: 'Client-certificaat - Voorkeuren bijwerken', scope: 'schrijven', desc: 'Kanaal- en taalvoorkeuren wijzigen.' },
+          { id: 'beheer', label: 'Client-certificaat - Volledig beheer', scope: 'beheer', desc: 'Lezen, bijwerken en verificaties starten met één identiteit.' },
+        ],
+      };
+      const scopeColor = { lezen: 'neutral', schrijven: 'accent', beheer: 'warning' };
+      const UITGEVER = 'PKIoverheid Private Services CA - G1 (demo-uitgifte)';
+      const WAARSCHUW_DAGEN = 30;
+
+      const overDagen = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+      function serieNr() {
+        let s = [];
+        for (let i = 0; i < 8; i++) s.push(Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase());
+        return s.join(':');
+      }
+      function vingerafdruk() {
+        let s = [];
+        for (let i = 0; i < 8; i++) s.push(Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase());
+        return 'SHA-256 ' + s.join(':') + ':…';
+      }
+      function certStatusTag(c) {
+        if (c.status === 'ingetrokken') return { color: 'critical', text: 'ingetrokken op ' + fmtDatum(c.ingetrokkenOp) };
+        const dagen = Math.ceil((new Date(c.geldigTot) - Date.now()) / 86400000);
+        if (dagen < 0) return { color: 'critical', text: 'verlopen op ' + fmtDatum(c.geldigTot) };
+        if (dagen <= WAARSCHUW_DAGEN) return { color: 'warning', text: 'verloopt ' + fmtDatum(c.geldigTot) + ' - nog ' + dagen + ' dagen' };
+        return { color: 'neutral', text: 'geldig tot ' + fmtDatum(c.geldigTot) };
+      }
+      function mockPem(c) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        let b64 = '';
+        for (let i = 0; i < 704; i++) b64 += chars[Math.floor(Math.random() * chars.length)] + ((i + 1) % 64 === 0 ? '\n' : '');
+        return '-----BEGIN CERTIFICATE-----\n' + b64 + '\n-----END CERTIFICATE-----\n';
+      }
+      const VOORBEELD_CSR = '-----BEGIN CERTIFICATE REQUEST-----\nMIICijCCAXICAQAwRTELMAkGA1UEBhMCTkwxHjAcBgNVBAoMFUthbWVyIHZhbiBL\nb29waGFuZGVsMRYwFAYDVQQDDA1iYWNrb2ZmaWNlLWt2azCCASIwDQYJKoZIhvcN\nAQEBBQADggEPADCCAQoCggEBALYVoorbeeldwaardenDitIsEenFictieveCSRAl\nleenVoorDeDemoGeenEchteSleutel…\n-----END CERTIFICATE REQUEST-----';
+
+      // Startdata per dienst; één certificaat verloopt binnenkort (expiry-demo).
+      const CERTS = {
+        notificatiedienst: [
+          { naam: 'Backoffice KvK', profiel: 'verzenden', serie: serieNr(), vinger: vingerafdruk(), geldigTot: overDagen(320), status: 'actief' },
+          { naam: 'Rapportagedashboard', profiel: 'lezen', serie: serieNr(), vinger: vingerafdruk(), geldigTot: overDagen(12), status: 'actief' },
+          { naam: 'Oude ketentestclient', profiel: 'lezen', serie: serieNr(), vinger: vingerafdruk(), geldigTot: overDagen(180), status: 'ingetrokken', ingetrokkenOp: overDagen(-14) },
+        ],
+        profieldienst: [
+          { naam: 'Zaaksysteem KvK', profiel: 'lezen', serie: serieNr(), vinger: vingerafdruk(), geldigTot: overDagen(200), status: 'actief' },
+        ],
+      };
+
+      // Zelfde rolregel als bij API keys: een key-eigenaar beheert niet zelf.
+      const magBeheren = !window.__MOZA_USER || window.__MOZA_USER.rol !== 'keyeigenaar';
+
+      document.querySelectorAll('.cert-beheer[data-dienst]').forEach(beheer => {
+        const certs = CERTS[beheer.dataset.dienst];
+        const profielen = PROFIELEN[beheer.dataset.dienst];
+        if (!certs || !profielen) return;
+        const profielVan = id => profielen.find(p => p.id === id) || { label: id, scope: 'lezen' };
+
+        beheer.innerHTML = `
+          <nldd-container class="stack" gap="16">
+            <nldd-banner variant="neutral" text="Authenticatie met een client-certificaat (mTLS): geen gedeeld geheim zoals een API key, maar een certificaat als identiteit van uw applicatie. De dienst vertrouwt uitsluitend certificaten uitgegeven onder PKIoverheid. Uw private key blijft altijd bij uw organisatie."></nldd-banner>
+            <nldd-container class="inline" layout="wrap" gap="8" vertical-alignment="center">
+              <nldd-button data-ct-open variant="primary" start-icon="plus" text="Certificaat aanvragen"></nldd-button>
+            </nldd-container>
+            <div data-ct-panel hidden>
+              <nldd-card>
+                <nldd-container padding="16" gap="12">
+                  <nldd-title size="5"><h3>Certificaat aanvragen</h3></nldd-title>
+                  <nldd-form-field label="Naam / toepassing">
+                    <nldd-text-field data-ct-naam placeholder="Bijv. Backoffice KvK"></nldd-text-field>
+                  </nldd-form-field>
+                  <nldd-form-field label="Certificaatprofiel">
+                    <nldd-dropdown>
+                      <select data-ct-profiel aria-label="Certificaatprofiel"></select>
+                    </nldd-dropdown>
+                  </nldd-form-field>
+                  <p class="muted-note" data-ct-profiel-desc></p>
+                  <nldd-form-field label="Certificate Signing Request (CSR)">
+                    <nldd-multi-line-text-field data-ct-csr rows="6" resize="vertical" no-spellcheck placeholder="-----BEGIN CERTIFICATE REQUEST-----"></nldd-multi-line-text-field>
+                  </nldd-form-field>
+                  <nldd-container class="row-actions" layout="wrap" gap="8">
+                    <nldd-button data-ct-upload variant="secondary" start-icon="paperclip" text="CSR-bestand uploaden"></nldd-button>
+                    <nldd-button data-ct-voorbeeld variant="secondary" start-icon="file-text" text="Voorbeeld-CSR invullen (demo)"></nldd-button>
+                  </nldd-container>
+                  <input type="file" data-ct-bestand accept=".csr,.pem,.txt" hidden>
+                  <p class="muted-note">Alleen de CSR: het publieke aanvraagbestand (.csr of .pem). Uw private key blijft bij uw organisatie en verlaat uw omgeving nooit - wij vragen er niet om en u kunt hem hier niet indienen. Het gekozen profiel bepaalt de certificaatvelden en scopes; u hoeft geen losse X.509-velden in te vullen.</p>
+                  <nldd-container class="row-actions" layout="wrap" gap="8">
+                    <nldd-button data-ct-uitgeven variant="primary" start-icon="seal-check-mark" text="Certificaat uitgeven"></nldd-button>
+                    <nldd-button data-ct-annuleer variant="secondary" text="Annuleren"></nldd-button>
+                  </nldd-container>
+                </nldd-container>
+              </nldd-card>
+            </div>
+            <nldd-banner data-ct-melding variant="success" text="" hidden></nldd-banner>
+            <nldd-banner data-ct-expiry variant="warning" text="" hidden></nldd-banner>
+            <nldd-container class="stack" gap="16" data-ct-lijst></nldd-container>
+          </nldd-container>`;
+
+        const lijst = beheer.querySelector('[data-ct-lijst]');
+        const meldingEl = beheer.querySelector('[data-ct-melding]');
+        const expiryEl = beheer.querySelector('[data-ct-expiry]');
+        function melding(variant, text) {
+          meldingEl.setAttribute('variant', variant);
+          meldingEl.setAttribute('text', text);
+          meldingEl.removeAttribute('hidden');
+        }
+
+        // Profielkeuze: dropdown + uitleg van het gekozen profiel.
+        const profielSelect = beheer.querySelector('[data-ct-profiel]');
+        const profielDesc = beheer.querySelector('[data-ct-profiel-desc]');
+        profielen.forEach(p => {
+          const o = document.createElement('option');
+          o.value = p.id; o.textContent = p.label;
+          profielSelect.appendChild(o);
+        });
+        function toonProfielDesc() {
+          const p = profielVan(profielSelect.value || profielen[0].id);
+          profielDesc.textContent = p.desc + ' Toegangsniveau: ' + p.scope + '.';
+        }
+        profielSelect.addEventListener('change', toonProfielDesc);
+        toonProfielDesc();
+
+        function kaart(c) {
+          const p = profielVan(c.profiel);
+          const wrap = document.createElement('div');
+          wrap.innerHTML = `
+            <nldd-card>
+              <nldd-container padding="16" gap="12">
+                <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                  <nldd-title size="5"><h3></h3></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
+                  <nldd-tag class="c-status" color="neutral" text="-"></nldd-tag>
+                </nldd-container>
+                <div class="k-rollen"><span class="k-rollen-label">Profiel:</span></div>
+                <p class="muted-note c-meta"></p>
+                <nldd-container class="row-actions" layout="wrap" gap="8">
+                  <nldd-button class="c-download" variant="secondary" start-icon="square-and-arrow-down" text="Certificaat (PEM)"></nldd-button>
+                  <nldd-button class="c-vernieuw" variant="secondary" start-icon="arrow-2-counter-clockwise" text="Vernieuwen"></nldd-button>
+                  <nldd-button class="c-intrek" variant="destructive" start-icon="trash" text="Intrekken"></nldd-button>
+                </nldd-container>
+              </nldd-container>
+            </nldd-card>`;
+          const el = wrap.firstElementChild;
+          el.querySelector('h3').textContent = c.naam;
+          const t = document.createElement('nldd-tag');
+          t.setAttribute('color', scopeColor[p.scope] || 'accent');
+          t.setAttribute('text', p.label);
+          el.querySelector('.k-rollen').appendChild(t);
+          el.querySelector('.c-meta').textContent = 'Serienummer ' + c.serie + ' · ' + c.vinger + ' · Uitgever: ' + UITGEVER;
+          const st = certStatusTag(c);
+          const tag = el.querySelector('.c-status');
+          tag.setAttribute('color', st.color);
+          tag.setAttribute('text', st.text);
+
+          const ingetrokken = c.status === 'ingetrokken';
+          if (ingetrokken || !magBeheren) {
+            el.querySelector('.c-vernieuw').classList.add('rol-verborgen');
+            el.querySelector('.c-intrek').classList.add('rol-verborgen');
+          }
+          if (ingetrokken) el.querySelector('.c-download').classList.add('rol-verborgen');
+
+          el.querySelector('.c-download').addEventListener('click', () => {
+            const blob = new Blob([mockPem(c)], { type: 'application/x-pem-file' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = c.naam.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.pem';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            melding('success', 'Certificaat van \'' + c.naam + '\' gedownload (PEM). Dit is het publieke certificaat; de private key heeft u zelf.');
+          });
+          el.querySelector('.c-vernieuw').addEventListener('click', () => {
+            c.geldigTot = overDagen(365);
+            c.serie = serieNr();
+            renderLijst();
+            melding('success', 'Certificaat van \'' + c.naam + '\' vernieuwd met behoud van de bestaande sleutel; geldig tot ' + fmtDatum(c.geldigTot) + '. Wilt u ook een nieuwe sleutel? Dien dan een nieuwe aanvraag met CSR in.');
+          });
+          el.querySelector('.c-intrek').addEventListener('click', () => {
+            c.status = 'ingetrokken';
+            c.ingetrokkenOp = overDagen(0);
+            renderLijst();
+            melding('warning', 'Certificaat van \'' + c.naam + '\' is per direct ingetrokken. Nieuwe TLS-verbindingen met dit certificaat worden geweigerd (CRL en OCSP bijgewerkt).');
+          });
+          return el;
+        }
+
+        function renderLijst() {
+          lijst.textContent = '';
+          if (!certs.length) {
+            const leeg = document.createElement('p');
+            leeg.className = 'muted-note';
+            leeg.textContent = 'Nog geen certificaten. Vraag een certificaat aan om de dienst via mTLS te gebruiken.';
+            lijst.appendChild(leeg);
+          } else {
+            certs.forEach(c => lijst.appendChild(kaart(c)));
+          }
+          const bijnaVerlopen = certs.filter(c => c.status === 'actief' &&
+            Math.ceil((new Date(c.geldigTot) - Date.now()) / 86400000) <= WAARSCHUW_DAGEN);
+          if (bijnaVerlopen.length) {
+            expiryEl.setAttribute('text', bijnaVerlopen.length + ' certifica' + (bijnaVerlopen.length === 1 ? 'at verloopt' : 'ten verlopen') + ' binnen ' + WAARSCHUW_DAGEN + ' dagen (' + bijnaVerlopen.map(c => c.naam).join(', ') + '). Vernieuw op tijd om onderbreking van de koppeling te voorkomen.');
+            expiryEl.removeAttribute('hidden');
+          } else {
+            expiryEl.setAttribute('hidden', '');
+          }
+        }
+
+        // Aanvraag-paneel: openen, CSR plakken/uploaden, uitgeven.
+        const panel = beheer.querySelector('[data-ct-panel]');
+        const naamVeld = beheer.querySelector('[data-ct-naam]');
+        const csrVeld = beheer.querySelector('[data-ct-csr]');
+        const bestand = beheer.querySelector('[data-ct-bestand]');
+        const openBtn = beheer.querySelector('[data-ct-open]');
+        if (!magBeheren) openBtn.classList.add('rol-verborgen');
+
+        openBtn.addEventListener('click', () => {
+          if (naamVeld) naamVeld.value = '';
+          if (csrVeld) csrVeld.value = '';
+          profielSelect.value = profielen[0].id;
+          toonProfielDesc();
+          panel.toggleAttribute('hidden');
+        });
+        beheer.querySelector('[data-ct-annuleer]').addEventListener('click', () => panel.setAttribute('hidden', ''));
+        beheer.querySelector('[data-ct-upload]').addEventListener('click', () => bestand.click());
+        bestand.addEventListener('change', () => {
+          const f = bestand.files && bestand.files[0];
+          if (!f) return;
+          const r = new FileReader();
+          r.onload = () => {
+            const tekst = String(r.result || '');
+            if (tekst.includes('PRIVATE KEY')) {
+              melding('critical', 'Dit bestand bevat een private key, geen CSR. Dien nooit een private key in - die hoort uw organisatie niet te verlaten. Maak zo nodig een nieuw sleutelpaar aan en upload alleen de CSR.');
+              return;
+            }
+            csrVeld.value = tekst.trim();
+            melding('success', 'CSR-bestand \'' + f.name + '\' ingelezen. Controleer de aanvraag en kies Certificaat uitgeven.');
+          };
+          r.readAsText(f);
+          bestand.value = '';
+        });
+        beheer.querySelector('[data-ct-voorbeeld]').addEventListener('click', () => { csrVeld.value = VOORBEELD_CSR; });
+
+        beheer.querySelector('[data-ct-uitgeven]').addEventListener('click', () => {
+          const naam = (naamVeld && naamVeld.value ? String(naamVeld.value).trim() : '') || 'Nieuwe toepassing';
+          const csr = (csrVeld && csrVeld.value ? String(csrVeld.value).trim() : '');
+          if (csr.includes('PRIVATE KEY')) {
+            melding('critical', 'Dit lijkt een private key, geen CSR. Dien nooit een private key in - die hoort uw organisatie niet te verlaten. Maak zo nodig een nieuw sleutelpaar aan en plak alleen de CSR.');
+            return;
+          }
+          if (!csr.includes('BEGIN CERTIFICATE REQUEST')) {
+            melding('warning', 'Plak of upload eerst een geldige CSR (PEM-formaat, begint met -----BEGIN CERTIFICATE REQUEST-----).');
+            return;
+          }
+          const p = profielVan(profielSelect.value);
+          const nieuw = { naam: naam, profiel: p.id, serie: serieNr(), vinger: vingerafdruk(), geldigTot: overDagen(365), status: 'actief' };
+          certs.unshift(nieuw);
+          renderLijst();
+          panel.setAttribute('hidden', '');
+          melding('success', 'Certificaat uitgegeven voor \'' + naam + '\' (' + p.label + '), geldig tot ' + fmtDatum(nieuw.geldigTot) + ', onder ' + UITGEVER + '. Gebaseerd op uw CSR - uw private key is nooit verstuurd.');
+        });
+
+        renderLijst();
+      });
+
+      // Flag aan = certificaten (mTLS) in plaats van API keys: de certkant vervangt
+      // het API-keyblok. Flag uit = alleen API keys (huidig gedrag).
+      document.querySelectorAll('.cert-beheer[data-dienst]').forEach(certBlok => {
+        const keysBlok = certBlok.closest('section').querySelector('.api-keys-beheer');
+        function pasFlagToe() {
+          const flagAan = !!(window.__mozaFlags && window.__mozaFlags.aan('certificaat-auth'));
+          keysBlok.toggleAttribute('hidden', flagAan);
+          certBlok.toggleAttribute('hidden', !flagAan);
+        }
+        document.addEventListener('moza-flags-changed', pasFlagToe);
+        pasFlagToe();
+      });
+    })();
+
     // ====================== Rapportage-beheer in de dienstviews ======================
     // Per dienst een lijst downloadbare rapportages; nieuwe samenstellen via een
     // paneel (type + periode + formaat). Gedeelde data met de rest van de dienst.
@@ -6263,6 +6555,13 @@
           terug: { view: 'profieldienst', titel: 'Profieldienst' },
           elementen: () => document.querySelectorAll('nldd-list-item[data-view="kanaalvoorkeur"], .nav-tile[data-nav-view="kanaalvoorkeur"]'),
         },
+        {
+          key: 'certificaat-auth',
+          label: 'Certificaat-authenticatie',
+          desc: 'Certificaten (mTLS, PKIoverheid) in plaats van API keys op de API keys-pagina van een dienst.',
+          standaard: false,
+          elementen: () => document.querySelectorAll('[data-cert-flag]'),
+        },
       ];
 
       function lees() {
@@ -6286,6 +6585,8 @@
             if (actief && actief.dataset.view === f.view) showView(f.terug.view, f.terug.titel);
           }
         });
+        // Modules die op een flag reageren (bv. certificaat-auth) luisteren hiernaar.
+        document.dispatchEvent(new CustomEvent('moza-flags-changed'));
       }
 
       const overlay = document.getElementById('flags-overlay');
