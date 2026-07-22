@@ -60,6 +60,18 @@ vanilla JavaScript onderaan het bestand.
   `arrow-right-out-bucket`, `plus`, `dismiss`, `file-box`, `paper-plane`,
   `message-rectangle-text`, `check-mark`).
 
+## Feature flags (demo)
+
+Experimentele functionaliteit staat achter feature flags: klik in de footer op
+**Flags** en zet een flag aan of uit. De keuze wordt per browser bewaard
+(localStorage `moza-flags`); standaard staan alle flags uit.
+
+| Flag | Wat er aan gaat |
+|---|---|
+| Berichten | berichten samenstellen en versturen binnen de notificatiedienst |
+| Kanaalvoorkeur | kanaalvoorkeur van een ondernemer opzoeken en aanpassen (profieldienst) |
+| Certificaat-authenticatie | de API keys-pagina's tonen **certificaten (mTLS)** in plaats van API keys: aanvragen met een CSR (nooit een private key), profiel/template i.p.v. losse X.509-velden, mock-uitgifte onder PKIoverheid, beheer met expiry-waarschuwing, vernieuwen en intrekken |
+
 ## Let op
 
 - Dit is een proeftuin/prototype. De data is **fictief**; gebruik geen echte
