@@ -503,8 +503,9 @@
                      in een nieuw tabblad opent. Alleen voor de organisatiebeheerder. -->
                 <nldd-list-item button id="nav-berichtendienst">
                   <nldd-icon-cell slot="start"><nldd-icon name="paper-plane"></nldd-icon></nldd-icon-cell>
-                  <nldd-text-cell text="Berichtendienst (via SSO)"></nldd-text-cell>
-                  <nldd-spacer-cell size="flexible"></nldd-spacer-cell>
+                  <!-- Tekst als geslotte span met nowrap: het label moet op één regel
+                       blijven (de text-cell zelf wrapt op de spatie vóór '(via SSO)'). -->
+                  <nldd-text-cell><span style="white-space: nowrap">Berichtendienst (via SSO)</span></nldd-text-cell>
                   <nldd-icon-cell><nldd-icon name="square-arrow-right-top" size="18"></nldd-icon></nldd-icon-cell>
                 </nldd-list-item>
 
@@ -5505,6 +5506,49 @@
         document.addEventListener('moza-flags-changed', pasFlagToe);
         pasFlagToe();
       });
+
+      // De ingangen heten mee met de flag: menu-item, paginatitel en dienstpagina-tegel
+      // tonen 'Certificaten' (met bijpassend icoon en omschrijving) i.p.v. 'API keys'.
+      const INGANGEN = {
+        'apikeys-profieldienst': 'de profieldienst',
+        'apikeys-notificatiedienst': 'de notificatiedienst',
+      };
+      function hernoemIngangen() {
+        const flagAan = !!(window.__mozaFlags && window.__mozaFlags.aan('certificaat-auth'));
+        const naam = flagAan ? 'Certificaten' : 'API keys';
+        Object.keys(INGANGEN).forEach(view => {
+          const item = document.querySelector('nldd-list-item[data-view="' + view + '"]');
+          if (item) {
+            item.dataset.title = naam;
+            const cel = item.querySelector('nldd-text-cell');
+            if (cel) cel.setAttribute('text', naam);
+            const icoon = item.querySelector('nldd-icon-cell nldd-icon');
+            if (icoon) icoon.setAttribute('name', flagAan ? 'seal-check-mark' : 'key');
+          }
+          const tile = document.querySelector('.nav-tile[data-nav-view="' + view + '"]');
+          if (tile) {
+            tile.dataset.navTitle = naam;
+            tile.setAttribute('aria-label', 'Naar ' + naam.toLowerCase());
+            const kop = tile.querySelector('h3');
+            if (kop) kop.textContent = naam;
+            const desc = tile.querySelector('nldd-rich-text p');
+            if (desc) desc.textContent = flagAan
+              ? 'Beheer de client-certificaten (mTLS) waarmee applicaties ' + INGANGEN[view] + ' aanroepen, elk met een eigen profiel en geldigheid.'
+              : 'Beheer de keys waarmee applicaties ' + INGANGEN[view] + ' aanroepen, elk met een eigen rol en geldigheid.';
+            const knop = tile.querySelector('nldd-button[data-nav-view]');
+            if (knop) {
+              knop.setAttribute('text', 'Naar ' + naam.toLowerCase());
+              knop.dataset.navTitle = naam;
+            }
+          }
+          // Staat de view open, dan gaat de paginatitel direct mee.
+          const actief = document.querySelector('.view:not([hidden])');
+          const titelEl = document.getElementById('titlebar');
+          if (actief && actief.dataset.view === view && titelEl) titelEl.textContent = naam;
+        });
+      }
+      document.addEventListener('moza-flags-changed', hernoemIngangen);
+      hernoemIngangen();
     })();
 
     // ====================== Rapportage-beheer in de dienstviews ======================
