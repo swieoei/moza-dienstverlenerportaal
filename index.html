@@ -1537,6 +1537,7 @@
                           <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
                             <nldd-title size="5"><h2>Notificatiedienst</h2></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
                             <nldd-tag color="accent" text="demo"></nldd-tag>
+                            <nldd-tag color="paars" text="federatief"></nldd-tag>
                           </nldd-container>
                           <nldd-rich-text><p>Verstuur notificaties naar ondernemers via één centrale dienst: ontvangerbepaling, verzending, response handling en contactherstel.</p></nldd-rich-text>
                           <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Afgenomen</span></div>
@@ -1576,6 +1577,21 @@
                       <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
                     </nldd-title>
                     <nldd-container class="svc-grid" layout="grid" gap="16">
+                      <!-- RINIS groepcertificatendienst: groepcertificaten voor federatief
+                           afgenomen diensten (FSC), per omgeving één. De aanvraagflow
+                           (CSR -> certificaat, vgl. certportal.demo.open-fsc.nl) en de
+                           verdere inrichting van deze dienst volgen later. -->
+                      <nldd-card class="mp-tile">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-title size="5"><h2>RINIS groepcertificatendienst</h2></nldd-title>
+                          <nldd-rich-text><p>Groepcertificaten voor federatief afgenomen diensten (FSC), zoals de notificatiedienst: per omgeving één certificaat - demo, acceptatie en productie afzonderlijk. Voor productie geldt handmatige controle door RINIS.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
+                          <nldd-container class="row-actions" layout="wrap" gap="8">
+                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="rinis-groepcertificaten"></nldd-button>
+                          </nldd-container>
+                        </nldd-container>
+                      </nldd-card>
+
                       <!-- DigiD -->
                       <nldd-card class="mp-tile">
                         <nldd-container padding="16" gap="12">
@@ -1641,6 +1657,7 @@
                         <nldd-title size="5"><h3>1. Kies de vorm</h3></nldd-title>
                         <nldd-segmented-control id="kp-vorm" value="demo" type="radio" variant="icon-and-text" width="full" accessible-label="Vorm van afname">
                           <nldd-segmented-control-item value="demo" text="Demo-omgeving" icon="blocks-9"></nldd-segmented-control-item>
+                          <nldd-segmented-control-item value="acceptatie" text="Acceptatie" icon="clipboard"></nldd-segmented-control-item>
                           <nldd-segmented-control-item value="productie" text="Productie" icon="shield-check-mark"></nldd-segmented-control-item>
                         </nldd-segmented-control>
                         <nldd-banner id="kp-vorm-uitleg" variant="neutral" text=""></nldd-banner>
@@ -1690,6 +1707,9 @@
 
                     <!-- API keys worden beheerd bij de dienst zelf (subpagina "API keys" in het menu) -->
                     <nldd-banner id="dp-keys-verwijzing" variant="neutral" text="" hidden></nldd-banner>
+
+                    <!-- Federatieve afname: groepcertificaat per omgeving via de RINIS-dienst -->
+                    <nldd-banner id="dp-federatief" variant="accent" text="" hidden></nldd-banner>
 
                     <!-- Demo-omschrijving en beperkingen (alleen zichtbaar in demo-fase) -->
                     <div id="dp-demo" hidden>
@@ -2531,7 +2551,31 @@
     const navwrap = document.getElementById('navwrap');
     const titlebar = document.getElementById('titlebar');
     const views = Array.from(document.querySelectorAll('.view'));
+    // Afnamevormen van een dienst: demo, acceptatie of productie. Demo en acceptatie
+    // zijn overal zichtbaar getagd (menu, paginatitel, dienstenaanbod, gebruikersbeheer);
+    // een dienst in productie draagt buiten het dienstenaanbod geen tag.
+    const OMGEVING = {
+      demo: { label: 'demo', kleur: 'accent', omschrijving: 'demo-omgeving' },
+      acceptatie: { label: 'acceptatie', kleur: 'oranje', omschrijving: 'acceptatieomgeving' },
+      productie: { label: 'productie', kleur: 'success', omschrijving: 'productie' },
+    };
+    // Huidige afname per dienst: alleen de notificatiedienst is (nog) in demo.
+    const DIENST_OMGEVING = { notificatiedienst: 'demo', profieldienst: 'productie' };
+    const dienstOmgeving = key => OMGEVING[DIENST_OMGEVING[key]] || null;
+
     const navItems = Array.from(navwrap.querySelectorAll('nldd-list-item[data-view]'));
+
+    // Menu: de dienst-parents tonen een omgevingstag zolang de dienst niet in productie is.
+    Object.keys(DIENST_OMGEVING).forEach(key => {
+      const eind = document.querySelector('nldd-list-item[data-view="' + key + '"] .nav-parent-end');
+      if (!eind) return;
+      let tag = eind.querySelector('nldd-tag');
+      if (DIENST_OMGEVING[key] === 'productie') { if (tag) tag.remove(); return; }
+      if (!tag) { tag = document.createElement('nldd-tag'); eind.prepend(tag); }
+      const omg = dienstOmgeving(key);
+      tag.setAttribute('color', omg.kleur);
+      tag.setAttribute('text', omg.label);
+    });
 
     // Uitklapbare groepen: parents (data-group) tonen/verbergen hun children (data-parent).
     const expandedGroups = new Set();
@@ -2555,14 +2599,14 @@
       const actiefItem = navItems.find(i => i.dataset.view === name);
       const parentKey = actiefItem && actiefItem.dataset.parent;
       if (title && titlebar) titlebar.textContent = title;
-      // Statustag van de dienst naast de paginatitel - ook op subpagina's. Alleen voor
-      // demo-diensten; in productie afgenomen diensten dragen buiten het dienstenaanbod
-      // geen productie-tag meer.
+      // Omgevingstag van de dienst naast de paginatitel - ook op subpagina's. Alleen
+      // voor demo- en acceptatiediensten; in productie afgenomen diensten dragen
+      // buiten het dienstenaanbod geen tag.
       const titleTag = document.getElementById('title-tag');
       if (titleTag) {
-        const DIENST_STATUS = { notificatiedienst: { text: 'demo', color: 'accent' } };
-        const st = DIENST_STATUS[name] || DIENST_STATUS[parentKey];
-        if (st) { titleTag.setAttribute('color', st.color); titleTag.setAttribute('text', st.text); titleTag.removeAttribute('hidden'); }
+        const dienstKey = DIENST_OMGEVING[name] ? name : (DIENST_OMGEVING[parentKey] ? parentKey : null);
+        const st = dienstKey && DIENST_OMGEVING[dienstKey] !== 'productie' ? dienstOmgeving(dienstKey) : null;
+        if (st) { titleTag.setAttribute('color', st.kleur); titleTag.setAttribute('text', st.label); titleTag.removeAttribute('hidden'); }
         else titleTag.setAttribute('hidden', '');
       }
       // Houd de groep van de actieve subpagina uitgeklapt zodat het item zichtbaar is.
@@ -2959,7 +3003,7 @@
       // zodat bv. BZK-gebruikers geen 'Kamer van Koophandel' zien.
       const orgNaam = u.org || 'Kamer van Koophandel';
       document.querySelectorAll('.js-org-afgenomen').forEach(el => {
-        el.textContent = 'Afgenomen door ' + orgNaam + ' · ' + (el.textContent.includes('productie') ? 'productie' : 'demo-omgeving');
+        el.textContent = 'Afgenomen door ' + orgNaam + ' · ' + (el.textContent.includes('productie') ? 'productie' : el.textContent.includes('acceptatie') ? 'acceptatieomgeving' : 'demo-omgeving');
       });
       document.querySelectorAll('.js-org-cel').forEach(el => el.setAttribute('text', orgNaam));
     })();
@@ -4557,7 +4601,7 @@
 
       const DIENSTEN = MP_DIENSTEN = {
         notificatiedienst: {
-          naam: 'Notificatiedienst', status: 'demo',
+          naam: 'Notificatiedienst', status: DIENST_OMGEVING.notificatiedienst, federatief: true,
           desc: 'Totaaloplossing rondom het versturen van (digitale) berichten: bepalen ontvanger(s), verzending, response handling en het bepalen en uitvoeren van contactherstel.',
           keyPrefix: 'nmp_demo',
           rollen: ['Notificaties verzenden', 'Status & rapportage lezen', 'Mislukte notificaties beheren'],
@@ -4592,7 +4636,7 @@
           },
         },
         profieldienst: {
-          naam: 'Profieldienst', status: 'productie',
+          naam: 'Profieldienst', status: DIENST_OMGEVING.profieldienst,
           desc: 'Overheidsbrede dienst die antwoord geeft op de vraag: hoe wil de burger of ondernemer benaderd worden en welke gegevens horen daarbij?',
           keyPrefix: 'pfd_live',
           rollen: ['Profiel lezen', 'Voorkeuren bijwerken', 'Verificatie initiëren'],
@@ -4625,6 +4669,20 @@
             tech: ['Digikoppeling- of REST-koppelvlak met PKIoverheid-certificaat', 'Berichten conform het geldende berichtenformaat (metadata en bijlagen)', 'Ketentest tegen de acceptatieomgeving van de Berichtenbox afgerond'],
             proces: ['Aansluitproces bij de beheerorganisatie doorlopen', 'Beheer- en incidentproces ingericht met een contactpunt voor storingen', 'Go-live-moment ingepland met de beheerorganisatie'],
             business: ['Aansluitovereenkomst ondertekend', 'Verwerkersafspraken en DPIA afgerond', 'Kosten per bericht akkoord'],
+          },
+        },
+        'rinis-groepcertificaten': {
+          naam: 'RINIS groepcertificatendienst',
+          desc: 'Groepcertificaten voor federatief afgenomen diensten (FSC). Per omgeving is één groepcertificaat nodig: demo, acceptatie en productie afzonderlijk. U vraagt een certificaat aan met een CSR; de private key blijft bij uw organisatie.',
+          rvAcc: {
+            tech: ['CSR gegenereerd met het sleutelpaar van uw organisatie (RSA 4096); de private key blijft bij u', 'Koppelvlakken conform de FSC-standaard', 'Aansluiting op de acceptatieomgeving van RINIS'],
+            proces: ['Ketentestplan afgestemd met RINIS', 'Contactpunt voor de testperiode vastgelegd'],
+            business: ['Kosteloos tijdens de afgesproken testperiode', 'Acceptatievoorwaarden gelden - geen productieverkeer'],
+          },
+          rvProd: {
+            tech: ['CSR gegenereerd met het sleutelpaar van uw organisatie (RSA 4096); de private key blijft bij u', 'Koppelvlakken conform de FSC-standaard', 'Certificaatrotatie vóór de vervaldatum ingericht'],
+            proces: ['Handmatige controle en goedkeuring door RINIS vóór uitgifte', 'Beheerproces voor vernieuwen en intrekken vastgelegd'],
+            business: ['Aansluitvoorwaarden van RINIS geaccepteerd', 'Tenaamstelling van het groepcertificaat komt overeen met uw organisatie'],
           },
         },
         digid: {
@@ -4676,10 +4734,15 @@
       }
       const maskKey = k => '•'.repeat(Math.max(12, k.length - 4)) + k.slice(-4);
 
-      // Tegels: afgenomen diensten openen de dienstpagina.
+      // Tegels: afgenomen diensten openen de dienstpagina. De omgevingstag op de
+      // tegel volgt de centrale afname-config (demo/acceptatie/productie).
       root.querySelectorAll('.mp-tile[data-svc]').forEach(tile => {
         tile.addEventListener('click', () => openDienst(tile.dataset.svc));
         tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDienst(tile.dataset.svc); } });
+        const svc = DIENSTEN[tile.dataset.svc];
+        const omg = svc && OMGEVING[svc.status];
+        const tag = tile.querySelector('nldd-tag');
+        if (omg && tag) { tag.setAttribute('color', omg.kleur); tag.setAttribute('text', omg.label); }
       });
       // "Koppelen" opent de koppelpagina.
       root.querySelectorAll('[data-koppel]').forEach(b =>
@@ -4693,14 +4756,23 @@
       // ---------- Koppelpagina ----------
       const VORM_UITLEG = {
         demo: 'Demo-omgeving: direct en vrijblijvend testen met fictieve gegevens - kosteloos, zonder aansluitproces.',
+        acceptatie: 'Acceptatieomgeving: ketentesten tegen de echte koppelvlakken met testgegevens, zonder echte gebruikers - de laatste stap vóór productie.',
         productie: 'Productie: echte gegevens en afspraken over beschikbaarheid. Onderstaande randvoorwaarden gelden vóór go-live.',
+      };
+      // Randvoorwaarden voor de acceptatievorm zijn voor elke dienst gelijk (ketentest).
+      const RV_ACC = {
+        tech: ['Aansluiting op de acceptatieomgeving met een eigen API-key of testcertificaat', 'Koppelvlak conform de specificaties van de dienst', 'Testgegevens - geen echte persoonsgegevens'],
+        proces: ['Ketentestplan afgestemd met de beheerorganisatie', 'Testperiode en contactpunt vastgelegd'],
+        business: ['Kosteloos tijdens de afgesproken testperiode', 'Acceptatievoorwaarden gelden - geen productieverkeer'],
       };
       const kpVorm = root.querySelector('#kp-vorm');
       let koppelDienst = null;
       let gekozenVorm = 'demo';
 
       function renderVoorwaarden(vorm) {
-        const rv = vorm === 'productie' ? (koppelDienst.rvProd || RV_DEMO) : RV_DEMO;
+        const rv = vorm === 'productie' ? (koppelDienst.rvProd || RV_DEMO)
+          : vorm === 'acceptatie' ? (koppelDienst.rvAcc || RV_ACC)
+          : RV_DEMO;
         fillList('kp-rv-tech', rv.tech);
         fillList('kp-rv-proces', rv.proces);
         fillList('kp-rv-business', rv.business);
@@ -4728,6 +4800,8 @@
         const b = root.querySelector('#kp-bevestig');
         b.setAttribute('text', vorm === 'demo'
           ? 'Aanvraag verstuurd. De demo-omgeving van ' + koppelDienst.naam + ' wordt klaargezet; de API-key verschijnt bij de dienst in het dienstenaanbod.'
+          : vorm === 'acceptatie'
+          ? 'Aanvraag verstuurd. De beheerorganisatie plant de ketentest in en zet de acceptatieomgeving van ' + koppelDienst.naam + ' voor u klaar.'
           : 'Aanvraag verstuurd. De beheerorganisatie neemt contact op om de aansluitvoorwaarden voor productie van ' + koppelDienst.naam + ' door te nemen.');
         b.removeAttribute('hidden');
       });
@@ -4739,14 +4813,23 @@
       function openDienst(id) {
         dienst = DIENSTEN[id];
         root.querySelector('#dp-titel').textContent = dienst.naam;
-        root.querySelector('#dp-sub').textContent = 'Afgenomen door ' + ((window.__MOZA_USER && window.__MOZA_USER.org) || 'Kamer van Koophandel') + ' · ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productie');
+        const omg = OMGEVING[dienst.status] || OMGEVING.productie;
+        root.querySelector('#dp-sub').textContent = 'Afgenomen door ' + ((window.__MOZA_USER && window.__MOZA_USER.org) || 'Kamer van Koophandel') + ' · ' + omg.omschrijving;
         root.querySelector('#dp-desc').textContent = dienst.desc;
         const tag = root.querySelector('#dp-status');
-        tag.setAttribute('color', dienst.status === 'demo' ? 'accent' : 'success');
-        tag.setAttribute('text', dienst.status);
+        tag.setAttribute('color', omg.kleur);
+        tag.setAttribute('text', omg.label);
         const verwijzing = root.querySelector('#dp-keys-verwijzing');
         verwijzing.setAttribute('text', 'De API-keys van deze dienst beheert u via het menu: ' + dienst.naam + ' > API keys.');
         verwijzing.removeAttribute('hidden');
+        // Federatieve diensten hebben per omgeving een groepcertificaat nodig.
+        const fed = root.querySelector('#dp-federatief');
+        if (dienst.federatief) {
+          fed.setAttribute('text', 'Deze dienst wordt federatief afgenomen (FSC). Per omgeving is een groepcertificaat nodig - demo, acceptatie en productie afzonderlijk - aan te vragen via de RINIS groepcertificatendienst in het dienstenaanbod.');
+          fed.removeAttribute('hidden');
+        } else {
+          fed.setAttribute('hidden', '');
+        }
         // Demo-omschrijving en beperkingen (alleen ter illustratie; beperkt de dienst niet echt).
         const demoBlok = root.querySelector('#dp-demo');
         if (dienst.status === 'demo') {
@@ -5110,7 +5193,7 @@
             else done();
           });
           el.querySelector('.k-valideer').addEventListener('click', () =>
-            melding('success', 'Key \'' + k.naam + '\' (' + rollenVan(k).join(', ') + ') gevalideerd: verbinding met de ' + (dienst.status === 'demo' ? 'demo-omgeving' : 'productieomgeving') + ' geslaagd (HTTP 200, rollen geaccepteerd).'));
+            melding('success', 'Key \'' + k.naam + '\' (' + rollenVan(k).join(', ') + ') gevalideerd: verbinding met de ' + (dienst.status === 'productie' ? 'productieomgeving' : (OMGEVING[dienst.status] || OMGEVING.demo).omschrijving) + ' geslaagd (HTTP 200, rollen geaccepteerd).'));
           el.querySelector('.k-intrek').addEventListener('click', () => {
             dienst.keys = dienst.keys.filter(x => x !== k);
             renderLijst();
@@ -5939,10 +6022,25 @@
       // Dienst-styling: gelijke dienst = gelijke kleur, zodat je in een oogopslag ziet
       // wie toegang heeft tot dezelfde dienst (bv. Fatima en Semih -> Notificatiedienst).
       const DIENST = {
-        'Notificatiedienst': { chip: 'dienst-notificatiedienst', rand: 'rand-notificatiedienst' },
-        'Profieldienst': { chip: 'dienst-profieldienst', rand: 'rand-profieldienst' },
+        'Notificatiedienst': { chip: 'dienst-notificatiedienst', rand: 'rand-notificatiedienst', key: 'notificatiedienst' },
+        'Profieldienst': { chip: 'dienst-profieldienst', rand: 'rand-profieldienst', key: 'profieldienst' },
       };
       const dienstVan = u => (u.rol === 'organisatiebeheerder' ? null : u.dienst);
+      // Omgeving van een dienst (demo/acceptatie) zichtbaar bij de dienst-chips en in
+      // de dienst-dropdowns; een dienst in productie krijgt geen toevoeging.
+      const omgevingVanDienst = naam => {
+        const d = DIENST[naam];
+        return d && DIENST_OMGEVING[d.key] !== 'productie' ? dienstOmgeving(d.key) : null;
+      };
+      function labelDienstOpties(select) {
+        if (!select) return;
+        select.querySelectorAll('option').forEach(o => {
+          const omg = omgevingVanDienst(o.value);
+          if (omg) o.textContent = o.value + ' (' + omg.label + ')';
+        });
+      }
+      labelDienstOpties(root.querySelector('#gbf-dienst'));
+      labelDienstOpties(root.querySelector('#gb-filter-dienst'));
 
       const org = ORG[user.orgKey] || ORG.kvk;
       if (sub) sub.textContent = org.naam + ' - beheer wie toegang heeft en met welke rol';
@@ -5978,6 +6076,7 @@
           '<nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button class="gbe-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="gbe-annuleer" variant="secondary" text="Annuleren"></nldd-button></nldd-container>';
         const rolSel = edit.querySelector('.gbe-rol');
         const dienstSel = edit.querySelector('.gbe-dienst');
+        labelDienstOpties(dienstSel);
         const dienstField = edit.querySelector('.gbe-dienst-field');
         const syncDienst = () => dienstField.toggleAttribute('hidden', rolSel.value === 'organisatiebeheerder');
         const vul = () => { rolSel.value = u.rol; if (u.dienst) dienstSel.value = u.dienst; syncDienst(); };
@@ -6013,6 +6112,7 @@
                   ${actief ? '' : '<nldd-tag color="critical" text="geen toegang"></nldd-tag>'}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
+                  ${(() => { const omg = dienst && omgevingVanDienst(dienst); return omg ? '<nldd-tag color="' + omg.kleur + '" text="' + omg.label + '"></nldd-tag>' : ''; })()}
                   ${u.rol === 'organisatiebeheerder' ? '<span class="dienst-chip dienst-project">Alle projecten</span>' : (u.project ? '<span class="dienst-chip dienst-project">Project: ' + u.project + '</span>' : '')}
                 </nldd-container>
               </nldd-container>
