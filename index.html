@@ -1935,7 +1935,7 @@
                     </nldd-card>
                   </div>
 
-                  <nldd-container class="gb-filterbalk" layout="grid" column-count="3" sm-column-count="1" gap="16">
+                  <nldd-container class="gb-filterbalk" layout="grid" column-count="4" sm-column-count="1" gap="16">
                     <nldd-form-field label="Filter op rol">
                       <nldd-dropdown>
                         <select id="gb-filter-rol" aria-label="Filter op rol">
@@ -1952,6 +1952,16 @@
                           <option value="alle" selected>Alle diensten</option>
                           <option value="Notificatiedienst">Notificatiedienst</option>
                           <option value="Profieldienst">Profieldienst</option>
+                        </select>
+                      </nldd-dropdown>
+                    </nldd-form-field>
+                    <nldd-form-field label="Filter op omgeving">
+                      <nldd-dropdown>
+                        <select id="gb-filter-omgeving" aria-label="Filter op omgeving">
+                          <option value="alle" selected>Alle omgevingen</option>
+                          <option value="demo">Demo</option>
+                          <option value="acceptatie">Acceptatie</option>
+                          <option value="productie">Productie</option>
                         </select>
                       </nldd-dropdown>
                     </nldd-form-field>
@@ -6006,6 +6016,7 @@
       const leegP = root.querySelector('#gb-leeg');
       const filterRol = root.querySelector('#gb-filter-rol');
       const filterDienst = root.querySelector('#gb-filter-dienst');
+      const filterOmgeving = root.querySelector('#gb-filter-omgeving');
       const filterProject = root.querySelector('#gb-filter-project');
       const user = window.__MOZA_USER || { org: 'Kamer van Koophandel', orgKey: 'kvk', email: 'sanne.deboer@kvk.nl' };
 
@@ -6219,11 +6230,15 @@
       function render() {
         const fr = filterRol ? filterRol.value : 'alle';
         const fd = filterDienst ? filterDienst.value : 'alle';
+        const fo = filterOmgeving ? filterOmgeving.value : 'alle';
         const fp = filterProject ? filterProject.value : 'alle';
         lijst.textContent = '';
         const zichtbaar = org.users.filter(u => {
           if (fr !== 'alle' && u.rol !== fr) return false;
           if (fd !== 'alle' && dienstVan(u) !== fd) return false;
+          // Omgevingsfilter: een organisatiebeheerder (of een gebruiker zonder expliciete
+          // omgevingen) heeft toegang tot alle omgevingen en past dus op elk omgevingsfilter.
+          if (fo !== 'alle' && u.rol !== 'organisatiebeheerder' && u.omgevingen && u.omgevingen.length && u.omgevingen.indexOf(fo) < 0) return false;
           // Een organisatiebeheerder heeft toegang tot alle projecten en past dus op elk projectfilter.
           if (fp !== 'alle' && u.rol !== 'organisatiebeheerder' && u.project !== fp) return false;
           return true;
@@ -6233,6 +6248,7 @@
       }
       if (filterRol) filterRol.addEventListener('change', render);
       if (filterDienst) filterDienst.addEventListener('change', render);
+      if (filterOmgeving) filterOmgeving.addEventListener('change', render);
       if (filterProject) filterProject.addEventListener('change', render);
 
       // Uitnodig-formulier: gebruiker opzetten en rol/project configureren.
@@ -6301,6 +6317,7 @@
         // in de lijst verschijnt (ook als er een filter aanstond die hem zou verbergen).
         if (filterRol) filterRol.value = 'alle';
         if (filterDienst) filterDienst.value = 'alle';
+        if (filterOmgeving) filterOmgeving.value = 'alle';
         if (filterProject) filterProject.value = 'alle';
         render();
         form.setAttribute('hidden', '');
