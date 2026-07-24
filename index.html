@@ -955,8 +955,17 @@
               <!-- ====================== API KEYS - PROFIELDIENST ====================== -->
               <section class="view" hidden data-view="apikeys-profieldienst">
                 <nldd-container class="stack" gap="16">
-                  <!-- Feature flag 'certificaat-auth' (Flags in de footer): flag aan =
-                       certificaten (mTLS) in plaats van API keys; flag uit = alleen API keys. -->
+                  <!-- Feature flag 'certificaat-auth' (Flags in de footer): flag aan = de
+                       pagina heet Integraties en certificaten (mTLS) is een extra
+                       authenticatiemethode naast API keys; flag uit = alleen API keys. -->
+                  <div data-cert-flag class="flag-off">
+                    <nldd-form-field label="Authenticatiemethode">
+                      <nldd-segmented-control data-auth-methode value="keys" type="radio" accessible-label="Authenticatiemethode">
+                        <nldd-segmented-control-item value="keys" text="API keys" selected></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="cert" text="Certificaten (mTLS)"></nldd-segmented-control-item>
+                      </nldd-segmented-control>
+                    </nldd-form-field>
+                  </div>
                   <div class="cert-beheer flag-off" data-cert-flag data-dienst="profieldienst" hidden></div>
                   <div class="api-keys-beheer" data-dienst="profieldienst">
                     <nldd-container class="stack" gap="16">
@@ -1024,8 +1033,17 @@
               <!-- ====================== API KEYS - NOTIFICATIEDIENST ====================== -->
               <section class="view" hidden data-view="apikeys-notificatiedienst">
                 <nldd-container class="stack" gap="16">
-                  <!-- Feature flag 'certificaat-auth' (Flags in de footer): flag aan =
-                       certificaten (mTLS) in plaats van API keys; flag uit = alleen API keys. -->
+                  <!-- Feature flag 'certificaat-auth' (Flags in de footer): flag aan = de
+                       pagina heet Integraties en certificaten (mTLS) is een extra
+                       authenticatiemethode naast API keys; flag uit = alleen API keys. -->
+                  <div data-cert-flag class="flag-off">
+                    <nldd-form-field label="Authenticatiemethode">
+                      <nldd-segmented-control data-auth-methode value="keys" type="radio" accessible-label="Authenticatiemethode">
+                        <nldd-segmented-control-item value="keys" text="API keys" selected></nldd-segmented-control-item>
+                        <nldd-segmented-control-item value="cert" text="Certificaten (mTLS)"></nldd-segmented-control-item>
+                      </nldd-segmented-control>
+                    </nldd-form-field>
+                  </div>
                   <div class="cert-beheer flag-off" data-cert-flag data-dienst="notificatiedienst" hidden></div>
                   <div class="api-keys-beheer" data-dienst="notificatiedienst">
                     <nldd-container class="stack" gap="16">
@@ -1570,6 +1588,22 @@
                           </nldd-container>
                         </nldd-container>
                       </nldd-card>
+
+                      <!-- RINIS groepcertificatendienst: standaard mee afgenomen bij een
+                           federatief afgenomen dienst (zoals de notificatiedienst), niet
+                           apart aan te vragen. Groepcertificaten per omgeving; de aanvraag-
+                           flow (CSR -> certificaat, vgl. certportal.demo.open-fsc.nl) en de
+                           verdere inrichting van deze dienst volgen later. -->
+                      <nldd-card class="mp-tile mp-tile--on">
+                        <nldd-container padding="16" gap="12">
+                          <nldd-container class="between" layout="wrap" gap="8" vertical-alignment="center">
+                            <nldd-title size="5"><h2>RINIS groepcertificatendienst</h2></nldd-title><nldd-spacer size="flexible" direction="horizontal"></nldd-spacer>
+                            <nldd-tag color="paars" text="federatief"></nldd-tag>
+                          </nldd-container>
+                          <nldd-rich-text><p>Groepcertificaten voor federatief afgenomen diensten (FSC), zoals de notificatiedienst: per omgeving één certificaat - demo, acceptatie en productie afzonderlijk. Voor productie geldt handmatige controle door RINIS.</p></nldd-rich-text>
+                          <div class="svc-status svc-status--on"><nldd-icon name="check-mark-circle" size="16"></nldd-icon><span>Standaard afgenomen bij uw federatieve dienst - niet apart aan te vragen</span></div>
+                        </nldd-container>
+                      </nldd-card>
                     </nldd-container>
 
                     <nldd-title size="5">
@@ -1577,21 +1611,6 @@
                       <p slot="subtitle">Neem een dienst af in demovorm of voor productie</p>
                     </nldd-title>
                     <nldd-container class="svc-grid" layout="grid" gap="16">
-                      <!-- RINIS groepcertificatendienst: groepcertificaten voor federatief
-                           afgenomen diensten (FSC), per omgeving één. De aanvraagflow
-                           (CSR -> certificaat, vgl. certportal.demo.open-fsc.nl) en de
-                           verdere inrichting van deze dienst volgen later. -->
-                      <nldd-card class="mp-tile">
-                        <nldd-container padding="16" gap="12">
-                          <nldd-title size="5"><h2>RINIS groepcertificatendienst</h2></nldd-title>
-                          <nldd-rich-text><p>Groepcertificaten voor federatief afgenomen diensten (FSC), zoals de notificatiedienst: per omgeving één certificaat - demo, acceptatie en productie afzonderlijk. Voor productie geldt handmatige controle door RINIS.</p></nldd-rich-text>
-                          <div class="svc-status svc-status--off"><span>Nog niet afgenomen</span></div>
-                          <nldd-container class="row-actions" layout="wrap" gap="8">
-                            <nldd-button variant="primary" start-icon="link" text="Koppelen" data-koppel="rinis-groepcertificaten"></nldd-button>
-                          </nldd-container>
-                        </nldd-container>
-                      </nldd-card>
-
                       <!-- DigiD -->
                       <nldd-card class="mp-tile">
                         <nldd-container padding="16" gap="12">
@@ -1904,6 +1923,9 @@
                               <option value="Profieldienst">Profieldienst</option>
                             </select>
                           </nldd-dropdown>
+                        </nldd-form-field>
+                        <nldd-form-field id="gbf-omgeving-field" label="Omgeving(en)">
+                          <nldd-container class="rol-groep" gap="8" id="gbf-omgevingen"></nldd-container>
                         </nldd-form-field>
                         <nldd-container class="row-actions" layout="wrap" gap="8">
                           <nldd-button id="gbf-verstuur" variant="primary" start-icon="paper-plane" text="Uitnodiging versturen"></nldd-button>
@@ -4671,20 +4693,6 @@
             business: ['Aansluitovereenkomst ondertekend', 'Verwerkersafspraken en DPIA afgerond', 'Kosten per bericht akkoord'],
           },
         },
-        'rinis-groepcertificaten': {
-          naam: 'RINIS groepcertificatendienst',
-          desc: 'Groepcertificaten voor federatief afgenomen diensten (FSC). Per omgeving is één groepcertificaat nodig: demo, acceptatie en productie afzonderlijk. U vraagt een certificaat aan met een CSR; de private key blijft bij uw organisatie.',
-          rvAcc: {
-            tech: ['CSR gegenereerd met het sleutelpaar van uw organisatie (RSA 4096); de private key blijft bij u', 'Koppelvlakken conform de FSC-standaard', 'Aansluiting op de acceptatieomgeving van RINIS'],
-            proces: ['Ketentestplan afgestemd met RINIS', 'Contactpunt voor de testperiode vastgelegd'],
-            business: ['Kosteloos tijdens de afgesproken testperiode', 'Acceptatievoorwaarden gelden - geen productieverkeer'],
-          },
-          rvProd: {
-            tech: ['CSR gegenereerd met het sleutelpaar van uw organisatie (RSA 4096); de private key blijft bij u', 'Koppelvlakken conform de FSC-standaard', 'Certificaatrotatie vóór de vervaldatum ingericht'],
-            proces: ['Handmatige controle en goedkeuring door RINIS vóór uitgifte', 'Beheerproces voor vernieuwen en intrekken vastgelegd'],
-            business: ['Aansluitvoorwaarden van RINIS geaccepteerd', 'Tenaamstelling van het groepcertificaat komt overeen met uw organisatie'],
-          },
-        },
         digid: {
           naam: 'DigiD',
           desc: 'Laat burgers veilig inloggen bij uw digitale dienstverlening met hun DigiD.',
@@ -4825,7 +4833,7 @@
         // Federatieve diensten hebben per omgeving een groepcertificaat nodig.
         const fed = root.querySelector('#dp-federatief');
         if (dienst.federatief) {
-          fed.setAttribute('text', 'Deze dienst wordt federatief afgenomen (FSC). Per omgeving is een groepcertificaat nodig - demo, acceptatie en productie afzonderlijk - aan te vragen via de RINIS groepcertificatendienst in het dienstenaanbod.');
+          fed.setAttribute('text', 'Deze dienst wordt federatief afgenomen (FSC). Per omgeving is een groepcertificaat nodig - demo, acceptatie en productie afzonderlijk. De RINIS groepcertificatendienst is hiervoor standaard mee afgenomen (niet apart aan te vragen); u vindt deze in het dienstenaanbod.');
           fed.removeAttribute('hidden');
         } else {
           fed.setAttribute('hidden', '');
@@ -5577,28 +5585,37 @@
         renderLijst();
       });
 
-      // Flag aan = certificaten (mTLS) in plaats van API keys: de certkant vervangt
-      // het API-keyblok. Flag uit = alleen API keys (huidig gedrag).
-      document.querySelectorAll('.cert-beheer[data-dienst]').forEach(certBlok => {
-        const keysBlok = certBlok.closest('section').querySelector('.api-keys-beheer');
-        function pasFlagToe() {
+      // Flag aan: certificaten (mTLS) is een extra authenticatiemethode naast API keys;
+      // de keuzeknop verschijnt en de certkant toont bij 'cert'. Flag uit herstelt
+      // altijd de API keys-weergave (huidig gedrag).
+      document.querySelectorAll('[data-auth-methode]').forEach(ctrl => {
+        const sectie = ctrl.closest('section');
+        const keysBlok = sectie.querySelector('.api-keys-beheer');
+        const certBlok = sectie.querySelector('.cert-beheer');
+        let methode = 'keys';
+        function pasMethodeToe() {
           const flagAan = !!(window.__mozaFlags && window.__mozaFlags.aan('certificaat-auth'));
-          keysBlok.toggleAttribute('hidden', flagAan);
-          certBlok.toggleAttribute('hidden', !flagAan);
+          const cert = flagAan && methode === 'cert';
+          keysBlok.toggleAttribute('hidden', cert);
+          certBlok.toggleAttribute('hidden', !cert);
         }
-        document.addEventListener('moza-flags-changed', pasFlagToe);
-        pasFlagToe();
+        ctrl.addEventListener('click', e => {
+          const it = e.target.closest('nldd-segmented-control-item');
+          if (it) { methode = it.getAttribute('value'); pasMethodeToe(); }
+        });
+        document.addEventListener('moza-flags-changed', pasMethodeToe);
+        pasMethodeToe();
       });
 
       // De ingangen heten mee met de flag: menu-item, paginatitel en dienstpagina-tegel
-      // tonen 'Certificaten' (met bijpassend icoon en omschrijving) i.p.v. 'API keys'.
+      // tonen 'Integraties' (API keys én certificaten) i.p.v. 'API keys'.
       const INGANGEN = {
         'apikeys-profieldienst': 'de profieldienst',
         'apikeys-notificatiedienst': 'de notificatiedienst',
       };
       function hernoemIngangen() {
         const flagAan = !!(window.__mozaFlags && window.__mozaFlags.aan('certificaat-auth'));
-        const naam = flagAan ? 'Certificaten' : 'API keys';
+        const naam = flagAan ? 'Integraties' : 'API keys';
         Object.keys(INGANGEN).forEach(view => {
           const item = document.querySelector('nldd-list-item[data-view="' + view + '"]');
           if (item) {
@@ -5606,7 +5623,7 @@
             const cel = item.querySelector('nldd-text-cell');
             if (cel) cel.setAttribute('text', naam);
             const icoon = item.querySelector('nldd-icon-cell nldd-icon');
-            if (icoon) icoon.setAttribute('name', flagAan ? 'seal-check-mark' : 'key');
+            if (icoon) icoon.setAttribute('name', flagAan ? 'link' : 'key');
           }
           const tile = document.querySelector('.nav-tile[data-nav-view="' + view + '"]');
           if (tile) {
@@ -5616,7 +5633,7 @@
             if (kop) kop.textContent = naam;
             const desc = tile.querySelector('nldd-rich-text p');
             if (desc) desc.textContent = flagAan
-              ? 'Beheer de client-certificaten (mTLS) waarmee applicaties ' + INGANGEN[view] + ' aanroepen, elk met een eigen profiel en geldigheid.'
+              ? 'Beheer de API keys en client-certificaten (mTLS) waarmee applicaties ' + INGANGEN[view] + ' aanroepen.'
               : 'Beheer de keys waarmee applicaties ' + INGANGEN[view] + ' aanroepen, elk met een eigen rol en geldigheid.';
             const knop = tile.querySelector('nldd-button[data-nav-view]');
             if (knop) {
@@ -6004,18 +6021,21 @@
           toegang: (u) => [u.dienst + ' - eigenaar van API-key ' + u.key, 'Logboek - alleen voor deze API-key', 'Mag API-keys met deze functionaliteit zelf distribueren'] },
       };
 
+      // Toegang per omgeving (demo/acceptatie/productie) verschilt per gebruiker: een
+      // key-eigenaar (bv. DevOps) kan alles hebben, een dienstbeheerder bv. alleen
+      // acceptatie en productie. Een organisatiebeheerder heeft altijd alle omgevingen.
       const ORG = {
         kvk: { naam: 'Kamer van Koophandel', users: [
           { naam: 'Sanne de Boer', email: 'sanne.deboer@kvk.nl', rol: 'organisatiebeheerder' },
-          { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'incasso' },
-          { naam: 'Lin Zhao', email: 'l.zhao@kvk.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service' },
-          { naam: 'Deniz Öztürk', email: 'd.ozturk@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs', project: 'incasso' },
+          { naam: 'Aïcha El Idrissi', email: 'a.elidrissi@kvk.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'incasso', omgevingen: ['acceptatie', 'productie'] },
+          { naam: 'Lin Zhao', email: 'l.zhao@kvk.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service', omgevingen: ['productie'] },
+          { naam: 'Deniz Öztürk', email: 'd.ozturk@kvk.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_7f3K…4bHs', project: 'incasso', omgevingen: ['demo', 'acceptatie', 'productie'] },
         ] },
         bzk: { naam: 'Ministerie van BZK', users: [
           { naam: 'Robbert Bos', email: 'Robbert.Bos@rijksoverheid.nl', rol: 'organisatiebeheerder' },
-          { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'betalen' },
-          { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service' },
-          { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc', project: 'incasso' },
+          { naam: 'Fatima Ouahabi', email: 'f.ouahabi@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Notificatiedienst', project: 'betalen', omgevingen: ['acceptatie', 'productie'] },
+          { naam: 'Naomi Sedney', email: 'n.sedney@rijksoverheid.nl', rol: 'dienstbeheerder', dienst: 'Profieldienst', project: 'service', omgevingen: ['productie'] },
+          { naam: 'Semih Aydın', email: 's.aydin@rijksoverheid.nl', rol: 'keyeigenaar', dienst: 'Notificatiedienst', key: 'nmp_demo_3xQw…9vBc', project: 'incasso', omgevingen: ['demo', 'acceptatie', 'productie'] },
         ] },
       };
 
@@ -6041,6 +6061,37 @@
       }
       labelDienstOpties(root.querySelector('#gbf-dienst'));
       labelDienstOpties(root.querySelector('#gb-filter-dienst'));
+
+      // Omgevingstoegang per gebruiker: aan te vinken bij uitnodigen en rol wijzigen.
+      // Een organisatiebeheerder heeft altijd alle omgevingen (geen keuze nodig).
+      const OMGEVING_KEYS = Object.keys(OMGEVING);
+      const OMGEVING_DESC = {
+        demo: 'Demo-omgeving met fictieve gegevens.',
+        acceptatie: 'Acceptatieomgeving voor ketentesten.',
+        productie: 'Productieomgeving met echte gegevens.',
+      };
+      function bouwOmgevingKeuze(container, geselecteerd) {
+        container.textContent = '';
+        OMGEVING_KEYS.forEach(key => {
+          const omg = OMGEVING[key];
+          const rij = document.createElement('div');
+          rij.className = 'rol-optie';
+          rij.innerHTML =
+            '<nldd-checkbox value="' + key + '" accessible-label="' + omg.label + '"></nldd-checkbox>' +
+            '<span class="rol-tekst"><strong>' + omg.label.charAt(0).toUpperCase() + omg.label.slice(1) + '</strong><span class="muted-note">' + OMGEVING_DESC[key] + '</span></span>';
+          const cb = rij.querySelector('nldd-checkbox');
+          if ((geselecteerd || []).indexOf(key) >= 0) cb.setAttribute('checked', '');
+          rij.addEventListener('click', e => {
+            if (e.target.closest('nldd-checkbox')) return; // checkbox handelt eigen klik af
+            const input = cb.shadowRoot && cb.shadowRoot.querySelector('input');
+            if (input) input.click(); else cb.toggleAttribute('checked');
+          });
+          container.appendChild(rij);
+        });
+      }
+      const gekozenOmgevingen = container => Array.from(container.querySelectorAll('nldd-checkbox'))
+        .filter(cb => cb.checked).map(cb => cb.getAttribute('value'));
+      const omgevingLabels = omgs => omgs.map(o => OMGEVING[o].label).join(', ');
 
       const org = ORG[user.orgKey] || ORG.kvk;
       if (sub) sub.textContent = org.naam + ' - beheer wie toegang heeft en met welke rol';
@@ -6073,23 +6124,36 @@
             '<option value="Notificatiedienst">Notificatiedienst</option>' +
             '<option value="Profieldienst">Profieldienst</option>' +
           '</select></nldd-dropdown></nldd-form-field>' +
+          '<nldd-form-field class="gbe-omgeving-field" label="Omgeving(en)"><nldd-container class="rol-groep gbe-omgevingen" gap="8"></nldd-container></nldd-form-field>' +
           '<nldd-container class="row-actions" layout="wrap" gap="8"><nldd-button class="gbe-opslaan" variant="primary" start-icon="check-mark" text="Opslaan"></nldd-button><nldd-button class="gbe-annuleer" variant="secondary" text="Annuleren"></nldd-button></nldd-container>';
         const rolSel = edit.querySelector('.gbe-rol');
         const dienstSel = edit.querySelector('.gbe-dienst');
         labelDienstOpties(dienstSel);
         const dienstField = edit.querySelector('.gbe-dienst-field');
-        const syncDienst = () => dienstField.toggleAttribute('hidden', rolSel.value === 'organisatiebeheerder');
-        const vul = () => { rolSel.value = u.rol; if (u.dienst) dienstSel.value = u.dienst; syncDienst(); };
+        const omgField = edit.querySelector('.gbe-omgeving-field');
+        const omgWrap = edit.querySelector('.gbe-omgevingen');
+        const syncDienst = () => {
+          const isBeheerder = rolSel.value === 'organisatiebeheerder';
+          dienstField.toggleAttribute('hidden', isBeheerder);
+          omgField.toggleAttribute('hidden', isBeheerder); // organisatiebeheerder heeft alle omgevingen
+        };
+        const vul = () => { rolSel.value = u.rol; if (u.dienst) dienstSel.value = u.dienst; bouwOmgevingKeuze(omgWrap, u.omgevingen || OMGEVING_KEYS); syncDienst(); };
         vul(); customElements.whenDefined('nldd-dropdown').then(vul);
         rolSel.addEventListener('change', syncDienst);
         edit.querySelector('.gbe-annuleer').addEventListener('click', () => { edit.hidden = true; });
         edit.querySelector('.gbe-opslaan').addEventListener('click', () => {
-          u.rol = rolSel.value;
-          if (u.rol === 'organisatiebeheerder') delete u.dienst;
-          else u.dienst = dienstSel.value;
+          const nieuweRol = rolSel.value;
+          let omgs = null;
+          if (nieuweRol !== 'organisatiebeheerder') {
+            omgs = gekozenOmgevingen(omgWrap);
+            if (!omgs.length) { meld('warning', 'Kies minstens één omgeving (demo, acceptatie of productie) voor ' + u.naam + '.'); return; }
+          }
+          u.rol = nieuweRol;
+          if (u.rol === 'organisatiebeheerder') { delete u.dienst; delete u.omgevingen; }
+          else { u.dienst = dienstSel.value; u.omgevingen = omgs; }
           if (u.rol === 'keyeigenaar' && !u.key) u.key = 'nmp_demo_nieuw';
           render();
-          meld('success', 'Rol van ' + u.naam + ' gewijzigd naar ' + ROLLEN[u.rol].label + (u.dienst ? ' voor de ' + u.dienst : '') + '. (demo)');
+          meld('success', 'Rol van ' + u.naam + ' gewijzigd naar ' + ROLLEN[u.rol].label + (u.dienst ? ' voor de ' + u.dienst : '') + (omgs ? ' - omgeving(en): ' + omgevingLabels(omgs) : '') + '. (demo)');
         });
         return edit;
       }
@@ -6112,7 +6176,12 @@
                   ${actief ? '' : '<nldd-tag color="critical" text="geen toegang"></nldd-tag>'}
                   <nldd-tag color="${meta.color}" text="${meta.label}"></nldd-tag>
                   <span class="dienst-chip ${dm ? dm.chip : 'dienst-alle'}">${dienst || 'Alle diensten'}</span>
-                  ${(() => { const omg = dienst && omgevingVanDienst(dienst); return omg ? '<nldd-tag color="' + omg.kleur + '" text="' + omg.label + '"></nldd-tag>' : ''; })()}
+                  ${(() => {
+                    if (u.rol === 'organisatiebeheerder') return '<span class="dienst-chip dienst-project">Alle omgevingen</span>';
+                    const omgs = u.omgevingen || [];
+                    if (!omgs.length || omgs.length === OMGEVING_KEYS.length) return '<span class="dienst-chip dienst-project">Alle omgevingen</span>';
+                    return omgs.map(o => '<nldd-tag color="' + OMGEVING[o].kleur + '" text="' + OMGEVING[o].label + '"></nldd-tag>').join('');
+                  })()}
                   ${u.rol === 'organisatiebeheerder' ? '<span class="dienst-chip dienst-project">Alle projecten</span>' : (u.project ? '<span class="dienst-chip dienst-project">Project: ' + u.project + '</span>' : '')}
                 </nldd-container>
               </nldd-container>
@@ -6193,10 +6262,15 @@
       function toonNieuwProject() { if (fProjectNieuwField) fProjectNieuwField.toggleAttribute('hidden', fProject.value !== '__nieuw'); }
       if (fProject) fProject.addEventListener('change', toonNieuwProject);
       toonNieuwProject();
+      // Omgevingskeuze bij het uitnodigen; nieuwe gebruikers starten standaard in demo.
+      const fOmgevingField = root.querySelector('#gbf-omgeving-field');
+      const fOmgevingen = root.querySelector('#gbf-omgevingen');
+      if (fOmgevingen) bouwOmgevingKeuze(fOmgevingen, ['demo']);
       function toonDienstVeld() {
         const isBeheerder = fRol.value === 'organisatiebeheerder';
-        // Een organisatiebeheerder heeft alle diensten en alle projecten: die velden vervallen.
+        // Een organisatiebeheerder heeft alle diensten, projecten en omgevingen: die velden vervallen.
         fDienstField.toggleAttribute('hidden', isBeheerder);
+        if (fOmgevingField) fOmgevingField.toggleAttribute('hidden', isBeheerder);
         if (fProjectField) fProjectField.toggleAttribute('hidden', isBeheerder);
         if (isBeheerder && fProjectNieuwField) fProjectNieuwField.setAttribute('hidden', '');
       }
@@ -6215,7 +6289,12 @@
         if (project && PROJECTEN.indexOf(project) < 0) { PROJECTEN.push(project); vulProjecten(); }
         const nieuw = { naam: naam, email: email, rol: rol };
         if (project) nieuw.project = project;
-        if (rol !== 'organisatiebeheerder') nieuw.dienst = root.querySelector('#gbf-dienst').value;
+        if (rol !== 'organisatiebeheerder') {
+          nieuw.dienst = root.querySelector('#gbf-dienst').value;
+          const omgs = fOmgevingen ? gekozenOmgevingen(fOmgevingen) : [];
+          if (!omgs.length) { meld('warning', 'Kies minstens één omgeving (demo, acceptatie of productie) voor de nieuwe gebruiker.'); return; }
+          nieuw.omgevingen = omgs;
+        }
         if (rol === 'keyeigenaar') nieuw.key = 'nmp_demo_nieuw';
         org.users.push(nieuw);
         // Filters terug naar 'alle', zodat de zojuist toegevoegde gebruiker altijd
@@ -6229,7 +6308,8 @@
         root.querySelector('#gbf-email').value = '';
         if (fProjectNieuw) fProjectNieuw.value = '';
         if (fProject) { fProject.value = PROJECTEN[0]; toonNieuwProject(); }
-        meld('success', naam + ' uitgenodigd als ' + ((ROLLEN[rol] || {}).label || rol) + (nieuw.dienst ? ' voor de ' + nieuw.dienst : '') + (project ? ' - project ' + project : '') + '. (demo)');
+        if (fOmgevingen) bouwOmgevingKeuze(fOmgevingen, ['demo']);
+        meld('success', naam + ' uitgenodigd als ' + ((ROLLEN[rol] || {}).label || rol) + (nieuw.dienst ? ' voor de ' + nieuw.dienst : '') + (project ? ' - project ' + project : '') + (nieuw.omgevingen ? ' - omgeving(en): ' + omgevingLabels(nieuw.omgevingen) : '') + '. (demo)');
       });
 
       render();
@@ -6702,7 +6782,7 @@
         {
           key: 'certificaat-auth',
           label: 'Certificaat-authenticatie',
-          desc: 'Certificaten (mTLS, PKIoverheid) in plaats van API keys op de API keys-pagina van een dienst.',
+          desc: 'Certificaten (mTLS, PKIoverheid) als extra authenticatiemethode naast API keys; de API keys-pagina heet dan Integraties.',
           standaard: false,
           elementen: () => document.querySelectorAll('[data-cert-flag]'),
         },

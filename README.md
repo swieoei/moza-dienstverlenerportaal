@@ -70,7 +70,7 @@ Experimentele functionaliteit staat achter feature flags: klik in de footer op
 |---|---|
 | Berichten | berichten samenstellen en versturen binnen de notificatiedienst |
 | Kanaalvoorkeur | kanaalvoorkeur van een ondernemer opzoeken en aanpassen (profieldienst) |
-| Certificaat-authenticatie | de API keys-pagina's tonen **certificaten (mTLS)** in plaats van API keys: aanvragen met een CSR (nooit een private key), profiel/template i.p.v. losse X.509-velden, mock-uitgifte onder PKIoverheid, beheer met expiry-waarschuwing, vernieuwen en intrekken |
+| Certificaat-authenticatie | de API keys-pagina's heten **Integraties** en bieden naast API keys de keuze **Certificaten (mTLS)**: aanvragen met een CSR (nooit een private key), profiel/template i.p.v. losse X.509-velden, mock-uitgifte onder PKIoverheid, beheer met expiry-waarschuwing, vernieuwen en intrekken |
 
 ## Let op
 
